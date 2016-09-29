@@ -1,0 +1,20 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\author{Andreas Ziegler}
+\title{Map Fusion for Collaborative UAV SLAM}
+\begin{document}
+\maketitle
+
+\section{Project description}
+Simultaneous Localization And Mapping (SLAM) is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.
+
+For a team of UAVs to perform task, e.g. inspection, together, a common map is required which can be used amongst the team of UAVs.
+
+To create this map, a place recognition system detects overlaps between maps constructed by different UAVs. If enough overlaps are detected between two maps, these maps can be fused into one, which then can be used by multiple UAVs simultaneously.
+
+This work aims to implement a pipeline that, given two SLAM maps with multiple place matches, produces an optimized merged map. This includes finding an optimal alignment of the two maps by a 3D transformation, applying optimization techniques for improved alignment and identifying and fusing redundant information in the fused map. The speed of the fusion step also has to be taken into account, since the system is meant to run on-line in real-world experiments with UAVs.
+\end{document}
