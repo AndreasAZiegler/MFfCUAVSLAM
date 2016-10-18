@@ -423,7 +423,14 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
         ++count1;
     }
 
-    cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
+    return(pFusedMap);
+}
+
+void MapMerger::globalBundleAdjustment(mapptr pMapCurr, mapptr pMapMatch, mapptr pFusedMap, vector<MapMatchHit> vMatchHits){
+		cout << ">>>>> MapMerger::globalBundleAdjustment --> Global Bundle Adjustment" << endl;
+
+		kfptr pKFCur = vMatchHits.back().mpKFCurr;
+		idpair nLoopKf = pKFCur->mId;
 
     // Launch a new thread to perform Global Bundle Adjustment
     mbRunningGBA = true;
@@ -512,7 +519,7 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
 
     cout << "after BA" << endl;
     #ifdef VISUALIZATION
-    mpMatcher->PublishMergedMap(pFusedMap,suAssClientsC,suAssClientsM);
+    //mpMatcher->PublishMergedMap(pFusedMap,suAssClientsC,suAssClientsM);
     #endif
 
     cout << "\033[1;32;41m!!! MAPS MERGED !!!\033[0m" << endl;
@@ -520,6 +527,21 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     this->SetIdle();
 
     set<ccptr> spCCF = pFusedMap->GetCCPtrs();
+
+    set<ccptr> spCCC = pMapCurr->GetCCPtrs();
+    set<ccptr> spCCM = pMapMatch->GetCCPtrs();
+    g2o::Sim3 g2oS_wm_wc; //world match - world curr
+    g2o::Sim3 g2oScw = vMatchHits.back().mg2oScw;
+
+    cv::Mat Twc = pKFCur->GetPoseInverse();
+
+		{
+			cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
+			cv::Mat twc = Twc.rowRange(0,3).col(3);
+			g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
+			g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
+		}
+
     for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
     {
         ccptr pCC = *sit;
@@ -548,7 +570,7 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     pMapMatch->UnLockMapUpdate();
     pFusedMap->UnLockMapUpdate();
 
-    return pFusedMap;
+    //return pFusedMap;
 }
 
 void MapMerger::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap, std::vector<mpptr> vpLoopMapPoints)

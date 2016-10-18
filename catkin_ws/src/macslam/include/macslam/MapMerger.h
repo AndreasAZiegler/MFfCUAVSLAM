@@ -54,6 +54,7 @@ public:
 public:
     MapMerger(MapMergerParams Params, matchptr pMatcher, ros::NodeHandle Nh, ros::NodeHandle NhPrivate);
     mapptr MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits);
+    void globalBundleAdjustment(mapptr pMapCurr, mapptr pMapMatch, mapptr pFusedMap, vector<MapMatchHit> vMatchHits);
 
     bool isBusy();
 private:
