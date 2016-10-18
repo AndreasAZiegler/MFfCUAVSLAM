@@ -54,7 +54,7 @@
   <param name="~VisRate" type="int" value="10" /> <!-- publish map every x-th iteration -->
 
   <param name="~MarkerSize" type="double" value="0.01" />
-  <param name="~ScaleFactor" type="double" value="1.0" />
+  <param name="~ScaleFactor" type="double" value="5.0" />
   <param name="~CamSize" type="double" value="0.04" />
   <param name="~CamLineSize" type="double" value="0.02" />
 

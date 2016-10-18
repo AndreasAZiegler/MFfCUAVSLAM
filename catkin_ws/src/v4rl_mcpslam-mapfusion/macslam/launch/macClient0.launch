@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="macslam" type="macClientNode" name="macClientNode0" args="/data/SP2/catkin_ws/src/macslam/conf/ORBvoc.txt $(find macslam)/conf/vi_equi.yaml" output="screen">
+  <node pkg="macslam" type="macClientNode" name="macClientNode0" args="$(find macslam)/conf/ORBvoc.txt $(find macslam)/conf/vi_equi.yaml" output="screen">
 
   <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->
   <!-- Agent Specific Params - !!!MUST BE ADJUSTED!!! -->
@@ -54,7 +54,7 @@
   <param name="~VisRate" type="int" value="10" /> <!-- publish map every x-th iteration -->
 
   <param name="~MarkerSize" type="double" value="0.01" />
-  <param name="~ScaleFactor" type="double" value="1.0" />
+  <param name="~ScaleFactor" type="double" value="5.0" />
   <param name="~CamSize" type="double" value="0.04" />
   <param name="~CamLineSize" type="double" value="0.02" />
 
