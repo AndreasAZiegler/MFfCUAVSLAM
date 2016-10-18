@@ -430,7 +430,19 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
         ++count1;
     }
 
+    return(pFusedMap);
+}
+
+void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits){
+
     cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
+
+
+    set<size_t> suAssClientsC = pMapCurr->msuAssClients;
+    set<size_t> suAssClientsM = pMapMatch->msuAssClients;
+    kfptr pKFCur = vMatchHits.back().mpKFCurr;
+    idpair nLoopKf;
+    nLoopKf = pKFCur->mId;
 
     // Launch a new thread to perform Global Bundle Adjustment
     mbRunningGBA = true;
@@ -526,8 +538,22 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
 
     this->SetIdle();
 
+
+    set<ccptr> spCCC = pMapCurr->GetCCPtrs();
     set<ccptr> spCCF = pFusedMap->GetCCPtrs();
-    for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
+
+
+		g2o::Sim3 g2oScw = vMatchHits.back().mg2oScw;
+		g2o::Sim3 g2oS_wm_wc; //world match - world curr
+		cv::Mat Twc = pKFCur->GetPoseInverse();
+
+		{
+				cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
+				cv::Mat twc = Twc.rowRange(0,3).col(3);
+				g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
+				g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
+		}
+		for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
     {
         ccptr pCC = *sit;
         chptr pCH = pCC->mpCH;
@@ -555,7 +581,7 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     pMapMatch->UnLockMapUpdate();
     pFusedMap->UnLockMapUpdate();
 
-    return pFusedMap;
+    //return pFusedMap;
 }
 
 void MapMerger::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap, std::vector<mpptr> vpLoopMapPoints)

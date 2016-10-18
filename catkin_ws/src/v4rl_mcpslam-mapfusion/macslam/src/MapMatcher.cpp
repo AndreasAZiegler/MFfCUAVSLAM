@@ -448,6 +448,7 @@ void MapMatcher::CorrectLoop()
     {
         vector<MapMatchHit> vMatches = mFoundMatches[mpCurrMap][pMatchedMap];
         mapptr pMergedMap = mpMapMerger->MergeMaps(mpCurrMap,pMatchedMap,vMatches);
+        mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
     }
 
     this->ClearLoopEdges();
