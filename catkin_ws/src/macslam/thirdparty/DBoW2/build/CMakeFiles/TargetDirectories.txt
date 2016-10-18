@@ -1,3 +1,0 @@
-/data/SP2/catkin_ws/src/macslam/thirdparty/DBoW2/build/CMakeFiles/edit_cache.dir
-/data/SP2/catkin_ws/src/macslam/thirdparty/DBoW2/build/CMakeFiles/rebuild_cache.dir
-/data/SP2/catkin_ws/src/macslam/thirdparty/DBoW2/build/CMakeFiles/DBoW2.dir
