@@ -437,12 +437,10 @@ void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr
 
     cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
 
-
     set<size_t> suAssClientsC = pMapCurr->msuAssClients;
     set<size_t> suAssClientsM = pMapMatch->msuAssClients;
     kfptr pKFCur = vMatchHits.back().mpKFCurr;
-    idpair nLoopKf;
-    nLoopKf = pKFCur->mId;
+    idpair nLoopKf = pKFCur->mId;
 
     // Launch a new thread to perform Global Bundle Adjustment
     mbRunningGBA = true;
