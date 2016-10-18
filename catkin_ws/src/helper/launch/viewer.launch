@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="helper" type="macslam_viewer_node" name="mac_viewer_node" output="screen">
+
+  <!-- Client0 -->
+  <param name="KfCutOffC0" type="int" value="1000" />
+  <param name="ScaleC0" type="double" value="1.0" />
+  <param name="KFScaleC0" type="double" value="2.0" />
+  <param name="TrajSizeC0" type="double" value="0.04" />
+  <param name="CamLineSizeC0" type="double" value="0.02" />
+
+  <!-- Client1 -->
+  <param name="KfCutOffC1" type="int" value="1000" />
+  <param name="ScaleC1" type="double" value="1.0" />
+  <param name="KFScaleC1" type="double" value="0.5" />
+  <param name="TrajSizeC1" type="double" value="0.02" />
+  <param name="CamLineSizeC1" type="double" value="0.02" />
+
+  <!-- Server0 -->
+  <param name="KfCutOffS0" type="int" value="1000" />
+<!-- intro img: 220; jneg 162,150; -->
+  <param name="ScaleS0" type="double" value="1.0" />
+  <param name="KFScaleS0" type="double" value="2.0" />
+  <param name="TrajSizeS0" type="double" value="0.1" />
+  <param name="TrajSizeS0v2" type="double" value="0.2" />
+  <param name="CamLineSizeS0" type="double" value="0.04" />
+  <param name="BoxS0P1x" type="double" value="0.5" />
+  <param name="BoxS0P1y" type="double" value="0.5" />
+  <param name="BoxS0P2x" type="double" value="0.5" />
+  <param name="BoxS0P2y" type="double" value="0.5" />
+  <param name="BoxS0P3x" type="double" value="0.5" />
+  <param name="BoxS0P3y" type="double" value="0.5" />
+  <param name="BoxS0P4x" type="double" value="0.5" />
+  <param name="BoxS0P4y" type="double" value="0.5" />
+  <param name="BoxS0P4y" type="double" value="0.5" />
+
+  <param name="BoxS0xl" type="double" value="10" />
+  <param name="BoxS0xh" type="double" value="28" />
+  <param name="BoxS0zl" type="double" value="55" />
+  <param name="BoxS0zh" type="double" value="100" />
+
+  <param name="S0zMin" type="double" value="0.5" />
+  <param name="S0zMax" type="double" value="0.5" />
+
+  <!-- Server1 -->
+  <param name="KfCutOffS1" type="int" value="1000" />
+<!-- intro img: 100 -->
+  <param name="ScaleS1" type="double" value="1.0" />
+  <param name="TrajSizeS1" type="double" value="0.1" />
+  <param name="CamLineSizeS1" type="double" value="0.04" />
+  <param name="BoxS1P1x" type="double" value="0.5" />
+  <param name="BoxS1P1y" type="double" value="0.5" />
+  <param name="BoxS1P2x" type="double" value="0.5" />
+  <param name="BoxS1P2y" type="double" value="0.5" />
+  <param name="BoxS1P3x" type="double" value="0.5" />
+  <param name="BoxS1P3y" type="double" value="0.5" />
+  <param name="BoxS1P4x" type="double" value="0.5" />
+  <param name="BoxS1P4y" type="double" value="0.5" />
+  <param name="BoxS1P4y" type="double" value="0.5" />
+  <param name="S1zMin" type="double" value="0.5" />
+  <param name="S1zMax" type="double" value="0.5" />
+
+  <!-- Server2 -->
+  <param name="KfCutOffS2" type="int" value="65" />
+  <param name="ScaleS2" type="double" value="1.0" />
+  <param name="TrajSizeS2" type="double" value="0.1" />
+  <param name="CamLineSizeS2" type="double" value="0.02" />
+
+  <!-- Server2 -->
+  <param name="KfCutOffS3" type="int" value="65" />
+  <param name="ScaleS3" type="double" value="1.0" />
+  <param name="TrajSizeS3" type="double" value="0.1" />
+  <param name="CamLineSizeS3" type="double" value="0.02" />
+
+</node>
+
+</launch>

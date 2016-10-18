@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="macslam" type="macServerNode" name="macServerNode" args="$(find macslam)/conf/ORBvoc.txt" output="screen">
+
+  <!-- +++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- !!! ADJUST INPUT TOPIC NAMES IF NECESSARY !!! -->
+  <!-- +++++++++++++++++++++++++++++++++++++++++++++ -->
+
+  <param name="NumOfClients" type="int" value="4" />
+
+  <!-- Sync & Timing -->
+  <param name="~LockSleep" type="int" value="1000" /> <!-- waiting time in ys if Lock cannot be acquired -->
+
+  <!-- Communication -->
+
+  <param name="~CommRate" type="int" value="10000" /> <!-- waiting time in ys -->
+
+  <param name="~CoutRate" type="int" value="200" /> <!-- "cout" comm info every x-th iteration -->
+
+  <param name="~PubMapBufferSize" type="int" value="10000" />  <!-- output buffer size -->
+  <param name="~SubMapBufferSize" type="int" value="10000" />  <!-- input buffer size -->
+
+  <param name="~KfItBound" type="int" value="30" /> <!-- max num of KF msgs processed per Comm iteration -->
+  <param name="~MpItBound" type="int" value="300" />  <!-- max num of MP msgs processed per Comm iteration -->
+
+  <param name="~bCommStrictLock" type="bool" value="true" />   <!-- true: either Comm or VO active -->
+
+  <!-- Mapping Module -->
+
+  <param name="~MappingRate" type="int" value="5000" /> <!-- waiting time in ys -->
+  <param name="~KfCullingRedundancyThres" type="double" value="1.0" /> <!-- 1.0 = no culling -->
+
+  <!-- Loop Closure Module -->
+
+  <param name="~LoopClosureRate" type="int" value="5000" /> <!-- waiting time in ys -->
+  <param name="~LoopLockSleep" type="int" value="1000" /> <!-- if other modules cannot be locked, wait x ys -->
+  <param name="~mKFNewLoopThres" type="int" value="10" /> <!-- when a loop is found, the next x KFs are not considered for loop closure -->
+  <!-- Params for place recognition and optimization are taken from Map Maptcher -->
+
+  <!-- Map Matcher -->
+
+  <param name="~MapMatchRate" type="int" value="5000" /> <!-- waiting time in ys -->
+  <param name="~MarkerSizeLoop" type="double" value="0.2" />
+  <param name="~StartAfterNumKFs" type="int" value="20" /> <!-- ignore the first n KFs (id < n) -->
+
+  <param name="~SolverIterations" type="int" value="5" /> <!-- default: 5 -->
+  <param name="~MatchesThres" type="int" value="20" /> <!-- default: 20 -->
+  <param name="~InliersThres" type="int" value="20" /> <!-- default: 20 -->
+  <param name="~TotalMatchesThres" type="int" value="40" /> <!-- default: 40 -->
+  <param name="~Probability" type="double" value="0.99" /> <!-- default: 0.99 -->
+  <param name="~MinInliers" type="int" value="6" /> <!-- default: 6 -->
+  <param name="~MaxIterations" type="int" value="300" /> <!-- default: 300 -->
+
+  <!-- Map Merger -->
+
+  <param name="~MinHitsForMerge" type="int" value="3" /> <!-- two maps are merged if x correpondences are found -->
+  <param name="~GBAIterations" type="int" value="20" /> <!-- default: 20 -->
+
+  <!-- Client 0 -->
+
+  <param name="FrameId0" type="string" value="odomS0" />
+  <param name="~MapInTopicName0" type="string" value="/MapOutClient0" />
+  <param name="~ResetInTopicName0" type="string" value="/ResetOutClient0" />
+
+  <!-- Client 1 -->
+
+  <param name="FrameId1" type="string" value="odomS1" />
+  <param name="~MapInTopicName1" type="string" value="/MapOutClient1" />
+  <param name="~ResetInTopicName1" type="string" value="/ResetOutClient1" />
+
+  <!-- Client 2 -->
+
+  <param name="FrameId2" type="string" value="odomS2" />
+  <param name="~MapInTopicName2" type="string" value="/MapOutClient2" />
+  <param name="~ResetInTopicName2" type="string" value="/ResetOutClient2" />
+
+  <!-- Client 3 -->
+
+  <param name="FrameId3" type="string" value="odomS3" />
+  <param name="~MapInTopicName3" type="string" value="/MapOutClient3" />
+  <param name="~ResetInTopicName3" type="string" value="/ResetOutClient3" />
+
+  <!-- Visualization -->
+
+  <param name="~bShowCovGraph" type="bool" value="true" />
+  <param name="~bShowMapPoints" type="bool" value="true" />
+  <param name="~bShowKFs" type="bool" value="true" />
+  <param name="~bShowTraj" type="bool" value="true" />
+
+  <param name="~VisRate" type="int" value="10" /> <!-- publish map every x-th iteration -->
+
+  <param name="~MarkerSize" type="double" value="0.01" /> <!-- Marker Diameter -->
+  <param name="~ScaleFactor" type="double" value="5.0" />
+  <param name="~CamSize" type="double" value="0.04" />
+  <param name="~CamLineSize" type="double" value="0.02" />
+  <param name="~MarkerSphereDiameter" type="double" value="0.5" />
+
+  <param name="~ColorR0" type="double" value="0.0" />
+  <param name="~ColorG0" type="double" value="0.0" />
+  <param name="~ColorB0" type="double" value="0.0" />
+
+  <param name="~ColorR1" type="double" value="0.0" />
+  <param name="~ColorG1" type="double" value="0.0" />
+  <param name="~ColorB1" type="double" value="1.0" />
+
+  <param name="~ColorR2" type="double" value="0.6" />
+  <param name="~ColorG2" type="double" value="0.0" />
+  <param name="~ColorB2" type="double" value="0.6" />
+
+  <param name="~ColorR3" type="double" value="0.0" />
+  <param name="~ColorG3" type="double" value="0.8" />
+  <param name="~ColorB3" type="double" value="0.0" />
+
+  <!-- Monitoring -->
+
+  <param name="~bRecordMode" type="bool" value="false" /> <!-- interrupts after vocabulary is loaded to start bagfile recording -->
+  <param name="~VerboseMode" type="int" value="1" /> <!-- -9=LockTracking;-8=MutexTracking;-7=MapMatchingT-acking;-6=CommInputTracking;-5=TrackingTime;-4=TimeStamps;-3=ShowCommBuffers;-2=ShowCommCosts;5=CommProgFlow -->
+
+</node>
+
+</launch>

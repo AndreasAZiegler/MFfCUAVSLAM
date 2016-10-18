@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="helper" type="imagesampler_node" name="imagesampler_node" output="screen">
+
+  <param name="~imgpathfloor" type="string" value="$(find helper)/img/jfloor.png" />
+<!--
+  <param name="~imgpathlongedge" type="string" value="$(find helper)/img/longedge.png" />
+  <param name="~imgpathshortedge" type="string" value="$(find helper)/img/shortedge.png" />
+-->
+
+  <param name="~height" type="int" value="71" />
+  <param name="~width" type="int" value="168" />
+
+<!-- good params for j_goodmappoints.bag
+  <param name="~height" type="int" value="71" />
+  <param name="~width" type="int" value="168" />
+-->
+<!-- good params for jloop1.bag
+  <param name="~height" type="int" value="66" />
+  <param name="~width" type="int" value="156" />
+-->
+<!-- good params for j_floor_negative.bag A
+  <param name="~height" type="int" value="71" />
+  <param name="~width" type="int" value="168" />
+-->
+<!-- good params for j_floor_negative.bag A
+  <param name="~height" type="int" value="65" />
+  <param name="~width" type="int" value="154" />
+-->
+
+  <param name="~zaxis" type="int" value="15" />
+  <param name="~densitiy" type="int" value="1" />
+  <param name="~scale" type="double" value="1.0" />
+
+  <param name="~z1" type="double" value="4" />
+
+  <param name="~thresRl1" type="int" value="0" />
+  <param name="~thresRh1" type="int" value="255" />
+  <param name="~thresGl1" type="int" value="0" />
+  <param name="~thresGh1" type="int" value="255" />
+  <param name="~thresBl1" type="int" value="0" />
+  <param name="~thresBh1" type="int" value="100" />
+
+  <param name="~thresRl2" type="int" value="0" />
+  <param name="~thresRh2" type="int" value="100" />
+  <param name="~thresGl2" type="int" value="0" />
+  <param name="~thresGh2" type="int" value="140" />
+  <param name="~thresBl2" type="int" value="100" />
+  <param name="~thresBh2" type="int" value="255" />
+
+</node>
+
+</launch>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="cy" default="18"/>
+<arg name="2cy" default="50"/>
+<arg name="cx" default="5"/>
+<arg name="c2x" default="8"/>
+<arg name="sx" default="67"/>
+<arg name="lx" default="-50"/>
+
+<node pkg="tf" type="static_transform_publisher" name="linkC0_broadcaster" args="$(arg cx) $(arg 2cy) 5 0 0 -3.142 world odomC0 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC1_broadcaster" args="$(arg cx) $(arg cy) 5 0 0 -3.142 world odomC1 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC2_broadcaster" args="$(arg c2x) -$(arg cy) 5 0 0 -3.142 world odomC2 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC3_broadcaster" args="$(arg cx) -$(arg 2cy) 5 -1.9 0 -3.142 world odomC3 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkS0_broadcaster" args="$(arg sx) $(arg 2cy) 5 0 -0.04 -3.142 world odomS0 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkS1_broadcaster" args="$(arg sx) $(arg cy) 5 0 0 -3.142 world odomS1 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkS2_broadcaster" args="$(arg sx) -$(arg cy) 5 0 0 -3.142 world odomS2 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkS3_broadcaster" args="$(arg sx) -$(arg 2cy) 5 -1.9 0 -3.142 world odomS3 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkL_broadcaster" args="$(arg lx) 0 0 -0.85 0 0 world odomL 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkLA_broadcaster" args="63 -0.5 2.2 -0.74 0.05 -0.01 world odomLA 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkLABag_broadcaster" args="62.5 49.1 2.4 -0.74 -0.03 0.020 world odomLABag 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkM_broadcaster" args="7 28 0.0 -1.4 0 1.571 world odomM 100" />
+
+<!-- good for Client1 Map
+<node pkg="tf" type="static_transform_publisher" name="linkFloor_broadcaster" args="3 10 0 0.15 0 0 world odomFloor 100" />
+-->
+
+<!-- good for 2clients_goodGTalignment.bag Server Map 0
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="67 38 2.1 0.17 0.03 0.0 world odomFloorBag 100" />
+-->
+
+<!-- for irchel_4clients_shorttraj_withstop_looksverygood.bag - not ready
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="67 -38 2.1 -1.17 0.03 0.0 world odomFloorBag 100" />
+-->
+
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="67 38 2.1 0.17 0.03 0.0 world odomFloorBag 100" />
+
+</launch>

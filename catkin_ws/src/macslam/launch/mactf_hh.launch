@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="cy" default="18"/>
+<arg name="2cy" default="50"/>
+<arg name="cx" default="5"/>
+<arg name="c2x" default="8"/>
+<arg name="sx" default="67"/>
+<arg name="lx" default="-50"/>
+
+<node pkg="tf" type="static_transform_publisher" name="linkC0_broadcaster" args="$(arg cx) $(arg 2cy) 5 -1.571 0 -1.571 world odomC0 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC1_broadcaster" args="$(arg cx) $(arg cy) 5 -1.571 0 -1.571 world odomC1 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC2_broadcaster" args="$(arg c2x) -$(arg cy) 5 -1.571 0 -1.571 world odomC2 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkC3_broadcaster" args="$(arg cx) -$(arg 2cy) 5 -1.571 0 -1.571 world odomC3 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkS0_broadcaster" args="$(arg sx) -15 5 -1.571 0 -1.571 world odomS0 100" />
+<node pkg="tf" type="static_transform_publisher" name="linkS1_broadcaster" args="$(arg sx) 15 5 -1.571 0 -1.571 world odomS1 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkL_broadcaster" args="$(arg lx) 0 0 -0.85 0 0 world odomL 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkLA_broadcaster" args="62.5 -0.9 2.2 -0.74 0 0 world odomLA 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="linkFloor_broadcaster" args="67 -25 5 -1.571 0 0 world odomFloor 100" />
+
+<!-- This one fits nicely to j_goodmappoints.bag
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="38 12 -1 -1.62 -0.02 0.08 world odomFloorBag 100" />
+-->
+
+<!-- This one fits nice to jloop1.bag
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="32 6 -1 -1.48 -0.02 0.05 world odomFloorBag 100" />
+-->
+
+<!-- This one fits nice to j_floor_negative.bag
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="35 10 -1 -1.6 -0.02 0.05 world odomFloorBag 100" />
+-->
+
+<node pkg="tf" type="static_transform_publisher" name="linkFloorBag_broadcaster" args="35 10 -1 -1.6 -0.02 0.05 world odomFloorBag 100" />
+
+</launch>

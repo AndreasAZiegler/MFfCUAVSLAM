@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="helper" type="republisher_node" name="republisher_node" output="screen">
+
+  <param name="Topicclient0" type="string" value="/orb2_output" />  
+  <param name="Topicclient1" type="string" value="/orb2_output_client1" />  
+
+  <param name="NumOfClients" type="int" value="2" />
+
+</node>
+
+</launch>

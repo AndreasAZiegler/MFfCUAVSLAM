@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="helper" type="imagesampler_node" name="imagesampler_node" output="screen">
+
+  <param name="~imgpathfloor" type="string" value="$(find helper)/img/irchelpark2.png" />
+  <param name="~imgpathlongedgex" type="string" value="$(find helper)/img/longedge.png" />
+  <param name="~imgpathshortedgex" type="string" value="$(find helper)/img/shortedge.png" />
+
+  <param name="~height" type="int" value="48" />
+  <param name="~width" type="int" value="28" />
+  <param name="~zaxis" type="int" value="25" />
+
+<!-- good with GT data set Server0, and maybe client 1 Map)
+  <param name="~height" type="int" value="48" />
+  <param name="~width" type="int" value="28" />
+  <param name="~zaxis" type="int" value="25" />
+  <param name="~z1" type="double" value="0.5" />
+-->
+  <param name="~densitiy" type="int" value="1" />
+  <param name="~scale" type="double" value="1.0" />
+
+  <param name="~z1" type="double" value="0.0" />
+
+  <param name="~thresRl1" type="int" value="0" />
+  <param name="~thresRh1" type="int" value="255" />
+  <param name="~thresGl1" type="int" value="60" />
+  <param name="~thresGh1" type="int" value="255" />
+  <param name="~thresBl1" type="int" value="0" />
+  <param name="~thresBh1" type="int" value="100" />
+
+  <param name="~thresRl2" type="int" value="0" />
+  <param name="~thresRh2" type="int" value="100" />
+  <param name="~thresGl2" type="int" value="0" />
+  <param name="~thresGh2" type="int" value="140" />
+  <param name="~thresBl2" type="int" value="100" />
+  <param name="~thresBh2" type="int" value="255" />
+
+</node>
+
+</launch>

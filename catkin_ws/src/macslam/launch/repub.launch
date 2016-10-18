@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="helper" type="republisher_node" name="repub_node" output="screen">
+
+  <param name="~OpMode" type="string" value="GT" /> <!-- "ORBKF";"CAM";"CAM1"-->
+  <param name="~Delay1" type="int" value="500" /> 
+  <param name="~x" type="double" value="0.1" /> 
+  <param name="~scale" type="double" value="0.896" />
+
+
+
+  <param name="~LineLength" type="int" value="0" />
+
+
+
+
+  <param name="~sleeptime" type="int" value="1000000" /> <!-- ys -->
+  <param name="~BoundMarkerSize" type="double" value="1.1" /> 
+
+  <param name="~x0bl" type="double" value="0.0" /> 
+  <param name="~y0bl" type="double" value="67.0" /> 
+  <param name="~x0br" type="double" value="0.0" /> 
+  <param name="~y0br" type="double" value="33.5" /> 
+  <param name="~x0tr" type="double" value="50.0" /> 
+  <param name="~y0tr" type="double" value="33.5" /> 
+  <param name="~x0tl" type="double" value="50.0" /> 
+  <param name="~y0tl" type="double" value="67.0" /> 
+
+  <param name="~x1bl" type="double" value="0.0" /> 
+  <param name="~y1bl" type="double" value="32.5" /> 
+  <param name="~x1br" type="double" value="0.0" /> 
+  <param name="~y1br" type="double" value="0.5" /> 
+  <param name="~x1tr" type="double" value="50.0" /> 
+  <param name="~y1tr" type="double" value="0.5" /> 
+  <param name="~x1tl" type="double" value="50.0" /> 
+  <param name="~y1tl" type="double" value="32.5" /> 
+
+  <param name="~x2bl" type="double" value="0.0" /> 
+  <param name="~y2bl" type="double" value="-0.5" /> 
+  <param name="~x2br" type="double" value="0.0" /> 
+  <param name="~y2br" type="double" value="-32.5" /> 
+  <param name="~x2tr" type="double" value="50.0" /> 
+  <param name="~y2tr" type="double" value="-32.5" /> 
+  <param name="~x2tl" type="double" value="50.0" /> 
+  <param name="~y2tl" type="double" value="-0.5" /> 
+
+  <param name="~x3bl" type="double" value="0.0" /> 
+  <param name="~y3bl" type="double" value="-33.5" /> 
+  <param name="~x3br" type="double" value="0.0" /> 
+  <param name="~y3br" type="double" value="-67.7" /> 
+  <param name="~x3tr" type="double" value="50.0" /> 
+  <param name="~y3tr" type="double" value="-67.0" /> 
+  <param name="~x3tl" type="double" value="50.0" /> 
+  <param name="~y3tl" type="double" value="-33.5" /> 
+
+  <param name="~xsbl" type="double" value="51.0" /> 
+  <param name="~ysbl" type="double" value="32.5" /> 
+  <param name="~xsbr" type="double" value="51.0" /> 
+  <param name="~ysbr" type="double" value="-32.5" /> 
+  <param name="~xstr" type="double" value="116.0" /> 
+  <param name="~ystr" type="double" value="-32.5" /> 
+  <param name="~xstl" type="double" value="116.0" /> 
+  <param name="~ystl" type="double" value="32.5" /> 
+
+  <param name="~xlbl" type="double" value="-50.0" /> 
+  <param name="~ylbl" type="double" value="17.0" /> 
+  <param name="~xlbr" type="double" value="-50.0" /> 
+  <param name="~ylbr" type="double" value="-17.0" /> 
+  <param name="~xltr" type="double" value="-1.0" /> 
+  <param name="~yltr" type="double" value="-17.0" /> 
+  <param name="~xltl" type="double" value="-1.0" /> 
+  <param name="~yltl" type="double" value="17.0" /> 
+
+  <param name="~ColorR0" type="double" value="0.0" />
+  <param name="~ColorG0" type="double" value="0.0" />
+  <param name="~ColorB0" type="double" value="0.0" />
+
+  <param name="~ColorR1" type="double" value="0.0" />
+  <param name="~ColorG1" type="double" value="0.0" />
+  <param name="~ColorB1" type="double" value="1.0" />
+
+  <param name="~ColorR2" type="double" value="0.6" />
+  <param name="~ColorG2" type="double" value="0.0" />
+  <param name="~ColorB2" type="double" value="0.6" />
+
+  <param name="~ColorR3" type="double" value="0.0" />
+  <param name="~ColorG3" type="double" value="0.8" />
+  <param name="~ColorB3" type="double" value="0.0" />
+
+</node>
+
+</launch>

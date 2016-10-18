@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+    <include file="$(find macslam)/launch/mactf_ex2.launch" />
+    <include file="$(find macslam)/launch/macClient0.launch" />
+    <include file="$(find macslam)/launch/macClient1.launch" />
+    <include file="$(find macslam)/launch/macServer.launch" />
+
+</launch>
