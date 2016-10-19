@@ -53,7 +53,8 @@ public:
         Eigen::aligned_allocator<std::pair<const kfptr, g2o::Sim3> > > KeyFrameAndPose;
 public:
     MapMerger(MapMergerParams Params, matchptr pMatcher, ros::NodeHandle Nh, ros::NodeHandle NhPrivate);
-    mapptr MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw_end);
+    mapptr MergeMaps(mapptr pMapCurr, mapptr pMapMatch, MapMatchHit vMatchHit, std::shared_ptr<g2o::Sim3> g2oScw_end);
+    void optimizeEssentialGraph(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits);
     void globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw);
 
     bool isBusy();

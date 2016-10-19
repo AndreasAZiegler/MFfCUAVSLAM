@@ -16,7 +16,7 @@ MapMerger::MapMerger(MapMergerParams Params, matchptr pMatcher, ros::NodeHandle 
     mPubMarkerArray = mNh.advertise<visualization_msgs::MarkerArray>("MapMergingMarkerArrays",10);
 }
 
-MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw_end)
+MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, MapMatchHit vMatchHit, std::shared_ptr<g2o::Sim3> g2oScw_end)
 {
     this->SetBusy();
 
@@ -154,12 +154,14 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
         (*sit)->mbOptActive = true;
     }
 
+    /*
     if(vMatchHits.size() < mMyParams.mMinHits)
     {
         cout << "\033[1;31m!!! ERROR !!!\033[0m In \"MapMerger::MergeMaps\": not enough matches between maps" << endl;
         this->SetIdle();
         return nullptr;
     }
+    */
 
     if(pMapCurr == nullptr || pMapMatch == nullptr)
     {
@@ -184,8 +186,8 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     cout << "Map B: KFs|MPs: " << pMapMatch->GetAllKeyFrames().size() << "|" << pMapMatch->GetAllMapPoints().size() << endl;
     cout << "Fused Map: KFs|MPs: " << pFusedMap->GetAllKeyFrames().size() << "|" << pFusedMap->GetAllKeyFrames().size() << endl;
 
-    size_t IdC = vMatchHits[0].mpKFCurr->mId.second;
-    size_t IdM = vMatchHits[0].mpKFMatch->mId.second;
+    size_t IdC = vMatchHit.mpKFCurr->mId.second;
+    size_t IdM = vMatchHit.mpKFMatch->mId.second;
 
     set<size_t> suAssClientsC = pMapCurr->msuAssClients;
     set<size_t> suAssClientsM = pMapMatch->msuAssClients;
@@ -199,329 +201,309 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     //optimize
     idpair nLoopKf;
 
-    int count1 = 0;
-    for(int idx = 0;idx < vMatchHits.size();++idx)
-//    for(int idx = 0;idx < 1;++idx)
-    {
-        cout << ">>>>> MapMerger::MergeMaps - process hit #" << count1 << endl;
+		kfptr pKFCur = vMatchHit.mpKFCurr;
+		kfptr pKFMatch = vMatchHit.mpKFMatch;
+		g2o::Sim3 g2oScw = vMatchHit.mg2oScw;
+		std::vector<mpptr> vpCurrentMatchedPoints = vMatchHit.mvpCurrentMatchedPoints;
+		std::vector<mpptr> vpLoopMapPoints = vMatchHit.mvpLoopMapPoints;
 
-        kfptr pKFCur = vMatchHits[idx].mpKFCurr;
-        kfptr pKFMatch = vMatchHits[idx].mpKFMatch;
-        g2o::Sim3 g2oScw = vMatchHits[idx].mg2oScw;
-        std::vector<mpptr> vpCurrentMatchedPoints = vMatchHits[idx].mvpCurrentMatchedPoints;
-        std::vector<mpptr> vpLoopMapPoints = vMatchHits[idx].mvpLoopMapPoints;
+		vector<kfptr> vpKeyFramesCurr = pMapCurr->GetAllKeyFrames();
 
-        vector<kfptr> vpKeyFramesCurr = pMapCurr->GetAllKeyFrames();
+		if(IdC != pKFCur->mId.second || IdM != pKFMatch->mId.second) {
+			std::cout << "\033[1;31m!!! ERROR !!!\033[0m In \"MapMerger::MergeMaps\": client ID mismatch" << endl;
+		}
 
-        if(IdC != pKFCur->mId.second || IdM != pKFMatch->mId.second)
-            cout << "\033[1;31m!!! ERROR !!!\033[0m In \"MapMerger::MergeMaps\": client ID mismatch" << endl;
+		// Ensure current keyframe is updated
+		pKFCur->UpdateConnections();
 
-        // Ensure current keyframe is updated
-        pKFCur->UpdateConnections();
+		// Retrive keyframes connected to the current keyframe and compute corrected Sim3 pose by propagation
+		mvpCurrentConnectedKFs = pKFCur->GetVectorCovisibleKeyFrames();
+		mvpCurrentConnectedKFs.push_back(pKFCur);
 
-        // Retrive keyframes connected to the current keyframe and compute corrected Sim3 pose by propagation
-        mvpCurrentConnectedKFs = pKFCur->GetVectorCovisibleKeyFrames();
-        mvpCurrentConnectedKFs.push_back(pKFCur);
+		nLoopKf = pKFCur->mId;
 
-        nLoopKf = pKFCur->mId;
+		KeyFrameAndPose CorrectedSim3;
+		KeyFrameAndPose NonCorrectedSim3;
+		CorrectedSim3[pKFCur] = g2oScw;
+		cv::Mat Twc = pKFCur->GetPoseInverse();
 
-        KeyFrameAndPose CorrectedSim3, NonCorrectedSim3;
-        CorrectedSim3[pKFCur]=g2oScw;
-        cv::Mat Twc = pKFCur->GetPoseInverse();
+		{
+			cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
+			cv::Mat twc = Twc.rowRange(0,3).col(3);
+			g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
+			g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
+		}
 
-        {
-            cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
-            cv::Mat twc = Twc.rowRange(0,3).col(3);
-            g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
-            g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
-        }
+		KeyFrameAndPose CorrectedSim3All;
+		KeyFrameAndPose NonCorrectedSim3All;
+		CorrectedSim3All[pKFCur] = g2oScw;
 
-        KeyFrameAndPose CorrectedSim3All, NonCorrectedSim3All;
-        CorrectedSim3All[pKFCur]=g2oScw;
+		for(vector<kfptr>::iterator vit = mvpCurrentConnectedKFs.begin(), vend = mvpCurrentConnectedKFs.end(); vit != vend; vit++) {
+			kfptr pKFi = *vit;
 
-        if(count1 == 0) //differentiate between first and other hits, because map is transformed only once
-        {
-            for(vector<kfptr>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
-            {
-                kfptr pKFi = *vit;
+			cv::Mat Tiw = pKFi->GetPose();
 
-                cv::Mat Tiw = pKFi->GetPose();
+			if(pKFi != pKFCur) {
+				cv::Mat Tic = Tiw*Twc;
+				cv::Mat Ric = Tic.rowRange(0,3).colRange(0,3);
+				cv::Mat tic = Tic.rowRange(0,3).col(3);
+				g2o::Sim3 g2oSic(Converter::toMatrix3d(Ric), Converter::toVector3d(tic),1.0);
+				g2o::Sim3 g2oCorrectedSiw = g2oSic*g2oScw;
+				//Pose corrected with the Sim3 of the loop closure
+				CorrectedSim3[pKFi] = g2oCorrectedSiw;
+			}
 
-                if(pKFi!=pKFCur)
-                {
-                    cv::Mat Tic = Tiw*Twc;
-                    cv::Mat Ric = Tic.rowRange(0,3).colRange(0,3);
-                    cv::Mat tic = Tic.rowRange(0,3).col(3);
-                    g2o::Sim3 g2oSic(Converter::toMatrix3d(Ric),Converter::toVector3d(tic),1.0);
-                    g2o::Sim3 g2oCorrectedSiw = g2oSic*g2oScw;
-                    //Pose corrected with the Sim3 of the loop closure
-                    CorrectedSim3[pKFi]=g2oCorrectedSiw;
-                }
+			cv::Mat Riw = Tiw.rowRange(0,3).colRange(0,3);
+			cv::Mat tiw = Tiw.rowRange(0,3).col(3);
+			g2o::Sim3 g2oSiw(Converter::toMatrix3d(Riw), Converter::toVector3d(tiw),1.0);
+			//Pose without correction
+			NonCorrectedSim3[pKFi] = g2oSiw;
+		}
 
-                cv::Mat Riw = Tiw.rowRange(0,3).colRange(0,3);
-                cv::Mat tiw = Tiw.rowRange(0,3).col(3);
-                g2o::Sim3 g2oSiw(Converter::toMatrix3d(Riw),Converter::toVector3d(tiw),1.0);
-                //Pose without correction
-                NonCorrectedSim3[pKFi]=g2oSiw;
-            }
+		for(vector<kfptr>::iterator vit = vpKeyFramesCurr.begin(); vit != vpKeyFramesCurr.end(); ++vit) {
+			kfptr pKFi = *vit;
 
-            for(vector<kfptr>::iterator vit = vpKeyFramesCurr.begin();vit!=vpKeyFramesCurr.end();++vit)
-            {
-                kfptr pKFi = *vit;
+			KeyFrameAndPose::const_iterator it = CorrectedSim3.find(pKFi);
 
-                KeyFrameAndPose::const_iterator it = CorrectedSim3.find(pKFi);
+			if(it != CorrectedSim3.end()) {
+				CorrectedSim3All[pKFi] = it->second;
+				NonCorrectedSim3All[pKFi] = NonCorrectedSim3All[pKFi];
 
-                if(it!=CorrectedSim3.end())
-                {
-                    CorrectedSim3All[pKFi] = it->second;
-                    NonCorrectedSim3All[pKFi] = NonCorrectedSim3All[pKFi];
+				KeyFrameAndPose::const_iterator it2 = NonCorrectedSim3.find(pKFi);
+				if(it2==NonCorrectedSim3.end()) {
+					cout << "\033[1;31m!!! ERROR !!!\033[0m In \"MapMerger::MergeMaps\": Siw for KF in CorrectedSim3 but not in NonCorrectedSim3" << endl;
+				}
+			} else {
+				cv::Mat Tiw = pKFi->GetPose();
+				//CorrectedSim3All
+				cv::Mat Tic = Tiw*Twc;
+				cv::Mat Ric = Tic.rowRange(0,3).colRange(0,3);
+				cv::Mat tic = Tic.rowRange(0,3).col(3);
+				g2o::Sim3 g2oSic(Converter::toMatrix3d(Ric), Converter::toVector3d(tic),1.0);
+				g2o::Sim3 g2oCorrectedSiw = g2oSic*g2oScw;
+				//Pose corrected with the Sim3 of the loop closure
+				CorrectedSim3All[pKFi] = g2oCorrectedSiw;
+				//NonCorrectedSim3All
+				cv::Mat Riw = Tiw.rowRange(0,3).colRange(0,3);
+				cv::Mat tiw = Tiw.rowRange(0,3).col(3);
+				g2o::Sim3 g2oSiw(Converter::toMatrix3d(Riw), Converter::toVector3d(tiw),1.0);
+				//Pose without correction
+				NonCorrectedSim3All[pKFi] = g2oSiw;
+			}
+		}
 
-                    KeyFrameAndPose::const_iterator it2 = NonCorrectedSim3.find(pKFi);
-                    if(it2==NonCorrectedSim3.end()) cout << "\033[1;31m!!! ERROR !!!\033[0m In \"MapMerger::MergeMaps\": Siw for KF in CorrectedSim3 but not in NonCorrectedSim3" << endl;
-                }
-                else
-                {
-                    cv::Mat Tiw = pKFi->GetPose();
-                    //CorrectedSim3All
-                    cv::Mat Tic = Tiw*Twc;
-                    cv::Mat Ric = Tic.rowRange(0,3).colRange(0,3);
-                    cv::Mat tic = Tic.rowRange(0,3).col(3);
-                    g2o::Sim3 g2oSic(Converter::toMatrix3d(Ric),Converter::toVector3d(tic),1.0);
-                    g2o::Sim3 g2oCorrectedSiw = g2oSic*g2oScw;
-                    //Pose corrected with the Sim3 of the loop closure
-                    CorrectedSim3All[pKFi]=g2oCorrectedSiw;
-                    //NonCorrectedSim3All
-                    cv::Mat Riw = Tiw.rowRange(0,3).colRange(0,3);
-                    cv::Mat tiw = Tiw.rowRange(0,3).col(3);
-                    g2o::Sim3 g2oSiw(Converter::toMatrix3d(Riw),Converter::toVector3d(tiw),1.0);
-                    //Pose without correction
-                    NonCorrectedSim3All[pKFi]=g2oSiw;
-                }
-            }
+		// Correct MapPoints and KeyFrames of current map
+		for(KeyFrameAndPose::iterator mit = CorrectedSim3All.begin(), mend = CorrectedSim3All.end(); mit != mend; mit++) {
+			kfptr pKFi = mit->first;
+			g2o::Sim3 g2oCorrectedSiw = mit->second;
+			g2o::Sim3 g2oCorrectedSwi = g2oCorrectedSiw.inverse();
 
-            // Correct MapPoints and KeyFrames of current map
-            for(KeyFrameAndPose::iterator mit=CorrectedSim3All.begin(), mend=CorrectedSim3All.end(); mit!=mend; mit++)
-            {
-                kfptr pKFi = mit->first;
-                g2o::Sim3 g2oCorrectedSiw = mit->second;
-                g2o::Sim3 g2oCorrectedSwi = g2oCorrectedSiw.inverse();
+			g2o::Sim3 g2oSiw = NonCorrectedSim3[pKFi];
 
-                g2o::Sim3 g2oSiw =NonCorrectedSim3[pKFi];
+			vector<mpptr> vpMPsi = pKFi->GetMapPointMatches();
+			for(size_t iMP = 0, endMPi = vpMPsi.size(); iMP < endMPi; iMP++) {
+				mpptr pMPi = vpMPsi[iMP];
+				if(!pMPi) {
+					continue;
+				}
+				if(pMPi->isBad()) {
+					continue;
+				}
+				if(pMPi->mCorrectedByKF_MM == pKFCur->mId) { //ID Tag
+					continue;
+				}
 
-                vector<mpptr> vpMPsi = pKFi->GetMapPointMatches();
-                for(size_t iMP=0, endMPi = vpMPsi.size(); iMP<endMPi; iMP++)
-                {
-                    mpptr pMPi = vpMPsi[iMP];
-                    if(!pMPi)
-                        continue;
-                    if(pMPi->isBad())
-                        continue;
-                    if(pMPi->mCorrectedByKF_MM==pKFCur->mId) //ID Tag
-                        continue;
+				// Project with non-corrected pose and project back with corrected pose
+				cv::Mat P3Dw = pMPi->GetWorldPos();
+				Eigen::Matrix<double,3,1> eigP3Dw = Converter::toVector3d(P3Dw);
+				Eigen::Matrix<double,3,1> eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oSiw.map(eigP3Dw));
 
-                    // Project with non-corrected pose and project back with corrected pose
-                    cv::Mat P3Dw = pMPi->GetWorldPos();
-                    Eigen::Matrix<double,3,1> eigP3Dw = Converter::toVector3d(P3Dw);
-                    Eigen::Matrix<double,3,1> eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oSiw.map(eigP3Dw));
+				cv::Mat cvCorrectedP3Dw = Converter::toCvMat(eigCorrectedP3Dw);
+				pMPi->SetWorldPos(cvCorrectedP3Dw,true);
+				pMPi->mCorrectedByKF_MM = pKFCur->mId;
+				pMPi->mCorrectedReference_MM = pKFCur->mUniqueId;
+				pMPi->UpdateNormalAndDepth();
+			}
 
-                    cv::Mat cvCorrectedP3Dw = Converter::toCvMat(eigCorrectedP3Dw);
-                    pMPi->SetWorldPos(cvCorrectedP3Dw,true);
-                    pMPi->mCorrectedByKF_MM = pKFCur->mId;
-                    pMPi->mCorrectedReference_MM = pKFCur->mUniqueId;
-                    pMPi->UpdateNormalAndDepth();
-                }
+			// Update keyframe pose with corrected Sim3. First transform Sim3 to SE3 (scale translation)
+			Eigen::Matrix3d eigR = g2oCorrectedSiw.rotation().toRotationMatrix();
+			Eigen::Vector3d eigt = g2oCorrectedSiw.translation();
+			double s = g2oCorrectedSiw.scale();
 
-                // Update keyframe pose with corrected Sim3. First transform Sim3 to SE3 (scale translation)
-                Eigen::Matrix3d eigR = g2oCorrectedSiw.rotation().toRotationMatrix();
-                Eigen::Vector3d eigt = g2oCorrectedSiw.translation();
-                double s = g2oCorrectedSiw.scale();
+			eigt *=(1./s); //[R t/s;0 1]
 
-                eigt *=(1./s); //[R t/s;0 1]
+			cv::Mat correctedTiw = Converter::toCvSE3(eigR,eigt);
 
-                cv::Mat correctedTiw = Converter::toCvSE3(eigR,eigt);
+			pKFi->SetPose(correctedTiw,true);
 
-                pKFi->SetPose(correctedTiw,true);
-
-                // Make sure connections are updated
-                pKFi->UpdateConnections();
-            }
+			// Make sure connections are updated
+			pKFi->UpdateConnections();
+		}
 
 //            cout << "\033[1;33m!!! WARN !!!\033[0m In \"MapMatcher::MergeMaps(...)\": skipped else branch, use only one match" << endl;
-        }
-        else
-        {
-            cout << "\033[1;33m!!! WARN !!!\033[0m In \"MapMatcher::MergeMaps(...)\": implement else branch for using more than on match" << endl;
-        }
 
-        #ifdef VISUALIZATION
-        mpMatcher->PublishMergedMap(pFusedMap,suAssClientsC,suAssClientsM);
-        #endif
-        cout << "fused map after transformation" << endl;
+		#ifdef VISUALIZATION
+		mpMatcher->PublishMergedMap(pFusedMap, suAssClientsC, suAssClientsM);
+		#endif
+		cout << "fused map after transformation" << endl;
 //        cin.get();
 
-        // Start Loop Fusion
-        // Update matched map points and replace if duplicated
-        for(size_t i=0; i<vpCurrentMatchedPoints.size(); i++)
-        {
-            if(vpCurrentMatchedPoints[i])
-            {
-                mpptr pLoopMP = vpCurrentMatchedPoints[i];
-                mpptr pCurMP = pKFCur->GetMapPoint(i);
-                if(pCurMP)
-                {
+		// Start Loop Fusion
+		// Update matched map points and replace if duplicated
+		for(size_t i = 0; i < vpCurrentMatchedPoints.size(); i++) {
+			if(vpCurrentMatchedPoints[i]){
+				mpptr pLoopMP = vpCurrentMatchedPoints[i];
+				mpptr pCurMP = pKFCur->GetMapPoint(i);
+				if(pCurMP) {
 //                    cout << "is pLoopMP nullptr?: " << (!pLoopMP) << endl;
-                    pCurMP->ReplaceAndLock(pLoopMP);
-                }
-                else
-                {
-                    pKFCur->AddMapPoint(pLoopMP,i,true); //lock this MapPoint
-                    pLoopMP->AddObservation(pKFCur,i,true);
-                    pLoopMP->ComputeDistinctiveDescriptors();
-                }
-            }
-        }
+					pCurMP->ReplaceAndLock(pLoopMP);
+				} else {
+					pKFCur->AddMapPoint(pLoopMP, i, true); //lock this MapPoint
+					pLoopMP->AddObservation(pKFCur, i, true);
+					pLoopMP->ComputeDistinctiveDescriptors();
+				}
+			}
+		}
 
-        // Project MapPoints observed in the neighborhood of the loop keyframe
-        // into the current keyframe and neighbors using corrected poses.
-        // Fuse duplications.
-        SearchAndFuse(CorrectedSim3,vpLoopMapPoints);
+		// Project MapPoints observed in the neighborhood of the loop keyframe
+		// into the current keyframe and neighbors using corrected poses.
+		// Fuse duplications.
+		SearchAndFuse(CorrectedSim3, vpLoopMapPoints);
 
+		#ifdef VISUALIZATION
+		mpMatcher->PublishMergedMap(pFusedMap, suAssClientsC, suAssClientsM);
+		cout << "loop connections and KFs" << endl;
+		#endif
 
-        // After the MapPoint fusion, new links in the covisibility graph will appear attaching both sides of the loop
-        map<kfptr, set<kfptr> > LoopConnections;
-
-        for(vector<kfptr>::iterator vit=mvpCurrentConnectedKFs.begin(), vend=mvpCurrentConnectedKFs.end(); vit!=vend; vit++)
-        {
-            kfptr pKFi = *vit;
-            vector<kfptr> vpPreviousNeighbors = pKFi->GetVectorCovisibleKeyFrames();
-
-            // Update connections. Detect new links.
-            pKFi->UpdateConnections();
-            LoopConnections[pKFi]=pKFi->GetConnectedKeyFrames();
-            for(vector<kfptr>::iterator vit_prev=vpPreviousNeighbors.begin(), vend_prev=vpPreviousNeighbors.end(); vit_prev!=vend_prev; vit_prev++)
-            {
-                LoopConnections[pKFi].erase(*vit_prev);
-            }
-            for(vector<kfptr>::iterator vit2=mvpCurrentConnectedKFs.begin(), vend2=mvpCurrentConnectedKFs.end(); vit2!=vend2; vit2++)
-            {
-                LoopConnections[pKFi].erase(*vit2);
-            }
-        }
-
-
-        #ifdef VISUALIZATION
-        mpMatcher->PublishMergedMap(pFusedMap,suAssClientsC,suAssClientsM);
-        cout << "loop connections and KFs" << endl;
-        #endif
-
-        // Optimize graph
-        Optimizer::OptimizeEssentialGraphMapFusionV2(pFusedMap, pKFMatch, pKFCur, LoopConnections, false);
-
-        // Add loop edge
-        pKFMatch->AddLoopEdge(pKFCur);
-        pKFCur->AddLoopEdge(pKFMatch);
-
-        #ifdef VISUALIZATION
-        mpMatcher->PublishMergedMap(pFusedMap,suAssClientsC,suAssClientsM);
-        #endif
-
-        cout << "Essential graph optimized" << endl;
-
-        ++count1;
-    }
     *g2oScw_end = g2oS_wm_wc;
 
     return(pFusedMap);
 }
 
+void MapMerger::optimizeEssentialGraph(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits) {
+	kfptr pKFCur = vMatchHits.back().mpKFCurr;
+	kfptr pKFMatch = vMatchHits.back().mpKFMatch;
+
+	set<size_t> suAssClientsC = pMapCurr->msuAssClients;
+	set<size_t> suAssClientsM = pMapMatch->msuAssClients;
+
+	std::vector<kfptr> mvpCurrentConnectedKFs = pKFCur->GetVectorCovisibleKeyFrames();
+
+	// After the MapPoint fusion, new links in the covisibility graph will appear attaching both sides of the loop
+	map<kfptr,set<kfptr>> LoopConnections;
+
+	for(vector<kfptr>::iterator vit = mvpCurrentConnectedKFs.begin(), vend = mvpCurrentConnectedKFs.end(); vit != vend; vit++) {
+		kfptr pKFi = *vit;
+		vector<kfptr> vpPreviousNeighbors = pKFi->GetVectorCovisibleKeyFrames();
+
+		// Update connections. Detect new links.
+		pKFi->UpdateConnections();
+		LoopConnections[pKFi] = pKFi->GetConnectedKeyFrames();
+		for(vector<kfptr>::iterator vit_prev = vpPreviousNeighbors.begin(), vend_prev = vpPreviousNeighbors.end(); vit_prev != vend_prev; vit_prev++) {
+			LoopConnections[pKFi].erase(*vit_prev);
+		}
+		for(vector<kfptr>::iterator vit2 = mvpCurrentConnectedKFs.begin(), vend2 = mvpCurrentConnectedKFs.end(); vit2 != vend2; vit2++) {
+			LoopConnections[pKFi].erase(*vit2);
+		}
+	}
+
+	// Optimize graph
+	Optimizer::OptimizeEssentialGraphMapFusionV2(pFusedMap, pKFMatch, pKFCur, LoopConnections, false);
+
+	// Add loop edge
+	pKFMatch->AddLoopEdge(pKFCur);
+	pKFCur->AddLoopEdge(pKFMatch);
+
+	#ifdef VISUALIZATION
+	mpMatcher->PublishMergedMap(pFusedMap, suAssClientsC, suAssClientsM);
+	#endif
+
+	std::cout << "Essential graph optimized" << std::endl;
+}
+
 void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw){
 
-    cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
+		cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
 
-    set<size_t> suAssClientsC = pMapCurr->msuAssClients;
-    set<size_t> suAssClientsM = pMapMatch->msuAssClients;
-    kfptr pKFCur = vMatchHits.back().mpKFCurr;
-    idpair nLoopKf = pKFCur->mId;
+		set<size_t> suAssClientsC = pMapCurr->msuAssClients;
+		set<size_t> suAssClientsM = pMapMatch->msuAssClients;
+		kfptr pKFCur = vMatchHits.back().mpKFCurr;
+		idpair nLoopKf = pKFCur->mId;
 
     // Launch a new thread to perform Global Bundle Adjustment
     mbRunningGBA = true;
     mbFinishedGBA = false;
     mbStopGBA = false;
 
-    struct timeval tStart,tNow;
+    struct timeval tStart;
+    struct timeval tNow;
     double dEl;
     gettimeofday(&tStart,NULL);
 
-    Optimizer::MapFusionGBA(pFusedMap,pFusedMap->mMapId,mMyParams.mGBAIterations,&mbStopGBA,nLoopKf,false);
+    Optimizer::MapFusionGBA(pFusedMap, pFusedMap->mMapId, mMyParams.mGBAIterations, &mbStopGBA, nLoopKf, false);
 
     // Correct keyframes starting at map first keyframe
-    list<kfptr> lpKFtoCheck(pFusedMap->mvpKeyFrameOrigins.begin(),pFusedMap->mvpKeyFrameOrigins.end());
+    list<kfptr> lpKFtoCheck(pFusedMap->mvpKeyFrameOrigins.begin(), pFusedMap->mvpKeyFrameOrigins.end());
 
-    while(!lpKFtoCheck.empty())
-    {
-        kfptr pKF = lpKFtoCheck.front();
-        const set<kfptr> sChilds = pKF->GetChilds();
-        cv::Mat Twc = pKF->GetPoseInverse();
-        for(set<kfptr>::const_iterator sit=sChilds.begin();sit!=sChilds.end();sit++)
-        {
-            kfptr pChild = *sit;
-            if(pChild->mBAGlobalForKF!=nLoopKf)
-            {
-                cv::Mat Tchildc = pChild->GetPose()*Twc;
-                pChild->mTcwGBA = Tchildc*pKF->mTcwGBA;//*Tcorc*pKF->mTcwGBA;
-                pChild->mBAGlobalForKF=nLoopKf;
+		while(!lpKFtoCheck.empty()) {
+			kfptr pKF = lpKFtoCheck.front();
+			const set<kfptr> sChilds = pKF->GetChilds();
+			cv::Mat Twc = pKF->GetPoseInverse();
+			for(set<kfptr>::const_iterator sit = sChilds.begin(); sit != sChilds.end(); sit++) {
+				kfptr pChild = *sit;
+				if(pChild->mBAGlobalForKF != nLoopKf) {
+					cv::Mat Tchildc = pChild->GetPose()*Twc;
+					pChild->mTcwGBA = Tchildc*pKF->mTcwGBA;//*Tcorc*pKF->mTcwGBA;
+					pChild->mBAGlobalForKF = nLoopKf;
 
-            }
-            lpKFtoCheck.push_back(pChild);
-        }
+				}
+				lpKFtoCheck.push_back(pChild);
+			}
 
-        pKF->mTcwBefGBA = pKF->GetPose();
-        pKF->SetPose(pKF->mTcwGBA,true);
-        lpKFtoCheck.pop_front();
+			pKF->mTcwBefGBA = pKF->GetPose();
+			pKF->SetPose(pKF->mTcwGBA,true);
+			lpKFtoCheck.pop_front();
     }
 
     // Correct MapPoints
     const vector<mpptr> vpMPs = pFusedMap->GetAllMapPoints();
 
-    for(size_t i=0; i<vpMPs.size(); i++)
-    {
-        mpptr pMP = vpMPs[i];
+		for(size_t i = 0; i < vpMPs.size(); i++) {
+			mpptr pMP = vpMPs[i];
 
-        if(pMP->isBad())
-            continue;
+			if(pMP->isBad()) {
+				continue;
+			}
 
-        if(pMP->mBAGlobalForKF==nLoopKf)
-        {
-            // If optimized by Global BA, just update
-            pMP->SetWorldPos(pMP->mPosGBA,true);
-        }
-        else
-        {
-            // Update according to the correction of its reference keyframe
-            kfptr pRefKF = pMP->GetReferenceKeyFrame();
+			if(pMP->mBAGlobalForKF == nLoopKf) {
+				// If optimized by Global BA, just update
+				pMP->SetWorldPos(pMP->mPosGBA,true);
+			} else {
+				// Update according to the correction of its reference keyframe
+				kfptr pRefKF = pMP->GetReferenceKeyFrame();
 
-            if(!pRefKF)
-            {
-                cout << "\033[1;31m!!! ERROR !!!\033[0m In \"LoopFinder::CorrectLoop()\": pRefKf is nullptr" << endl;
-                continue;
-            }
+				if(!pRefKF) {
+					cout << "\033[1;31m!!! ERROR !!!\033[0m In \"LoopFinder::CorrectLoop()\": pRefKf is nullptr" << endl;
+					continue;
+				}
 
 //            if(pRefKF->mnBAGlobalForKF!=nLoopKf)
-            if(pRefKF->mBAGlobalForKF!=nLoopKf)
-                continue;
+				if(pRefKF->mBAGlobalForKF != nLoopKf) {
+					continue;
+				}
 
-            // Map to non-corrected camera
-            cv::Mat Rcw = pRefKF->mTcwBefGBA.rowRange(0,3).colRange(0,3);
-            cv::Mat tcw = pRefKF->mTcwBefGBA.rowRange(0,3).col(3);
-            cv::Mat Xc = Rcw*pMP->GetWorldPos()+tcw;
+				// Map to non-corrected camera
+				cv::Mat Rcw = pRefKF->mTcwBefGBA.rowRange(0,3).colRange(0,3);
+				cv::Mat tcw = pRefKF->mTcwBefGBA.rowRange(0,3).col(3);
+				cv::Mat Xc = Rcw*pMP->GetWorldPos()+tcw;
 
-            // Backproject using corrected camera
-            cv::Mat Twc = pRefKF->GetPoseInverse();
-            cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
-            cv::Mat twc = Twc.rowRange(0,3).col(3);
+				// Backproject using corrected camera
+				cv::Mat Twc = pRefKF->GetPoseInverse();
+				cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
+				cv::Mat twc = Twc.rowRange(0,3).col(3);
 
-            pMP->SetWorldPos(Rwc*Xc+twc,true);
-        }
+				pMP->SetWorldPos(Rwc*Xc+twc, true);
+			}
     }
 
     gettimeofday(&tNow,NULL);
@@ -541,25 +523,21 @@ void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr
     set<ccptr> spCCC = pMapCurr->GetCCPtrs();
     set<ccptr> spCCF = pFusedMap->GetCCPtrs();
 
-		for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
-    {
-        ccptr pCC = *sit;
-        chptr pCH = pCC->mpCH;
-        if(spCCC.count(pCC))
-        {
-            cout << "pCC found for client id " << pCC->mClientId << endl;
-            pCH->ChangeMap(pFusedMap, *g2oScw);
-            pCC->mbGotMerged = true;
-        }
-        else
-        {
-            cout << "g2oS_wm_wc not changed for client id " << pCC->mClientId << endl;
-            pCH->ChangeMap(pFusedMap,g2o::Sim3());
-        }
-        pCC->UnLockComm();
-        pCC->UnLockMapping();
-        pCC->UnLockPlaceRec();
-        pCC->mbOptActive = false;
+		for(set<ccptr>::iterator sit = spCCF.begin(); sit != spCCF.end(); ++sit) {
+			ccptr pCC = *sit;
+			chptr pCH = pCC->mpCH;
+			if(spCCC.count(pCC)) {
+				cout << "pCC found for client id " << pCC->mClientId << endl;
+				pCH->ChangeMap(pFusedMap, *g2oScw);
+				pCC->mbGotMerged = true;
+			} else {
+				cout << "g2oS_wm_wc not changed for client id " << pCC->mClientId << endl;
+				pCH->ChangeMap(pFusedMap, g2o::Sim3());
+			}
+			pCC->UnLockComm();
+			pCC->UnLockMapping();
+			pCC->UnLockPlaceRec();
+			pCC->mbOptActive = false;
     }
 
     pMapCurr->mbOutdated = true;
@@ -568,8 +546,6 @@ void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr
     pMapCurr->UnLockMapUpdate();
     pMapMatch->UnLockMapUpdate();
     pFusedMap->UnLockMapUpdate();
-
-    //return pFusedMap;
 }
 
 void MapMerger::SearchAndFuse(const KeyFrameAndPose &CorrectedPosesMap, std::vector<mpptr> vpLoopMapPoints)
