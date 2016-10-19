@@ -16,7 +16,7 @@ MapMerger::MapMerger(MapMergerParams Params, matchptr pMatcher, ros::NodeHandle 
     mPubMarkerArray = mNh.advertise<visualization_msgs::MarkerArray>("MapMergingMarkerArrays",10);
 }
 
-MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits)
+MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw_end)
 {
     this->SetBusy();
 
@@ -429,11 +429,12 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
 
         ++count1;
     }
+    *g2oScw_end = g2oS_wm_wc;
 
     return(pFusedMap);
 }
 
-void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits){
+void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw){
 
     cout << ">>>>> MapMerger::MergeMaps --> Global Bundle Adjustment" << endl;
 
@@ -540,17 +541,6 @@ void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr
     set<ccptr> spCCC = pMapCurr->GetCCPtrs();
     set<ccptr> spCCF = pFusedMap->GetCCPtrs();
 
-
-		g2o::Sim3 g2oScw = vMatchHits.back().mg2oScw;
-		g2o::Sim3 g2oS_wm_wc; //world match - world curr
-		cv::Mat Twc = pKFCur->GetPoseInverse();
-
-		{
-				cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
-				cv::Mat twc = Twc.rowRange(0,3).col(3);
-				g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
-				g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
-		}
 		for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
     {
         ccptr pCC = *sit;
@@ -558,7 +548,7 @@ void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr
         if(spCCC.count(pCC))
         {
             cout << "pCC found for client id " << pCC->mClientId << endl;
-            pCH->ChangeMap(pFusedMap,g2oS_wm_wc);
+            pCH->ChangeMap(pFusedMap, *g2oScw);
             pCC->mbGotMerged = true;
         }
         else

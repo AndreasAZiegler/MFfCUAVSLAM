@@ -446,9 +446,10 @@ void MapMatcher::CorrectLoop()
 
     if(mFoundMatches[mpCurrMap][pMatchedMap].size() >= mMMParams.mMinHitsForMerge)
     {
+        std::shared_ptr<g2o::Sim3> g2oScw = std::make_shared<g2o::Sim3>();
         vector<MapMatchHit> vMatches = mFoundMatches[mpCurrMap][pMatchedMap];
-        mapptr pMergedMap = mpMapMerger->MergeMaps(mpCurrMap,pMatchedMap,vMatches);
-        mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
+        mapptr pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches, g2oScw);
+        mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches, g2oScw);
     }
 
     this->ClearLoopEdges();
