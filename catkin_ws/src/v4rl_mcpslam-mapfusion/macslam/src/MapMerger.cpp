@@ -200,14 +200,19 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     idpair nLoopKf;
 
     int count1 = 0;
+
+    kfptr pKFCur;
+    g2o::Sim3 g2oScw;
     for(int idx = 0;idx < vMatchHits.size();++idx)
 //    for(int idx = 0;idx < 1;++idx)
     {
         cout << ">>>>> MapMerger::MergeMaps - process hit #" << count1 << endl;
 
-        kfptr pKFCur = vMatchHits[idx].mpKFCurr;
+        //kfptr pKFCur = vMatchHits[idx].mpKFCurr;
+        pKFCur = vMatchHits[idx].mpKFCurr;
         kfptr pKFMatch = vMatchHits[idx].mpKFMatch;
-        g2o::Sim3 g2oScw = vMatchHits[idx].mg2oScw;
+        //g2o::Sim3 g2oScw = vMatchHits[idx].mg2oScw;
+        g2oScw = vMatchHits[idx].mg2oScw;
         std::vector<mpptr> vpCurrentMatchedPoints = vMatchHits[idx].mvpCurrentMatchedPoints;
         std::vector<mpptr> vpLoopMapPoints = vMatchHits[idx].mvpLoopMapPoints;
 
@@ -234,6 +239,10 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
             cv::Mat twc = Twc.rowRange(0,3).col(3);
             g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
             g2oS_wm_wc = (g2oScw.inverse())*(g2oSwc.inverse());
+            // BEGIN MODIFY
+            std::cout << " g2oS_wm_wc[" << idx << "]: " << g2oS_wm_wc << std::endl;
+            std::cout << "Twc: " << Twc << std::endl;
+            // END MODIFY
         }
 
         KeyFrameAndPose CorrectedSim3All, NonCorrectedSim3All;
@@ -441,6 +450,11 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
     double dEl;
     gettimeofday(&tStart,NULL);
 
+    // BEGIN MODIFY
+    std::cout << "nLoopKf: first: " << nLoopKf.first << " second: " << nLoopKf.second << std::endl;
+    std::cout << "back(): first: " << vMatchHits.back().mpKFCurr->mId.first << " second: " << vMatchHits.back().mpKFCurr->mId.second << std::endl;
+    // END MODIFY
+
     Optimizer::MapFusionGBA(pFusedMap,pFusedMap->mMapId,mMyParams.mGBAIterations,&mbStopGBA,nLoopKf,false);
 
     // Correct keyframes starting at map first keyframe
@@ -526,6 +540,21 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
 
     this->SetIdle();
 
+    // BEGIN MODIFY
+    std::cout << "g2oS_wm_sc: " << g2oS_wm_wc << std::endl;
+    g2o::Sim3 g2oS_wm_wc_local;
+		{
+				cv::Mat Twc = vMatchHits[0].mpKFCurr->GetPoseInverse();
+				cv::Mat Rwc = Twc.rowRange(0,3).colRange(0,3);
+				cv::Mat twc = Twc.rowRange(0,3).col(3);
+				g2o::Sim3 g2oSwc(Converter::toMatrix3d(Rwc),Converter::toVector3d(twc),1.0);
+				g2oS_wm_wc_local = (vMatchHits[0].mg2oScw.inverse())*(g2oSwc.inverse());
+				std::cout << "vMatchHits.size(): " << vMatchHits.size() << std::endl;
+				std::cout << "Twc: " << Twc << std::endl;
+				std::cout << "g2oS_wm_sc local: " << g2oS_wm_wc_local << std::endl;
+		}
+		// END MODIFY
+
     set<ccptr> spCCF = pFusedMap->GetCCPtrs();
     for(set<ccptr>::iterator sit = spCCF.begin();sit!=spCCF.end();++sit)
     {
@@ -535,6 +564,7 @@ MapMerger::mapptr MapMerger::MergeMaps(mapptr pMapCurr, mapptr pMapMatch, vector
         {
             cout << "pCC found for client id " << pCC->mClientId << endl;
             pCH->ChangeMap(pFusedMap,g2oS_wm_wc);
+            //pCH->ChangeMap(pFusedMap,g2oS_wm_wc_local);
             pCC->mbGotMerged = true;
         }
         else
