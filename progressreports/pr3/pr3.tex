@@ -146,7 +146,7 @@
 \frametitle{A first approach}
   \only<1> {
     \begin{block}{Idea}
-      Use the map points of multiple matches the calculate a better transformation
+      Use the map points of multiple keyframe matches to calculate a better transformation
     \end{block}
     \begin{center}
     \begin{tikzpicture}
@@ -270,7 +270,7 @@
   \begin{enumerate}
     \item Find $n$ keyframe matches
     \item Merge the two maps with the transformation of one of the keyframe matches
-    \item Fuse map points in the $n-1$ keyframe matches
+    \item Fuse map points in the ($n-1$) keyframe matches
     \item Pose graph optimization over essential graph
     \item Global bundle adjustment
   \end{enumerate}
@@ -617,13 +617,11 @@
   \end{center}
 }
 \only<6>{
-  \begin{block}{}
   \begin{itemize}
     \item Reducing risk of bad map merging as $n$ keyframe matches have to be found
     \item The fusion of the map points creates edges in the covisibility graph, which the pose graph optimization and the GBA can optimize.
     \item Pose graph optimization and GBA are performed for $n$ keyframe matches together -> Saves time
   \end{itemize}
-  \end{block}
 }
 \end{frame}
 
