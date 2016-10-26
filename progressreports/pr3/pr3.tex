@@ -268,35 +268,94 @@
 \frametitle{The new approach}
 \only<1>{
   \begin{enumerate}
-    \item Merge the two maps with one of the keyframe matches
-    \item {Optimize the map locally at the positions of the other keyframe matches (Approach similar to the loop closure)
-      \begin{enumerate}
-        \item Loop candidate detection
-        \item Compute similarity transformations
-        \item {Fusion of the matched keyframes}
-        \item Pose graph optimization over the essential graph
-      \end{enumerate}
-    }
+    \item Find $n$ keyframe matches
+    \item Merge the two maps with the transformation of one of the keyframe matches
+    \item Fuse map points in the $n-1$ keyframe matches
+    \item Pose graph optimization over essential graph
+    \item Global bundle adjustment
   \end{enumerate}
 }
-\only<2,3>{
+\only<2>{
+  Find $n$ keyframe matches
   \begin{center}
   \begin{tikzpicture}
-    \coordinate (A1) at (0, 2);
-    \coordinate (B1) at (5, 2);
-    \coordinate (C1) at (10, 2);
+    \coordinate (A1) at (0, 3);
+    \coordinate (A1MP1) at (-0.5, 3.5);
+    \coordinate (A1MP2) at (0, 3.75);
+    \coordinate (A1MP3) at (0.5, 3.5);
+
+    \coordinate (B1) at (4, 3);
+    \coordinate (B1MP1) at (3.2, 3.15);
+    \coordinate (B1MP2) at (3.4, 3.6);
+    \coordinate (B1MP3) at (3.9, 3.5);
+
+    \coordinate (C1) at (4, 6);
+    \coordinate (C1MP1) at (3.5, 6.5);
+    \coordinate (C1MP2) at (3.25, 6.0);
+    \coordinate (C1MP3) at (3.5, 5.5);
 
     \coordinate (A2) at (0, 0);
-    \coordinate (B2) at (3, 0);
-    \coordinate (C2) at (6, 0);
+    \coordinate (A2MP1) at (-0.5, 0.5);
+    \coordinate (A2MP2) at (0, 0.75);
+    \coordinate (A2MP3) at (0.5, 0.5);
+
+    \coordinate (B2) at (8, 0);
+    \coordinate (B2MP1) at (7.2, 0.15);
+    \coordinate (B2MP2) at (7.4, 0.6);
+    \coordinate (B2MP3) at (7.9, 0.5);
+
+    \coordinate (C2) at (8, 6);
+    \coordinate (C2MP1) at (7.5, 6.5);
+    \coordinate (C2MP2) at (7.25, 6.0);
+    \coordinate (C2MP3) at (7.5, 5.5);
 
     \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (A1) {};
-    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP1) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (A1) to (A1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (A1) to (A1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (A1) to (A1MP3);
+
+    \node [fill=orange!70, circle, inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP3);
+
     \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP3);
 
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (A2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP1) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (A2) to (A2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (A2) to (A2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (A2) to (A2MP3);
+
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (B2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP1) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP3);
+
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP3);
 
     \draw [orange!50, line width=0.05cm] (A1) to (B1);
     \draw [orange!50, line width=0.05cm] (B1) to (C1);
@@ -309,48 +368,85 @@
   \end{tikzpicture}
   \end{center}
 }
-\only<3,4>{
+\only<3>{
+  Merge the two maps with the transformation of one of the keyframe matches
   \begin{center}
   \begin{tikzpicture}
-    \coordinate (A1) at (0, 0);
-    \coordinate (B1) at (3, 0);
-    \coordinate (C1) at (6, 0);
+    \coordinate (A1) at (0, 0.25);
+    \coordinate (A1MP1) at (-0.5, 0.75);
+    \coordinate (A1MP2) at (0, 1.0);
+    \coordinate (A1MP3) at (0.5, 0.75);
 
-    \coordinate (AV1) at (1, 2);
-    \coordinate (AV2) at (2, 2);
-    \coordinate (BV1) at (4, 2);
-    \coordinate (BV2) at (5, 2);
-    \coordinate (CV1) at (10, 2);
+    \coordinate (B1) at (4, 0.25);
+    \coordinate (B1MP1) at (3.2, 0.15);
+    \coordinate (B1MP2) at (3.4, 0.6);
+    \coordinate (B1MP3) at (3.9, 0.5);
+
+    \coordinate (C1) at (4, 6);
+    \coordinate (C1MP1) at (3.5, 6.5);
+    \coordinate (C1MP2) at (3.25, 6.0);
+    \coordinate (C1MP3) at (3.5, 5.5);
 
     \coordinate (A2) at (0, 0);
-    \coordinate (B2) at (3, 0);
-    \coordinate (C2) at (6, 0);
+
+    \coordinate (B2) at (5.5, 0);
+    \coordinate (B2MP1) at (4.7, 0.15);
+    \coordinate (B2MP2) at (4.9, 0.6);
+    \coordinate (B2MP3) at (4.4, 0.5);
+
+    \coordinate (C2) at (5.5, 6);
+    \coordinate (C2MP1) at (5.0, 6.5);
+    \coordinate (C2MP2) at (4.75, 6.0);
+    \coordinate (C2MP3) at (5.0, 5.5);
 
     \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (A1) {};
-    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
-    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=none, draw, red, circle, inner sep=2pt, text width=2.0cm] at (A1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP3);
 
-    %\node [fill=red!70, circle,inner sep=2pt, text width=0.1mm] at (AV1) {};
-    %\node [fill=red!70, circle,inner sep=2pt, text width=0.1mm] at (AV2) {};
-    %\node [fill=red!70, circle,inner sep=2pt, text width=0.1mm] at (BV1) {};
-    %\node [fill=red!70, circle,inner sep=2pt, text width=0.1mm] at (BV2) {};
-    %\node [fill=red!70, circle,inner sep=2pt, text width=0.1mm] at (CV1) {};
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP3);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP3);
 
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (A2) {};
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP3);
+
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (B2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP1) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP2) {};
+    \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP3);
+
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP3);
 
-    \node [circle, dashed, red, fill=none, minimum width=8.0mm, draw] at (A2) {};
-    \node [circle, dashed, red, fill=none, minimum width=8.0mm, draw] at (B2) {};
-    \node [circle, dashed, red, fill=none, minimum width=8.0mm, draw] at (C2) {};
-
-    \draw [orange!50, line width=0.05cm] (A1) to [out=0, in=-100] (AV1);
-    \draw [orange!50, line width=0.05cm] (AV1) to (AV2);
-    \draw [orange!50, line width=0.05cm] (AV2) to [out=-60, in=180] (B1);
-    \draw [orange!50, line width=0.05cm] (B1) to [out=0, in=-100] (BV1);
-    \draw [orange!50, line width=0.05cm] (BV1) to (BV2);
-    \draw [orange!50, line width=0.05cm] (BV2) to [out=-80, in=180] (C1);
-    \draw [orange!50, line width=0.05cm] (C1) to [out=0, in=-180] (CV1);
+    \draw [orange!50, line width=0.05cm] (A1) to (B1);
+    \draw [orange!50, line width=0.05cm] (B1) to (C1);
     \draw [blue!50, line width=0.05cm] (A2) to (B2);
     \draw [blue!50, line width=0.05cm] (B2) to (C2);
 
@@ -361,10 +457,171 @@
   \end{center}
 }
 \only<4>{
+  Fuse map points in the $n-1$ keyframe matches
+  \begin{center}
+  \begin{tikzpicture}
+    \coordinate (A1) at (0, 0.25);
+    \coordinate (A1MP1) at (-0.5, 0.75);
+    \coordinate (A1MP2) at (0, 1.0);
+    \coordinate (A1MP3) at (0.5, 0.75);
+
+    \coordinate (B1) at (4, 0.25);
+    \coordinate (B1MP1) at (3.2, 0.15);
+    \coordinate (B1MP2) at (3.4, 0.6);
+    \coordinate (B1MP3) at (3.9, 0.5);
+
+    \coordinate (C1) at (4, 6);
+    \coordinate (C1MP1) at (3.5, 6.5);
+    \coordinate (C1MP2) at (3.25, 6.0);
+    \coordinate (C1MP3) at (3.5, 5.5);
+
+    \coordinate (A2) at (0, 0);
+    
+    \coordinate (B12) at (4.5, 0.5);
+    \coordinate (B2) at (5.5, 0);
+
+    \coordinate (C2) at (5.5, 6);
+    \coordinate (C2MP1) at (5.0, 6.5);
+    \coordinate (C2MP2) at (4.75, 6.0);
+    \coordinate (C2MP3) at (5.0, 5.5);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (A1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP3);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=none, draw, red, circle, inner sep=2pt, text width=3.0cm] at (B12) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP3) {};
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP1);
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP2);
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP3);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (A2) {};
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (B2) {};
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP1);
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP2);
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP1) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP2) {};
+    \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP3) {};
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP1);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP2);
+    \draw [green!50, dashed, line width=0.05cm] (C2) to (C2MP3);
+
+    \draw [orange!50, line width=0.05cm] (A1) to (B1);
+    \draw [orange!50, line width=0.05cm] (B1) to (C1);
+    \draw [blue!50, line width=0.05cm] (A2) to (B2);
+    \draw [blue!50, line width=0.05cm] (B2) to (C2);
+
+    \draw [red!50, line width=0.05cm, dashed] (A1) to (A2);
+    \draw [red!50, line width=0.05cm, dashed] (B1) to (B2);
+    \draw [red!50, line width=0.05cm, dashed] (C1) to (C2);
+  \end{tikzpicture}
+  \end{center}
+}
+\only<5>{
+  Fuse map points in the $n-1$ keyframe matches
+  \begin{center}
+  \begin{tikzpicture}
+    \coordinate (A1) at (0, 0.25);
+    \coordinate (A1MP1) at (-0.5, 0.75);
+    \coordinate (A1MP2) at (0, 1.0);
+    \coordinate (A1MP3) at (0.5, 0.75);
+
+    \coordinate (B1) at (4, 0.25);
+    \coordinate (B1MP1) at (3.2, 0.15);
+    \coordinate (B1MP2) at (3.4, 0.6);
+    \coordinate (B1MP3) at (3.9, 0.5);
+
+    \coordinate (C1) at (4, 5);
+    \coordinate (C1MP1) at (3.5, 5.5);
+    \coordinate (C1MP2) at (3.25, 5.0);
+    \coordinate (C1MP3) at (3.5, 4.5);
+
+    \coordinate (A2) at (0, 0);
+
+    \coordinate (B2) at (5.5, 0);
+
+    \coordinate (C12) at (4.5, 5.0);
+    \coordinate (C2) at (5.5, 5);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (A1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP1) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
+    \node [fill=green!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A1) to (A1MP3);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP3) {};
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP1);
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP2);
+    \draw [green!50, line width=0.05cm] (B1) to (B1MP3);
+
+    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=none, draw, red, circle, inner sep=2pt, text width=2.8cm] at (C12) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (C1MP2) {};
+    \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (C1MP3) {};
+    \draw [green!50, line width=0.05cm] (C1) to (C1MP1);
+    \draw [green!50, line width=0.05cm] (C1) to (C1MP2);
+    \draw [green!50, line width=0.05cm] (C1) to (C1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (A2) {};
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP1);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP2);
+    \draw [green!50, line width=0.05cm] (A2) to (A1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (B2) {};
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP1);
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP2);
+    \draw [green!50, line width=0.05cm] (B2) to (B1MP3);
+
+    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
+    \draw [green!50, line width=0.05cm] (C2) to (C1MP1);
+    \draw [green!50, line width=0.05cm] (C2) to (C1MP2);
+    \draw [green!50, line width=0.05cm] (C2) to (C1MP3);
+
+    \draw [orange!50, line width=0.05cm] (A1) to (B1);
+    \draw [orange!50, line width=0.05cm] (B1) to (C1);
+    \draw [blue!50, line width=0.05cm] (A2) to (B2);
+    \draw [blue!50, line width=0.05cm] (B2) to (C2);
+
+    \draw [red!50, line width=0.05cm, dashed] (A1) to (A2);
+    \draw [red!50, line width=0.05cm, dashed] (B1) to (B2);
+    \draw [red!50, line width=0.05cm, dashed] (C1) to (C2);
+  \end{tikzpicture}
+  \end{center}
+}
+\only<6>{
   \begin{block}{}
   \begin{itemize}
-    \item The loop fusion works quite well -> Fusion of machted keyframes should too
-    \item This local optimizations can provide BA a better initial guess
+    \item Reducing risk of bad map merging as $n$ keyframe matches have to be found
+    \item The fusion of the map points creates edges in the covisibility graph, which the pose graph optimization and the GBA can optimize.
+    \item Pose graph optimization and GBA are performed for $n$ keyframe matches together -> Saves time
   \end{itemize}
   \end{block}
 }
