@@ -473,7 +473,7 @@ namespace macslam {
       vMatches.shrink_to_fit();
 
       // Perform local optimization on the remaining matches
-      mpMapMerger->localMatchOptimization(pMergedMap, vMatches);
+      //mpMapMerger->localMatchOptimization(pMergedMap, vMatches);
 
       // Perform essential graph optimization
       mpMapMerger->optimizeEssentialGraph(pMergedMap, mpCurrMap, pMatchedMap, vMatches);

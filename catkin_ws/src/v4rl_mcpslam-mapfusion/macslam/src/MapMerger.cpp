@@ -766,8 +766,10 @@ namespace macslam {
 
     std::cout << "Essential graph optimized" << std::endl;
 
+		/*
 		cout << "ENTER to continue..." << endl << endl;
 		std::cin.get(); //wait to start bagfile recording
+		*/
 	}
 
   void MapMerger::globalBundleAdjustment(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits, std::shared_ptr<g2o::Sim3> g2oScw) {
