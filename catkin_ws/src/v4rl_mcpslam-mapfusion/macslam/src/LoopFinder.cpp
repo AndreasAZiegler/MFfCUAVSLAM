@@ -559,7 +559,7 @@ void LoopFinder::CorrectLoop()
         g2o::Sim3 g2oCorrectedSiw = mit->second;
         g2o::Sim3 g2oCorrectedSwi = g2oCorrectedSiw.inverse();
 
-        g2o::Sim3 g2oSiw =NonCorrectedSim3[pKFi];
+        g2o::Sim3 g2oSiw = NonCorrectedSim3[pKFi];
 
         vector<mpptr> vpMPsi = pKFi->GetMapPointMatches();
         for(size_t iMP=0, endMPi = vpMPsi.size(); iMP<endMPi; iMP++)

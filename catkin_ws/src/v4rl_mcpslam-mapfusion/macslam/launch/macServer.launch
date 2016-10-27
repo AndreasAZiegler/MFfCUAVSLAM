@@ -54,7 +54,7 @@
 
   <!-- Map Merger -->
 
-  <param name="~MinHitsForMerge" type="int" value="1" /> <!-- two maps are merged if x correpondences are found -->
+  <param name="~MinHitsForMerge" type="int" value="5" /> <!-- two maps are merged if x correpondences are found -->
   <param name="~GBAIterations" type="int" value="20" /> <!-- default: 20 -->
 
   <!-- Client 0 -->

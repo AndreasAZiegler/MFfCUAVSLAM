@@ -1,3 +1,0 @@
-/data/catkin/src/v4rl_mcpslam-mapfusion/macslam/thirdparty/DBoW2/build/CMakeFiles/edit_cache.dir
-/data/catkin/src/v4rl_mcpslam-mapfusion/macslam/thirdparty/DBoW2/build/CMakeFiles/rebuild_cache.dir
-/data/catkin/src/v4rl_mcpslam-mapfusion/macslam/thirdparty/DBoW2/build/CMakeFiles/DBoW2.dir

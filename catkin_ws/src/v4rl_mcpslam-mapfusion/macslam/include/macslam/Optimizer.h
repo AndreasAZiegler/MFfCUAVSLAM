@@ -64,6 +64,9 @@ public:
 
     //-----------server-----------
 
+    // To optimize matches locally after the maps were merged with the first match
+    void static LocalBundleAdjustment(std::vector<kfptr> pKFs, bool *pbStopFlag, mapptr pMap, size_t ClientId, eSystemState SysState = eSystemState::SERVER);
+
     void static MapFusionGBA(mapptr pMap, size_t ClientId, int nIterations=5, bool *pbStopFlag=NULL,
                              idpair nLoopKF = make_pair(0,0), const bool bRobust = true);
 
