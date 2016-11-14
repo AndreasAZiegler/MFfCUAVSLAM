@@ -7,7 +7,8 @@ namespace macslam {
       mpKFDB(pDB), mpVoc(pVoc), mpMap0(pMap0), mpMap1(pMap1), mpMap2(pMap2), mpMap3(pMap3),
       mLastLoopKFid(0), mbResetRequested(false),
       mMMParams(MMParams),
-      mbFixScale(false) {
+      mbFixScale(false),
+      mKFcount(0){
     mNhPrivate.param("MapMatchRate", mMapMatchRate, 5000);
 
     if(pMap0) {
@@ -105,8 +106,12 @@ namespace macslam {
       mpCurrentKF->SetNotErase();
     }
 
+    ++mKFcount;
+
     //If the map contains less than 10 KF or less than 10 KF have passed from last loop detection
-    if(mpCurrentKF->mId.first < mMMParams.mKFsToSkip) {
+    if((mpCurrentKF->mId.first < mMMParams.mKFsToSkipAtStart) || (mKFcount < mMMParams.mKFsToSkip)) {
+      //std::cout << "current KF id: " << mpCurrentKF->mId.first << " , KFs to skip at start: " << mMMParams.mKFsToSkipAtStart << std::endl;
+      //std::cout << "current KF passed: " << currFramesPassed << " , KFs to skip: " << mMMParams.mKFsToSkip << std::endl;
       mpCurrentKF->SetErase();
       return false;
     }
@@ -215,11 +220,11 @@ namespace macslam {
     // Add Current Keyframe to database
     //    mpKFDB->add(mpCurrentKF);
 
+
     if(mvpEnoughConsistentCandidates.empty()) {
       //        cout << "FALSE - not enough consistent candidates" << endl;
       mpCurrentKF->SetErase();
       return false;
-
     } else {
       //        cout << "TRUE - search SIM3" << endl;
       return true;
@@ -459,6 +464,7 @@ namespace macslam {
     MapMatchHit MMH(mpCurrentKF, mpMatchedKF, mg2oScw, mvpLoopMapPoints, mvpCurrentMatchedPoints);
     mFoundMatches[mpCurrMap][pMatchedMap].push_back(MMH);
     mFoundMatches[pMatchedMap][mpCurrMap].push_back(MMH);
+    mKFcount = 0;
 
     if(mFoundMatches[mpCurrMap][pMatchedMap].size() >= mMMParams.mMinHitsForMerge) {
       // Pointer to a Sim3 used by merge maps and global bundle adjustment
@@ -469,6 +475,7 @@ namespace macslam {
 
       // Merge maps with the first match
       mapptr pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches.back(), g2oScw);
+      // Remove first match as the map points of the first match will already be fused by the map merge
       vMatches.pop_back();
       vMatches.shrink_to_fit();
 

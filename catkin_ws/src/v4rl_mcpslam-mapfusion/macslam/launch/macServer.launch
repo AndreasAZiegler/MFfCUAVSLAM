@@ -55,6 +55,7 @@
   <!-- Map Merger -->
 
   <param name="~MinHitsForMerge" type="int" value="5" /> <!-- two maps are merged if x correpondences are found -->
+  <param name="~SkipKeyframeNumber" type="int" value="10" /> <!-- how many key frames should be skipped before considering key frame for matching candidate -->
   <param name="~GBAIterations" type="int" value="20" /> <!-- default: 20 -->
 
   <!-- Client 0 -->
@@ -91,6 +92,7 @@
   <param name="~VisRate" type="int" value="10" /> <!-- publish map every x-th iteration -->
 
   <param name="~MarkerSize" type="double" value="0.01" /> <!-- Marker Diameter -->
+  <param name="~MarkerSizeServer" type="double" value="0.005" /> <!-- Marker Diameter -->
   <param name="~ScaleFactor" type="double" value="1.0" />
   <param name="~CamSize" type="double" value="0.04" />
   <param name="~CamLineSize" type="double" value="0.02" />
