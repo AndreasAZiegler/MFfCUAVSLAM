@@ -5,8 +5,9 @@
 
   <param name="~OpMode" type="string" value="GT" /> <!-- "ORBKF";"CAM";"CAM1"-->
   <param name="~Delay1" type="int" value="500" /> 
-  <param name="~x" type="double" value="0.1" /> 
-  <param name="~scale" type="double" value="0.896" />
+  <param name="~x" type="double" value="0.05" /> 
+  <!--<param name="~scale" type="double" value="0.305" />-->
+  <param name="~scale" type="double" value="0.13" />
 
 
 
@@ -22,7 +23,7 @@
   <param name="~y0bl" type="double" value="67.0" /> 
   <param name="~x0br" type="double" value="0.0" /> 
   <param name="~y0br" type="double" value="33.5" /> 
-  <param name="~x0tr" type="double" value="50.0" /> 
+  <param name="~x0tr" type="double" value="100.0" /> 
   <param name="~y0tr" type="double" value="33.5" /> 
   <param name="~x0tl" type="double" value="50.0" /> 
   <param name="~y0tl" type="double" value="67.0" /> 

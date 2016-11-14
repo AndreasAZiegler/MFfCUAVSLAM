@@ -338,9 +338,15 @@ republisher::republisher(ros::NodeHandle& Nh, ros::NodeHandle& NhPrivate, std::s
 
         mbIniPointSet = false;
 
-        mIniPoint.x = -0.604677;
-        mIniPoint.y = 16.8367;
-        mIniPoint.z = -0.184735;
+        /* data set leica21.bag
+        mIniPoint.x = -6.5;
+        mIniPoint.y = 8.8;
+        mIniPoint.z = -5.0;
+        */
+
+        mIniPoint.x = -187.0;
+        mIniPoint.y = 173.5;
+        mIniPoint.z = -10.0;
 
         //mesh marker
         mPubMesh = Nh_.advertise<visualization_msgs::Marker>("mesh",1);
