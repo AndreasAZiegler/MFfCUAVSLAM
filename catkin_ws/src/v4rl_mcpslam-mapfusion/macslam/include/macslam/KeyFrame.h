@@ -164,6 +164,10 @@ public:
     size_t mUniqueId;
     size_t mVisId;
 
+    size_t mOrigClientId;
+    static size_t mNumKeyFramesMap1;
+    static size_t mNumKeyFramesMap2;
+
     // Grid (to speed up feature matching)
     /*const*/ int mnGridCols;
     /*const*/ int mnGridRows;

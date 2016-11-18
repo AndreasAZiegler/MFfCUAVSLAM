@@ -4,6 +4,9 @@ namespace macslam {
 
 size_t KeyFrame::nNextId=0;
 
+size_t KeyFrame::mNumKeyFramesMap1 = 0;
+size_t KeyFrame::mNumKeyFramesMap2 = 0;
+
 KeyFrame::KeyFrame(Frame &F, mapptr pMap, dbptr pKFDB, commptr pComm, eSystemState SysState, size_t UniqueId)
     : mFrameId(F.mId),mUniqueId(UniqueId),mTimeStamp(F.mTimeStamp),mVisId(-1),
       mnGridCols(FRAME_GRID_COLS), mnGridRows(FRAME_GRID_ROWS),
@@ -24,7 +27,7 @@ KeyFrame::KeyFrame(Frame &F, mapptr pMap, dbptr pKFDB, commptr pComm, eSystemSta
       mLoopQuery(defpair),mMatchQuery(defpair),
       mBALocalForKF(defpair),mBAFixedForKF(defpair),mBAGlobalForKF(defpair),
       mSysState(SysState),mbOmitSending(false),
-      mbChangedByServer(false),mbLoopCorrected(false)
+      mbChangedByServer(false),mbLoopCorrected(false), mOrigClientId(pComm->GetClientId())
 {
     mId=make_pair(nNextId++,F.mId.second);
 
@@ -43,6 +46,15 @@ KeyFrame::KeyFrame(Frame &F, mapptr pMap, dbptr pKFDB, commptr pComm, eSystemSta
     mvbMapPointsLock.resize(N,false);
 
     if(mUniqueId == 0 && !mId.first == 0) cout << "\033[1;31m!!!!! ERROR !!!!!\033[0m KeyFrame::KeyFrame(..): mUniqueId not set" << endl;
+
+    std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
+    if(0 == mOrigClientId) {
+      KeyFrame::mNumKeyFramesMap1++;
+      std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 1: " << KeyFrame::mNumKeyFramesMap1 << std::endl;
+    } else if(1 == mOrigClientId) {
+      KeyFrame::mNumKeyFramesMap2++;
+      std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
+    }
 }
 
 KeyFrame::KeyFrame(bool NonUsedValue, mapptr pMap, eSystemState SysState) //the "NonUsedValue" is for safety, to not accidentally construct emtpy objects
@@ -60,9 +72,18 @@ KeyFrame::KeyFrame(bool NonUsedValue, mapptr pMap, eSystemState SysState) //the 
       mbFirstConnection(true),
       mFrameId(defpair), mbPoseChanged(false),
       mSysState(SysState),mbOmitSending(false),
-      mbChangedByServer(false),mbLoopCorrected(false)
+      mbChangedByServer(false),mbLoopCorrected(false), mOrigClientId(25)
 {
     //pass map to KF to be able to erase itself from KF buffer
+
+    std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
+    if(0 == mOrigClientId) {
+      KeyFrame::mNumKeyFramesMap1++;
+      std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 1: " << KeyFrame::mNumKeyFramesMap1 << std::endl;
+    } else if(1 == mOrigClientId) {
+      KeyFrame::mNumKeyFramesMap2++;
+      std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
+    }
 }
 
 KeyFrame& KeyFrame::operator=(KeyFrame&& rhs)
@@ -98,6 +119,16 @@ KeyFrame& KeyFrame::operator=(KeyFrame&& rhs)
       mbInOutBuffer = move(rhs.mbInOutBuffer);
       mbChangedByServer = move(rhs.mbChangedByServer);
       mbLoopCorrected = move(rhs.mbLoopCorrected);
+      mOrigClientId = rhs.mOrigClientId;
+
+			std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
+			if(0 == mOrigClientId) {
+				KeyFrame::mNumKeyFramesMap1++;
+				std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 1: " << KeyFrame::mNumKeyFramesMap1 << std::endl;
+			} else if(1 == mOrigClientId) {
+				KeyFrame::mNumKeyFramesMap2++;
+				std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
+			}
 }
 
 KeyFrame::KeyFrame(macslam_msgs::macKeyFrame* pMsg, g2o::Sim3 mg2oS_wcurmap_wclientmap, g2o::Sim3 mg2oS_loop, vocptr pVoc, mapptr pMap, dbptr pKFDB, commptr pComm,
@@ -118,7 +149,7 @@ KeyFrame::KeyFrame(macslam_msgs::macKeyFrame* pMsg, g2o::Sim3 mg2oS_wcurmap_wcli
       mLoopQuery(defpair),mMatchQuery(defpair),
       mBALocalForKF(defpair),mBAFixedForKF(defpair),mBAGlobalForKF(defpair),
       mSysState(SysState),mbOmitSending(false),
-      mbChangedByServer(false),mbLoopCorrected(false)
+      mbChangedByServer(false),mbLoopCorrected(false), mOrigClientId(pComm->GetClientId())
 {
     //Performance: use "reserve" for vectors
 
@@ -218,6 +249,17 @@ KeyFrame::KeyFrame(macslam_msgs::macKeyFrame* pMsg, g2o::Sim3 mg2oS_wcurmap_wcli
     AssignFeaturesToGrid();
 
     mbOmitSending = false;
+
+		/*
+		std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
+		if(0 == mOrigClientId) {
+			KeyFrame::mNumKeyFramesMap1++;
+			std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 1: " << KeyFrame::mNumKeyFramesMap1 << std::endl;
+		} else if(1 == mOrigClientId) {
+			KeyFrame::mNumKeyFramesMap2++;
+			std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
+		}
+		*/
 }
 
 void KeyFrame::AssignFeaturesToGrid()

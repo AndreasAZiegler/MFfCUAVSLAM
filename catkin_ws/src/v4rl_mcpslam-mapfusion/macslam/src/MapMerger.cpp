@@ -562,8 +562,10 @@ namespace macslam {
 			mpMatcher->PublishMergedMap(pMergedMap, suAssClientsC, suAssClientsM);
 #endif
 
+			/*
 			cout << "ENTER to continue..." << endl << endl;
 			std::cin.get(); //wait to start bagfile recording
+			*/
 		}
 
     // Project MapPoints observed in the neighborhood of the loop keyframe
