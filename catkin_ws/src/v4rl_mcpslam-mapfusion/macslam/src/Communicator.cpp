@@ -678,15 +678,15 @@ void Communicator::PublishMapCb(std_msgs::BoolConstPtr pMsg) {
 			output << "Begin export of map:" << std::endl;
 			output << "ID;mapId;timestamp;x;y;z" << std::endl;
 			for(boost::shared_ptr<KeyFrame> i : kfs) {
-				if(false == i->isBad()) {
-					std::cout << "test: " << i->mFrameId.first << ";" << i->mOrigClientId << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetTranslation().at<float>(0) << ";" << i->GetTranslation().at<float>(1) << ";" << i->GetTranslation().at<float>(2) << std::endl;
+				if((false == i->isBad()) && (false == i->IsEmpty())) {
+					std::cout << "test: " << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
 					set<commptr> com = i->GetCommPtrs();
 					//for(set<commptr>::iterator sit = i->GetCommPtrs().begin(); sit != i->GetCommPtrs().end(); ++sit) {
 					for(set<commptr>::iterator sit = com.begin(); sit != com.end(); ++sit) {
 						//std::cout << "Client: " << mClientId << ", id: " << (*sit)->GetClientId() << endl;
 						//output << i->mUniqueId << ";" << (*sit)->GetClientId() << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetTranslation().at<float>(0) << ";" << i->GetTranslation().at<float>(1) << ";" << i->GetTranslation().at<float>(2) << std::endl;
 					}
-					output << i->mFrameId.first << ";" << i->mOrigClientId << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetTranslation().at<float>(0) << ";" << i->GetTranslation().at<float>(1) << ";" << i->GetTranslation().at<float>(2) << std::endl;
+					output << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
 				}
 			}
 			output.close();
