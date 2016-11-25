@@ -27,20 +27,20 @@ list_leica_y_2 = []
 list_leica_z_2 = []
 
 # Add data points to the corresponding lists
-with open('export_1.txt', 'rt') as csvfile:
+with open('export_0.txt', 'rt') as csvfile:
   reader = csv.reader(csvfile, delimiter=';')
   for row in reader:
     if int(row[1]) == 0:
       list_slam_timestamp_1.append(1000*float(row[2]))
       list_slam_x_1.append(float(row[3]))
       list_slam_y_1.append(float(row[4]))
-      list_slam_z_1.append(-float(row[5]))
+      list_slam_z_1.append(float(row[5]))
       #print(row[3] + ", " + row[4] + ", " + row[5])
     elif int(row[1]) == 1:
       list_slam_timestamp_2.append(1000*float(row[2]))
       list_slam_x_2.append(float(row[3]))
       list_slam_y_2.append(float(row[4]))
-      list_slam_z_2.append(-float(row[5]))
+      list_slam_z_2.append(float(row[5]))
       #print(row[3] + ", " + row[4] + ", " + row[5])
 
 with open('export_leica.csv', 'rt') as csvfile:
@@ -172,13 +172,13 @@ slam_2 = slam_2[~(slam_2 == 0).all(1)]
 leica_2 = leica_2[~(leica_2 == 0).all(1)]
 
 # Get transformation for alignement
-s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:20,1:4], slam_1[0:20,1:4])
+s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:50,1:4], slam_1[0:50,1:4])
 # Transform slam output
 slam_1_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_1[:,1:4]))) + gt_t_gt_es_1
 slam_1_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_1[:,1:4]))) + gt_t_gt_es_1
 
 # Get transformation for alignement
-s_2, R_gt_es_2, gt_t_gt_es_2 = align_sim3(leica_2[0:20,1:4], slam_2[0:20,1:4])
+s_2, R_gt_es_2, gt_t_gt_es_2 = align_sim3(leica_2[0:50,1:4], slam_2[0:50,1:4])
 # Transform slam output
 slam_2_transformed = s_2 * np.transpose(np.dot(R_gt_es_2, np.transpose(slam_2[:,1:4]))) + gt_t_gt_es_2
 slam_2_orig_transformed = s_2 * np.transpose(np.dot(R_gt_es_2, np.transpose(slam_coordinates_2[:,1:4]))) + gt_t_gt_es_2
@@ -187,22 +187,26 @@ slam_2_orig_transformed = s_2 * np.transpose(np.dot(R_gt_es_2, np.transpose(slam
 fig = plt.figure()
 fig.suptitle('Choosen SLAM points Map 1')
 ax1 = fig.add_subplot(111, projection='3d')
+#ax1 = fig.gca(projection='3d')
 ax1.set_xlabel('X')
 ax1.set_ylabel('Y')
 ax1.set_zlabel('Z')
 #ax.scatter(list_leica_x_1, list_leica_y_1, list_leica_z_1, c='orange')
 ax1.scatter(slam_1_orig_transformed[:,0], slam_1_orig_transformed[:,1], slam_1_orig_transformed[:,2], c='orange')
 ax1.scatter(slam_1_transformed[:,0], slam_1_transformed[:,1], slam_1_transformed[:,2], c='blue', s=100)
+#ax1.plot(slam_coordinates_1[:,1], slam_coordinates_1[:,2], slam_coordinates_1[:,3], c='blue')
 
 fig = plt.figure()
 fig.suptitle('Choosen SLAM points Map 2')
 ax1 = fig.add_subplot(111, projection='3d')
+#ax1 = fig.gca(projection='3d')
 ax1.set_xlabel('X')
 ax1.set_ylabel('Y')
 ax1.set_zlabel('Z')
 #ax.scatter(list_leica_x_1, list_leica_y_1, list_leica_z_1, c='orange')
 ax1.scatter(slam_2_orig_transformed[:,0], slam_2_orig_transformed[:,1], slam_2_orig_transformed[:,2], c='orange')
 ax1.scatter(slam_2_transformed[:,0], slam_2_transformed[:,1], slam_2_transformed[:,2], c='blue', s=100)
+#ax1.plot(slam_coordinates_2[:,1], slam_coordinates_2[:,2], slam_coordinates_2[:,3], c='blue')
 
 fig = plt.figure()
 fig.suptitle('Choosen Leica points Map 1')
