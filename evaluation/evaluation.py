@@ -94,6 +94,11 @@ slam_coordinates_1 = slam_coordinates_1[slam_coordinates_1[:, 0].argsort()]
 #slam_coordinates_1 = slam_coordinates_1[np.argsort(slam_coordinates_1[:, 0])]
 #slam_coordinates_1 = slam_coordinates_1[np.lexsort(slam_coordinates_1[:, 0])]
 
+# Add Gaussian noise to first trajectory
+print("mean slam 1 map: " + str(np.mean(slam_coordinates_1[:,1:4], axis=0)) + ", std: " + str(np.std(slam_coordinates_1[:,1:4], axis=0)))
+slam_coordinates_1 = slam_coordinates_1 + np.hstack((np.zeros(slam_coordinates_1[:,0:1].shape), np.random.normal(loc=0.0, scale=0.15, size=slam_coordinates_1[:, 1:4].shape)))
+print("mean slam 1 map w. noise: " + str(np.mean(slam_coordinates_1[:,1:4], axis=0)) + ", std: " + str(np.std(slam_coordinates_1[:,1:4], axis=0)))
+
 array_leica_2_timestamp = np.array([list_leica_timestamp_2])
 array_leica_2_x = np.array(list_leica_x_2)
 array_leica_2_y = np.array(list_leica_y_2)
