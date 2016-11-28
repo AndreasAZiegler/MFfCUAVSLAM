@@ -118,6 +118,8 @@ private:
     cv::Mat mScw;
     g2o::Sim3 mg2oScw;
 
+    int mKFcount;
+
     long unsigned int mLastLoopKFid;
 
     cv::Mat mMatchMatrix;

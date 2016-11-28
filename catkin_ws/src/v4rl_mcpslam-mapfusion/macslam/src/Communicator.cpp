@@ -1,3 +1,5 @@
+#include <iostream>
+#include <fstream>
 #include <macslam/Communicator.h>
 
 namespace macslam {
@@ -6,7 +8,7 @@ Communicator::Communicator(ccptr pCC, vocptr pVoc, mapptr pMap, dbptr pKFDB)
     : mpCC(pCC),
       mNh(pCC->mNh), mNhPrivate(pCC->mNhPrivate),
       mpVoc(pVoc), mpMap(pMap), mpDatabase(pKFDB),
-      mClientId(pCC->mClientId), mbResetRequested(false), mbFirstKF(false)
+      mClientId(pCC->mClientId), mbResetRequested(false), mbFirstKF(false), mFlagExported(false)
 //      mbLoopClosed(false)
 {
     mVerboseMode = extVerboseMode;
@@ -44,7 +46,10 @@ Communicator::Communicator(ccptr pCC, vocptr pVoc, mapptr pMap, dbptr pKFDB)
     else if(mpCC->mSysState == eSystemState::SERVER)
     {
         SysType = "Server";
-    }
+
+				// Subscriber for the control of the map export
+				mSubControl = mNh.subscribe<std_msgs::Bool>("publish_map", 1, boost::bind(&Communicator::PublishMapCb,this,_1));
+		}
     else
     {
         cout << "\033[1;31m!!!!! ERROR !!!!!\033[0m Communicator::ResetIfRequested(): invalid systems state: " << mpCC->mSysState << endl;
@@ -659,6 +664,38 @@ void Communicator::ResetCb(std_msgs::BoolConstPtr pMsg)
     }
 
     if(mVerboseMode > 0) cout << "ClientHandler " << mClientId << ": finished Communicator::ResetCb" << endl;
+}
+
+void Communicator::PublishMapCb(std_msgs::BoolConstPtr pMsg) {
+	std::unique_lock<std::mutex> lock(Communicator::mMutexExport);
+	if((true == pMsg->data) && (false == Communicator::mFlagExported)) {
+		// Export map
+		std::vector<boost::shared_ptr<KeyFrame>> kfs = mpMap->GetAllKeyFrames();
+		std::ofstream output;
+		output.open("export_" + to_string(mClientId) + ".txt");
+
+		if(true == output.is_open()) {
+			output << "Begin export of map:" << std::endl;
+			output << "ID;mapId;timestamp;x;y;z" << std::endl;
+			for(boost::shared_ptr<KeyFrame> i : kfs) {
+				if((false == i->isBad()) && (false == i->IsEmpty())) {
+					std::cout << "test: " << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
+					set<commptr> com = i->GetCommPtrs();
+					//for(set<commptr>::iterator sit = i->GetCommPtrs().begin(); sit != i->GetCommPtrs().end(); ++sit) {
+					for(set<commptr>::iterator sit = com.begin(); sit != com.end(); ++sit) {
+						//std::cout << "Client: " << mClientId << ", id: " << (*sit)->GetClientId() << endl;
+						//output << i->mUniqueId << ";" << (*sit)->GetClientId() << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetTranslation().at<float>(0) << ";" << i->GetTranslation().at<float>(1) << ";" << i->GetTranslation().at<float>(2) << std::endl;
+					}
+					output << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
+				}
+			}
+			output.close();
+			Communicator::mFlagExported = true;
+			std::cout << "Finished export!" << std::endl;
+		} else {
+			std::cout << "Unalbel to open file!" << std::endl;
+		}
+	}
 }
 
 void Communicator::RequestReset()

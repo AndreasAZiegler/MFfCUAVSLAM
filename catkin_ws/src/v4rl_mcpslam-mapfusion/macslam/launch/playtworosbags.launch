@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+<node pkg="rosbag" type="play" name="player1" output="screen" args="/data/SP2/dataset/21.bag"/>
+<node pkg="rosbag" type="play" name="player2" output="screen" args="-s 1.017 /data/SP2/dataset/leica21.bag"/>
+
+<node pkg="rosbag" type="play" name="player3" output="screen" args="/data/SP2/dataset/23c1.bag"/>
+<node pkg="rosbag" type="play" name="player4" output="screen" args="-s 0.876 /data/SP2/dataset/leica23c1.bag"/>
+
+</launch>

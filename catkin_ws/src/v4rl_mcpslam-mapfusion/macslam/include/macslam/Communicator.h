@@ -86,6 +86,7 @@ public:
     void MapCb(macslam_msgs::macMapConstPtr pMsg);
 //    void FusionCb(mcpslam_msgs::MCPFusionConstPtr pMsg);
     void ResetCb(std_msgs::BoolConstPtr pMsg);
+    void PublishMapCb(std_msgs::BoolConstPtr pMsg);
     void RequestReset();
 
     //--- data transfer---
@@ -131,6 +132,9 @@ protected:
 //    ros::Subscriber mSubMP;
     ros::Subscriber mSubMap;
     ros::Subscriber mSubReset;
+
+    // Subscriber for the control of the map export
+    ros::Subscriber mSubControl;
 
     string mSubKfTopicName;
     string mSubMpTopicName;
@@ -233,6 +237,9 @@ protected:
 //    size_t mnVisRuns;
 //    size_t mnCoutRuns;
 //    size_t mnCommRuns;
+
+    std::mutex mMutexExport;
+    bool mFlagExported;
 
 #ifdef STATS
     //statistics

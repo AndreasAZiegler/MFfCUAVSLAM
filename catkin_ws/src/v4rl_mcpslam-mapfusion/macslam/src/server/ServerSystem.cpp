@@ -155,11 +155,12 @@ void ServerSystem::InitializeMapMatcher()
     mNhPrivate.param("MaxIterations",MMParams.mMaxIterations,300);
     mNhPrivate.param("MinHitsForMerge",MMParams.mMinHitsForMerge,3);
     mNhPrivate.param("GBAIterations",MMParams.mGBAIterations,20);
-    mNhPrivate.param("StartAfterNumKFs",MMParams.mKFsToSkip,10);
+    mNhPrivate.param("StartAfterNumKFs",MMParams.mKFsToSkipAtStart,10);
+    mNhPrivate.param("SkipKeyframeNumber",MMParams.mKFsToSkip,10);
     mNhPrivate.param("LoopLockSleep",MMParams.mLockSleep,1000);
 
     cout << "Server Map Matcher Params: " << endl;
-    cout << "KFs to skip: " << MMParams.mKFsToSkip << endl;
+    cout << "KFs to skip: " << MMParams.mKFsToSkipAtStart << endl;
     cout << "Solver Iterations: " << MMParams.mSolverIterations << endl;
     cout << "Matches Threshold: " << MMParams.mMatchesThres << endl;
     cout << "Inliers Threshold: " << MMParams.mInliersThres << endl;

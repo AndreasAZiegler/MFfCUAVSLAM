@@ -526,140 +526,20 @@ namespace macslam {
     return(pFusedMap);
   }
 
-  void MapMerger::localMatchOptimization(mapptr mpMap, vector<MapMatchHit> vMatchHits) {
+  void MapMerger::localMapPointFusion(mapptr pMergedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits) {
     cout << "\033[1;32m!!! LOOP FOUND !!!\033[0m" << endl;
 #ifdef VISUALIZATION
     /// \todo Rewrite PublishLoopEdges for this purpose.
     //this->PublishLoopEdges();
 #endif
 
-		KeyFrameAndPose CorrectedSim3Vec[vMatchHits.size()];
-		// Loop through all matches
-		int lv = 0;
-		for(auto i : vMatchHits) {
-			/// \todo Loop through all matches and not only use current key frame of the first match, use according data structure
-			//boost::shared_ptr<KeyFrame> mpCurrentKF = vMatchHits.front().mpKFCurr;
-			boost::shared_ptr<KeyFrame> mpCurrentKF = i.mpKFCurr;
-
-			KeyFrameAndPose CorrectedSim3;
-			KeyFrameAndPose NonCorrectedSim3;
-			/// \todo Use transformation of the according match
-			//CorrectedSim3[mpCurrentKF] = vMatchHits.front().mg2oScw;
-			CorrectedSim3[mpCurrentKF] = i.mg2oScw;
-			cv::Mat Twc = mpCurrentKF->GetPoseInverse();
-
-			cv::Mat Rcur = Twc.rowRange(0, 3).colRange(0, 3);
-			cv::Mat tcur = Twc.rowRange(0, 3).col(3);
-			g2o::Sim3 g2oScur(Converter::toMatrix3d(Rcur), Converter::toVector3d(tcur), 1.0);
-			/// \todo Use transformation of the according match
-			//g2o::Sim3 g2oS_loop = g2oScur * vMatchHits.front().mg2oScw;
-			g2o::Sim3 g2oS_loop = g2oScur * i.mg2oScw;
-
-			cout << "--- transform KFs/MPs" << endl;
-
-			// Retrive keyframes connected to the current keyframe and compute corrected Sim3 pose by propagation
-			std::vector<boost::shared_ptr<KeyFrame>> mvpCurrentConnectedKFs = i.mpKFCurr->GetVectorCovisibleKeyFrames();
-			mvpCurrentConnectedKFs.push_back(i.mpKFCurr);
-
-			for(vector<kfptr>::iterator vit = mvpCurrentConnectedKFs.begin(), vend = mvpCurrentConnectedKFs.end(); vit != vend; vit++) {
-				kfptr pKFi = *vit;
-
-				cv::Mat Tiw = pKFi->GetPose();
-
-				if(pKFi != mpCurrentKF) {
-					cv::Mat Tic = Tiw * Twc;
-					cv::Mat Ric = Tic.rowRange(0, 3).colRange(0, 3);
-					cv::Mat tic = Tic.rowRange(0, 3).col(3);
-					g2o::Sim3 g2oSic(Converter::toMatrix3d(Ric), Converter::toVector3d(tic), 1.0);
-					/// \todo Use transformation of the according match
-					g2o::Sim3 g2oCorrectedSiw = g2oSic * i.mg2oScw;
-					//g2o::Sim3 g2oCorrectedSiw = g2oSic * vMatchHits.front().mg2oScw;
-					//Pose corrected with the Sim3 of the loop closure
-					CorrectedSim3[pKFi] = g2oCorrectedSiw;
-					CorrectedSim3Vec[lv][pKFi] = g2oCorrectedSiw;
-				}
-
-				cv::Mat Riw = Tiw.rowRange(0, 3).colRange(0, 3);
-				cv::Mat tiw = Tiw.rowRange(0, 3).col(3);
-				g2o::Sim3 g2oSiw(Converter::toMatrix3d(Riw), Converter::toVector3d(tiw), 1.0);
-				//Pose without correction
-				NonCorrectedSim3[pKFi] = g2oSiw;
-			}
-			++lv;
-
-			// Correct all MapPoints obsrved by current keyframe and neighbors, so that they align with the other side of the loop
-			for(KeyFrameAndPose::iterator mit = CorrectedSim3.begin(), mend = CorrectedSim3.end(); mit != mend; mit++) {
-				kfptr pKFi = mit->first;
-				g2o::Sim3 g2oCorrectedSiw = mit->second;
-				g2o::Sim3 g2oCorrectedSwi = g2oCorrectedSiw.inverse();
-
-				g2o::Sim3 g2oSiw = NonCorrectedSim3[pKFi];
-
-				vector<mpptr> vpMPsi = pKFi->GetMapPointMatches();
-
-				for(size_t iMP = 0, endMPi = vpMPsi.size(); iMP < endMPi; iMP++) {
-					mpptr pMPi = vpMPsi[iMP];
-
-					if(!pMPi) {
-						continue;
-					}
-
-					if(pMPi->isBad()) {
-						continue;
-					}
-
-					//            if(pMPi->mnCorrectedByKF==mpCurrentKF->mnId && pMPi->mnCorrectedByKFClientId == mpCurrentKF->mClientId) //ID Tag
-					if(pMPi->mCorrectedByKF_LC == mpCurrentKF->mId) { //ID Tag
-						continue;
-					}
-
-					// Project with non-corrected pose and project back with corrected pose
-					cv::Mat P3Dw = pMPi->GetWorldPos();
-					Eigen::Matrix<double, 3, 1> eigP3Dw = Converter::toVector3d(P3Dw);
-					Eigen::Matrix<double, 3, 1> eigCorrectedP3Dw = g2oCorrectedSwi.map(g2oSiw.map(eigP3Dw));
-
-					cv::Mat cvCorrectedP3Dw = Converter::toCvMat(eigCorrectedP3Dw);
-					pMPi->SetWorldPos(cvCorrectedP3Dw, true);
-					//            pMPi->mnCorrectedByKF = mpCurrentKF->mnId; //ID Tag
-					//            pMPi->mnCorrectedByKFClientId = mpCurrentKF->mClientId; //ID Tag
-					//            pMPi->mnCorrectedReference = pKFi->mnId; //ID Tag
-					//            pMPi->mnCorrectedReferenceClientId = pKFi->mClientId; //ID Tag
-					pMPi->mCorrectedByKF_LC = mpCurrentKF->mId;
-					pMPi->mCorrectedReference_LC = mpCurrentKF->mUniqueId;
-					pMPi->UpdateNormalAndDepth();
-				}
-
-				// Update keyframe pose with corrected Sim3. First transform Sim3 to SE3 (scale translation)
-				Eigen::Matrix3d eigR = g2oCorrectedSiw.rotation().toRotationMatrix();
-				Eigen::Vector3d eigt = g2oCorrectedSiw.translation();
-				double s = g2oCorrectedSiw.scale();
-
-				eigt *= (1. / s); //[R t/s;0 1]
-
-				cv::Mat correctedTiw = Converter::toCvSE3(eigR, eigt);
-
-				pKFi->SetPose(correctedTiw, true);
-
-				// Make sure connections are updated
-				pKFi->UpdateConnections();
-			}
-		}
-
-    cout << "--- update matched MPs" << endl;
-
     // Start Loop Fusion
-    // Update matched map points and replace if duplicated
-    /// \todo Use the matched points of the according match
     // Loop through all matches
+    // Update matched map points and replace if duplicated
     for(auto j : vMatchHits) {
       for(size_t i = 0; i < j.mvpCurrentMatchedPoints.size(); i++) {
-      //for(size_t i=0; i<mvpCurrentMatchedPoints.size(); i++)
-        /// \todo Use the matched points of the according match
         if(j.mvpCurrentMatchedPoints[i]) {
-        //if(mvpCurrentMatchedPoints[i])
-          /// \todo Use the matched points of the according match
           mpptr pLoopMP = j.mvpCurrentMatchedPoints[i];
-          //mpptr pLoopMP = mvpCurrentMatchedPoints[i];
           mpptr pCurMP = j.mpKFCurr->GetMapPoint(i);
 
 					if(pCurMP) {
@@ -672,57 +552,33 @@ namespace macslam {
 					}
 				}
 			}
+			// Update connections in covisibility graph
+			j.mpKFCurr->UpdateConnections();
+
+			set<size_t> suAssClientsC = pMapCurr->msuAssClients;
+			set<size_t> suAssClientsM = pMapMatch->msuAssClients;
+
+#ifdef VISUALIZATION
+			mpMatcher->PublishMergedMap(pMergedMap, suAssClientsC, suAssClientsM);
+#endif
+
+			/*
+			cout << "ENTER to continue..." << endl << endl;
+			std::cin.get(); //wait to start bagfile recording
+			*/
 		}
 
     // Project MapPoints observed in the neighborhood of the loop keyframe
     // into the current keyframe and neighbors using corrected poses.
     // Fuse duplications.
-    /// \todo Use the matched points of the according match
+    /*
     lv = 0;
     for(auto i : vMatchHits) {
       SearchAndFuse(CorrectedSim3Vec[lv], i.mvpLoopMapPoints);
-      //SearchAndFuse(CorrectedSim3, mvpLoopMapPoints);
       ++lv;
     }
-
-		for(auto i : vMatchHits) {
-			std::vector<boost::shared_ptr<KeyFrame>> mvpCurrentConnectedKFs = i.mpKFCurr->GetVectorCovisibleKeyFrames();
-			mvpCurrentConnectedKFs.push_back(i.mpKFCurr);
-
-			// After the MapPoint fusion, new links in the covisibility graph will appear attaching both sides of the loop
-			map<kfptr, set<kfptr> > LoopConnections;
-
-			for(vector<kfptr>::iterator vit = mvpCurrentConnectedKFs.begin(), vend = mvpCurrentConnectedKFs.end(); vit != vend; vit++) {
-				kfptr pKFi = *vit;
-				vector<kfptr> vpPreviousNeighbors = pKFi->GetVectorCovisibleKeyFrames();
-
-				// Update connections. Detect new links.
-				pKFi->UpdateConnections();
-				LoopConnections[pKFi] = pKFi->GetConnectedKeyFrames();
-
-				for(vector<kfptr>::iterator vit_prev = vpPreviousNeighbors.begin(), vend_prev = vpPreviousNeighbors.end(); vit_prev != vend_prev; vit_prev++) {
-					LoopConnections[pKFi].erase(*vit_prev);
-				}
-
-				for(vector<kfptr>::iterator vit2 = mvpCurrentConnectedKFs.begin(), vend2 = mvpCurrentConnectedKFs.end(); vit2 != vend2; vit2++) {
-					LoopConnections[pKFi].erase(*vit2);
-				}
-			}
-		}
-
-    // Perform local bundle adjustment
-    /*
-    bool mbStopLBA = false;
-
-		std::vector<kfptr> pKFs;
-		for(auto i : vMatchHits) {
-			pKFs.push_back(i.mpKFCurr);
-		}
-
-		Optimizer::LocalBundleAdjustment(pKFs, &mbStopLBA, mpMap, mpMap->mMapId);
-		*/
-
-  }
+    */
+	}
 
   void MapMerger::optimizeEssentialGraph(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits) {
     kfptr pKFCur = vMatchHits.back().mpKFCurr;
