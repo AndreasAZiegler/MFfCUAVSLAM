@@ -47,13 +47,13 @@ with open('export_leica.csv', 'rt') as csvfile:
   reader = csv.reader(csvfile, delimiter=';')
   for row in reader:
     if int(row[0]) == 0:
-      list_leica_timestamp_1.append(1000*(float(row[1]) + 0.0))
+      list_leica_timestamp_1.append(1000*(float(row[1])) + 32.8)
       list_leica_x_1.append(float(row[2]))
       list_leica_y_1.append(float(row[3]))
       list_leica_z_1.append(float(row[4]))
       #print(row[3] + ", " + row[4] + ", " + row[5])
     elif int(row[0]) == 1:
-      list_leica_timestamp_2.append(1000*(float(row[1]) + 0.0))
+      list_leica_timestamp_2.append(1000*(float(row[1])) + 32.8)
       list_leica_x_2.append(float(row[2]))
       list_leica_y_2.append(float(row[3]))
       list_leica_z_2.append(float(row[4]))
@@ -177,16 +177,16 @@ slam_2 = slam_2[~(slam_2 == 0).all(1)]
 leica_2 = leica_2[~(leica_2 == 0).all(1)]
 
 # Get transformation for alignement
-s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:-1,1:4], slam_1[0:-1,1:4])
+s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:40,1:4], slam_1[0:40,1:4])
 # Transform slam output
 slam_1_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_1[:,1:4]))) + gt_t_gt_es_1
 slam_1_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_1[:,1:4]))) + gt_t_gt_es_1
 
 # Get transformation for alignement
-s_2, R_gt_es_2, gt_t_gt_es_2 = align_sim3(leica_2[0:-1,1:4], slam_2[0:-1,1:4])
+#s_2, R_gt_es_2, gt_t_gt_es_2 = align_sim3(leica_2[0:80,1:4], slam_2[0:80,1:4])
 # Transform slam output
-slam_2_transformed = s_2 * np.transpose(np.dot(R_gt_es_2, np.transpose(slam_2[:,1:4]))) + gt_t_gt_es_2
-slam_2_orig_transformed = s_2 * np.transpose(np.dot(R_gt_es_2, np.transpose(slam_coordinates_2[:,1:4]))) + gt_t_gt_es_2
+slam_2_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_2[:,1:4]))) + gt_t_gt_es_1
+slam_2_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_2[:,1:4]))) + gt_t_gt_es_1
 
 # Calculate rmse
 var_slam_1 = []
@@ -214,7 +214,7 @@ legend_all = ax1.scatter(slam_1_orig_transformed[:,0], slam_1_orig_transformed[:
 #legend_all = ax1.scatter(slam_coordinates_1[:,1], slam_coordinates_1[:,2], slam_coordinates_1[:,3], c='orange', label='All SLAM points')
 for i in range(0, 1):
   #ax1.annotate('%s' % slam_coordinates_1[i,0], xy=(slam_coordinates_1[i,1], slam_coordinates_1[i,2]), textcoords='data')
-  ax1.text(slam_1_orig_transformed[i,0], slam_1_orig_transformed[i,1], slam_1_orig_transformed[i,2], '%s' % (slam_coordinates_1[i,0]), size=20, zorder=1)
+  ax1.text(slam_1_orig_transformed[i,0], slam_1_orig_transformed[i,1], slam_1_orig_transformed[i,2], '%.2f' % (slam_coordinates_1[i,0]), size=20, zorder=1)
 #legend_all = ax1.plot(slam_1_orig_transformed[0:50,0], slam_1_orig_transformed[0:50,1], slam_1_orig_transformed[0:50,2], c='orange', label='All SLAM points')
 legend_matched = ax1.scatter(slam_1_transformed[:,0], slam_1_transformed[:,1], slam_1_transformed[:,2], c='blue', s=100, label='Matched SLAM points')
 #legend_matched = ax1.scatter(slam_1[:,1], slam_1[:,2], slam_1[:,3], c='blue', s=100, label='Matched SLAM points')
@@ -243,7 +243,7 @@ ax1.set_ylabel('Y')
 ax1.set_zlabel('Z')
 ax1.scatter(slam_2_orig_transformed[:,0], slam_2_orig_transformed[:,1], slam_2_orig_transformed[:,2], c='orange')
 for i in range(1):
-  ax1.text(slam_2_orig_transformed[i,0], slam_2_orig_transformed[i,1], slam_2_orig_transformed[i,2], '%s' % (slam_coordinates_2[i,0]), size=20, zorder=1)
+  ax1.text(slam_2_orig_transformed[i,0], slam_2_orig_transformed[i,1], slam_2_orig_transformed[i,2], '%.2f' % (slam_coordinates_2[i,0]), size=20, zorder=1)
 ax1.scatter(slam_2_transformed[:,0], slam_2_transformed[:,1], slam_2_transformed[:,2], c='blue', s=100)
 #ax1.plot(slam_coordinates_2[:,1], slam_coordinates_2[:,2], slam_coordinates_2[:,3], c='blue')
 # Make scaling equal
@@ -305,15 +305,19 @@ ax3.set_xlabel('X')
 ax3.set_ylabel('Y')
 ax3.set_zlabel('Z')
 legend_slam = ax3.scatter(slam_1_transformed[:,0], slam_1_transformed[:,1], slam_1_transformed[:,2], c='blue', label='SLAM transformed')
+"""
 for i in range(len(slam_1_transformed[:,1])):
   if i%4 == 0:
     ax3.text(slam_1_transformed[i,0], slam_1_transformed[i,1], slam_1_transformed[i,2], '%s' % (i), size=20, zorder=1)
+"""
 #legend_slam = ax3.plot(slam_1_transformed[:100,0], slam_1_transformed[0:100,1], slam_1_transformed[0:100,2], c='blue', label='SLAM transformed')
 #legend_slam = ax3.scatter(slam_1[:,0], slam_1[:,1], slam_1[:,2], c='blue', label='SLAM transformed')
 legend_leica = ax3.scatter(leica_1[:,1], leica_1[:,2], leica_1[:,3], c='red', label='Leica')
+"""
 for i in range(len(leica_1[:,1])):
   if i%4 == 0:
     ax3.text(leica_1[i,1], leica_1[i,2], leica_1[i,3], '%s' % (i), size=20, zorder=1)
+"""
 #legend_leica = ax3.plot(leica_1[0:100,1], leica_1[0:100,2], leica_1[0:100,3], c='red', label='Leica')
 
 # Make scaling equal
