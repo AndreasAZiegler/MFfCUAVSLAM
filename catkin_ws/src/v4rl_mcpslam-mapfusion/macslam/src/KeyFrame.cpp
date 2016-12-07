@@ -47,6 +47,7 @@ KeyFrame::KeyFrame(Frame &F, mapptr pMap, dbptr pKFDB, commptr pComm, eSystemSta
 
     if(mUniqueId == 0 && !mId.first == 0) cout << "\033[1;31m!!!!! ERROR !!!!!\033[0m KeyFrame::KeyFrame(..): mUniqueId not set" << endl;
 
+    /*
     std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
     if(0 == mOrigClientId) {
       KeyFrame::mNumKeyFramesMap1++;
@@ -55,6 +56,7 @@ KeyFrame::KeyFrame(Frame &F, mapptr pMap, dbptr pKFDB, commptr pComm, eSystemSta
       KeyFrame::mNumKeyFramesMap2++;
       std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
     }
+    */
 }
 
 KeyFrame::KeyFrame(bool NonUsedValue, mapptr pMap, eSystemState SysState) //the "NonUsedValue" is for safety, to not accidentally construct emtpy objects
@@ -76,6 +78,7 @@ KeyFrame::KeyFrame(bool NonUsedValue, mapptr pMap, eSystemState SysState) //the 
 {
     //pass map to KF to be able to erase itself from KF buffer
 
+    /*
     std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
     if(0 == mOrigClientId) {
       KeyFrame::mNumKeyFramesMap1++;
@@ -84,6 +87,7 @@ KeyFrame::KeyFrame(bool NonUsedValue, mapptr pMap, eSystemState SysState) //the 
       KeyFrame::mNumKeyFramesMap2++;
       std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
     }
+    */
 }
 
 KeyFrame& KeyFrame::operator=(KeyFrame&& rhs)
@@ -121,6 +125,7 @@ KeyFrame& KeyFrame::operator=(KeyFrame&& rhs)
       mbLoopCorrected = move(rhs.mbLoopCorrected);
       mOrigClientId = rhs.mOrigClientId;
 
+			/*
 			std::cout << "KeyFrame::KeyFrame: mFrameId: " << mFrameId.first << " mOrigMapId: " << mOrigClientId << std::endl;
 			if(0 == mOrigClientId) {
 				KeyFrame::mNumKeyFramesMap1++;
@@ -129,6 +134,7 @@ KeyFrame& KeyFrame::operator=(KeyFrame&& rhs)
 				KeyFrame::mNumKeyFramesMap2++;
 				std::cout << "KeyFrame::KeyFrame: NumKeyFrames Map 2: " << KeyFrame::mNumKeyFramesMap2 << std::endl;
 			}
+			*/
 }
 
 KeyFrame::KeyFrame(macslam_msgs::macKeyFrame* pMsg, g2o::Sim3 mg2oS_wcurmap_wclientmap, g2o::Sim3 mg2oS_loop, vocptr pVoc, mapptr pMap, dbptr pKFDB, commptr pComm,
