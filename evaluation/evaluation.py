@@ -89,6 +89,16 @@ slam_coordinates_1 = np.vstack((slam_coordinates_1, array_slam_1_y))
 slam_coordinates_1 = np.vstack((slam_coordinates_1, array_slam_1_z))
 slam_coordinates_1 = slam_coordinates_1.transpose()
 
+# Transform SLAM points according to calibration transformation
+R_cam_marker = np.array([[0.99858239, -0.00736774, -0.05271548],
+                         [0.00682177, 0.99992129, -0.01052936],
+                         [0.05278891, 0.01015482, 0.99855406]])
+t_cam_marker = np.array([-0.00604897, 0.05317244, 0.04223419])
+R_marker_cam = R_cam_marker.transpose()
+t_marker_cam = -t_cam_marker
+slam_coordinates_1[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_1[:,1:4]))) + t_marker_cam
+
+
 # Sort timings
 slam_coordinates_1 = slam_coordinates_1[slam_coordinates_1[:, 0].argsort()]
 #slam_coordinates_1 = slam_coordinates_1[np.argsort(slam_coordinates_1[:, 0])]
@@ -118,6 +128,9 @@ slam_coordinates_2 = np.vstack((array_slam_2_timestamp, array_slam_2_x))
 slam_coordinates_2 = np.vstack((slam_coordinates_2, array_slam_2_y))
 slam_coordinates_2 = np.vstack((slam_coordinates_2, array_slam_2_z))
 slam_coordinates_2 = slam_coordinates_2.transpose()
+
+# Transform SLAM points according to calibration transformation
+slam_coordinates_2[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_2[:,1:4]))) + t_marker_cam
 
 # Sort timings
 slam_coordinates_2 = slam_coordinates_2[slam_coordinates_2[:, 0].argsort()]
@@ -177,7 +190,7 @@ slam_2 = slam_2[~(slam_2 == 0).all(1)]
 leica_2 = leica_2[~(leica_2 == 0).all(1)]
 
 # Get transformation for alignement
-s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:40,1:4], slam_1[0:40,1:4])
+s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:50,1:4], slam_1[0:50,1:4])
 # Transform slam output
 slam_1_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_1[:,1:4]))) + gt_t_gt_es_1
 slam_1_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_1[:,1:4]))) + gt_t_gt_es_1
