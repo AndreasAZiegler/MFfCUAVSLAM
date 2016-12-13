@@ -1,3 +1,4 @@
+#include <set>
 #include <macslam/MapMatcher.h>
 
 namespace macslam {
@@ -650,7 +651,7 @@ namespace macslam {
     CovMsgCM.color.b = 0.0;
     CovMsgCM.color.a = 1.0;
     CovMsgCM.action = visualization_msgs::Marker::ADD;
-    CovMsgCM.scale.x = MarkerSize;
+    CovMsgCM.scale.x = MarkerSize/10;
     CovMsgCM.id = 1;
 
     CovMsgC.points.clear();
@@ -660,6 +661,11 @@ namespace macslam {
     vector<kfptr> vpKFs = pMap->GetAllKeyFrames();
     size_t MaxVal = pMap->GetMaxKFidUnique() + 1;
     vector<vector<bool>> CovMat(MaxVal, vector<bool>(MaxVal, false));
+
+    std::set<size_t> keyFrameFirstMapM;
+    std::set<size_t> keyFrameSecondMapM;
+    std::set<size_t> keyFrameFirstMapC;
+    std::set<size_t> keyFrameSecondMapC;
 
     for(vector<kfptr>::iterator vit = vpKFs.begin(); vit != vpKFs.end(); ++vit) {
       if(((*vit)->IsEmpty()) || ((*vit)->isBad())) {
@@ -717,13 +723,25 @@ namespace macslam {
         }
 
         if(suAssClientsC.count(pKF->mId.second) && suAssClientsC.count(pCon->mId.second)) {
-          CovMsgC.points.push_back(p1);
-          CovMsgC.points.push_back(p2);
+          // Only add key frames of the simple trajectory without the in-trajectory visibility.
+          if((0 == keyFrameFirstMapC.count(pKF->mId.first)) && (0 == keyFrameSecondMapC.count(pCon->mId.first)) && (pCon->mId.first > pKF->mId.first)) {
+            CovMsgC.points.push_back(p1);
+            CovMsgC.points.push_back(p2);
 
+            keyFrameFirstMapC.insert(pKF->mId.first);
+            keyFrameSecondMapC.insert(pCon->mId.first);
+            std::cout << "Added CovMsgC!" << std::endl;
+          }
         } else if(suAssClientsM.count(pKF->mId.second) && suAssClientsM.count(pCon->mId.second)) {
-          CovMsgM.points.push_back(p1);
-          CovMsgM.points.push_back(p2);
+          // Only add key frames of the simple trajectory without the in-trajectory visibility.
+          if((0 == keyFrameFirstMapM.count(pKF->mId.first)) && (0 == keyFrameSecondMapM.count(pCon->mId.first)) && (pCon->mId.first > pKF->mId.first)) {
+            CovMsgM.points.push_back(p1);
+            CovMsgM.points.push_back(p2);
 
+            keyFrameFirstMapM.insert(pKF->mId.first);
+            keyFrameSecondMapM.insert(pCon->mId.first);
+            std::cout << "Added CovMsgM!" << std::endl;
+          }
         } else {
           CovMsgCM.points.push_back(p1);
           CovMsgCM.points.push_back(p2);
