@@ -47,13 +47,19 @@ with open('export_leica.csv', 'rt') as csvfile:
   reader = csv.reader(csvfile, delimiter=';')
   for row in reader:
     if int(row[0]) == 0:
-      list_leica_timestamp_1.append(1000*(float(row[1])) + 32.8)
+      # Rack
+      #list_leica_timestamp_1.append(1000*(float(row[1])) + 32.8)
+      # UAV
+      list_leica_timestamp_1.append(1000*(float(row[1])) + 41.8)
       list_leica_x_1.append(float(row[2]))
       list_leica_y_1.append(float(row[3]))
       list_leica_z_1.append(float(row[4]))
       #print(row[3] + ", " + row[4] + ", " + row[5])
     elif int(row[0]) == 1:
-      list_leica_timestamp_2.append(1000*(float(row[1])) + 32.8)
+      # Rack
+      #list_leica_timestamp_2.append(1000*(float(row[1])) + 32.8)
+      # UAV
+      list_leica_timestamp_2.append(1000*(float(row[1])) + 41.8)
       list_leica_x_2.append(float(row[2]))
       list_leica_y_2.append(float(row[3]))
       list_leica_z_2.append(float(row[4]))
@@ -90,10 +96,18 @@ slam_coordinates_1 = np.vstack((slam_coordinates_1, array_slam_1_z))
 slam_coordinates_1 = slam_coordinates_1.transpose()
 
 # Transform SLAM points according to calibration transformation
+# Rack
+"""
 R_cam_marker = np.array([[0.99858239, -0.00736774, -0.05271548],
                          [0.00682177, 0.99992129, -0.01052936],
                          [0.05278891, 0.01015482, 0.99855406]])
 t_cam_marker = np.array([-0.00604897, 0.05317244, 0.04223419])
+"""
+# UAV
+R_cam_marker = np.array([[-0.02680569, -0.38553653, 0.92230312],
+                         [-0.99927546, -0.01460280, -0.03514699],
+                         [0.02701865, -0.92257701, -0.38486576]])
+t_cam_marker = np.array([0.08020492, -0.05702338, -0.12186974])
 R_marker_cam = R_cam_marker.transpose()
 t_marker_cam = -t_cam_marker
 slam_coordinates_1[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_1[:,1:4]))) + t_marker_cam
@@ -190,7 +204,7 @@ slam_2 = slam_2[~(slam_2 == 0).all(1)]
 leica_2 = leica_2[~(leica_2 == 0).all(1)]
 
 # Get transformation for alignement
-s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[0:50,1:4], slam_1[0:50,1:4])
+s_1, R_gt_es_1, gt_t_gt_es_1 = align_sim3(leica_1[:,1:4], slam_1[:,1:4])
 # Transform slam output
 slam_1_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_1[:,1:4]))) + gt_t_gt_es_1
 slam_1_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_1[:,1:4]))) + gt_t_gt_es_1
