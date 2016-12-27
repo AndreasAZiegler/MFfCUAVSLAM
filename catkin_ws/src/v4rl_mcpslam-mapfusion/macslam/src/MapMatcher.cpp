@@ -1,4 +1,5 @@
 #include <set>
+#include <chrono>
 #include <macslam/MapMatcher.h>
 
 namespace macslam {
@@ -472,23 +473,48 @@ namespace macslam {
       std::shared_ptr<g2o::Sim3> g2oScw = std::make_shared<g2o::Sim3>();
 
       // Vector with MapMatchHits
-      vector<MapMatchHit> vMatches = mFoundMatches[mpCurrMap][pMatchedMap];
+      std::vector<MapMatchHit> vMatches = mFoundMatches[mpCurrMap][pMatchedMap];
 
       // Merge maps with the first match
-      mapptr pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches.back(), g2oScw);
+      boost::shared_ptr<Map> pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches.back(), g2oScw);
+
+      // Remove redundant key frames
+      for(auto i : vMatches) {
+        KeyFrameCulling(i.mpKFCurr, i.mpKFMatch);
+        //MapPointCulling(i.mvpLoopMapPoints, i.mvpCurrentMatchedPoints);
+      }
+
       // Remove first match as the map points of the first match will already be fused by the map merge
       vMatches.pop_back();
       vMatches.shrink_to_fit();
 
-      // Perform local optimization on the remaining matches
+      auto start_lmpf = chrono::steady_clock::now();
+
+      // Perform local map point fusion on the remaining matches
       mpMapMerger->localMapPointFusion(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
+
+			auto end_lmpf = chrono::steady_clock::now();
+			auto diff_lmpf = end_lmpf - start_lmpf;
+			std::cout << "local map point fusion timing: " << chrono::duration <double, milli> (diff_lmpf).count() << " ms" << endl;
+
+			auto start_oeg = chrono::steady_clock::now();
 
       // Perform essential graph optimization
       mpMapMerger->optimizeEssentialGraph(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
 
+			auto end_oeg = chrono::steady_clock::now();
+			auto diff_oeg = end_oeg - start_oeg;
+			std::cout << "optimize essential graph timing: " << chrono::duration <double, milli> (diff_oeg).count() << " ms" << endl;
+
+			auto start_gba = chrono::steady_clock::now();
+
       // Perform global bundle adjustment
       mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches, g2oScw);
-    }
+
+			auto end_gba = chrono::steady_clock::now();
+			auto diff_gba = end_gba - start_gba;
+			std::cout << "global bundle adjustment timing: " << chrono::duration <double, milli> (diff_gba).count() << " ms" << endl;
+		}
 
     this->ClearLoopEdges();
   }
@@ -549,6 +575,134 @@ namespace macslam {
     mMapMatchEdgeMsg.action = 3;
     mPubMarker.publish(mMapMatchEdgeMsg);
     mMapMatchEdgeMsg.action = visualization_msgs::Marker::ADD;
+  }
+
+  void MapMatcher::KeyFrameCulling(boost::shared_ptr<KeyFrame> mpCurrentKF, boost::shared_ptr<KeyFrame> mpMatchedKF) {
+    //    unique_lock<mutex> lock1(mpMap->mMutexMapUpdate);
+
+    // Check redundant keyframes (only local keyframes)
+    // A keyframe is considered redundant if the 90% of the MapPoints it sees, are seen
+    // in at least other 3 keyframes (in the same or finer scale)
+    // We only consider close stereo points
+    std::vector<boost::shared_ptr<KeyFrame>> vpLocalCurrentKeyFrames = mpCurrentKF->GetVectorCovisibleKeyFrames();
+    std::vector<boost::shared_ptr<KeyFrame>> vpLocalMatchedKeyFrames = mpMatchedKF->GetVectorCovisibleKeyFrames();
+
+    vpLocalCurrentKeyFrames.insert(std::end(vpLocalCurrentKeyFrames), std::begin(vpLocalMatchedKeyFrames), std::end(vpLocalMatchedKeyFrames));
+    /*
+    for(auto it : mpMatchedKF->GetVectorCovisibleKeyFrames()) {
+      vpLocalKeyFrames.push_back(it);
+    }
+    */
+
+    vpLocalCurrentKeyFrames.push_back(mpCurrentKF);
+
+    for(std::vector<boost::shared_ptr<KeyFrame>>::iterator vit = vpLocalCurrentKeyFrames.begin(), vend = vpLocalCurrentKeyFrames.end(); vit != vend; vit++) {
+      kfptr pKF = *vit;
+      if(pKF->isBad()) {
+        continue;
+      }
+
+      if(0 == pKF->mId.first) {
+        continue;
+      }
+
+      const vector<boost::shared_ptr<MapPoint>> vpMapPoints = pKF->GetMapPointMatches();
+
+      int nObs = 3;
+      const int thObs = nObs;
+      int nRedundantObservations = 0;
+      int nMPs = 0;
+
+      for(size_t i = 0, iend = vpMapPoints.size(); i < iend; i++) {
+        boost::shared_ptr<MapPoint> pMP = vpMapPoints[i];
+
+        if(pMP) {
+          if(!pMP->isBad()) {
+
+            /*
+            if(!mbMonocular) {
+              if(pKF->mvDepth[i]>pKF->mThDepth || pKF->mvDepth[i]<0) {
+                continue;
+              }
+            }
+            */
+
+            nMPs++;
+
+            if(pMP->Observations() > thObs) {
+              const int &scaleLevel = pKF->mvKeysUn[i].octave;
+              const map<boost::shared_ptr<KeyFrame>, size_t> observations = pMP->GetObservations();
+              int nObs = 0;
+
+              for(map<boost::shared_ptr<KeyFrame>, size_t>::const_iterator mit = observations.begin(), mend = observations.end(); mit != mend; mit++) {
+                boost::shared_ptr<KeyFrame> pKFi = mit->first;
+
+                if(pKFi->isBad()) {
+                  continue;
+                }
+
+                if(pKFi == pKF) {
+                  continue;
+                }
+
+                const int &scaleLeveli = pKFi->mvKeysUn[mit->second].octave;
+
+                if(scaleLeveli <= scaleLevel + 1) {
+                  nObs++;
+
+                  if(nObs >= thObs) {
+                    break;
+                  }
+                }
+              }
+
+              if(nObs >= thObs) {
+                nRedundantObservations++;
+              }
+            }
+          }
+        }
+      }
+
+      //if(nRedundantObservations > (mRedundancyThres * nMPs)) {
+      if(nRedundantObservations > (0.9 * nMPs)) {
+        pKF->SetBadFlag();
+      }
+    }
+  }
+
+	void MapMatcher::MapPointCulling(std::vector<boost::shared_ptr<MapPoint>> mvpLoopMapPoints, std::vector<boost::shared_ptr<MapPoint>> mvpCurrentMatchedPoints) {
+		// Check map point of the current match
+		std::vector<boost::shared_ptr<MapPoint>> mvpMatchMapPoints = mvpLoopMapPoints;
+		mvpMatchMapPoints.insert(std::end(mvpMatchMapPoints), std::begin(mvpCurrentMatchedPoints), std::end(mvpCurrentMatchedPoints));
+
+		std::vector<boost::shared_ptr<MapPoint>>::iterator lit = mvpMatchMapPoints.begin();
+		//const idpair nCurrentKFid = mpCurrentKeyFrame->mId;
+
+    int nThObs = 3;
+    const int cnThObs = nThObs;
+
+    while(lit != mvpMatchMapPoints.end()) {
+      mpptr pMP = *lit;
+
+      if(pMP->isBad()) {
+        lit = mvpMatchMapPoints.erase(lit);
+
+      } else if(pMP->GetFoundRatio() < 0.25f ) {
+        pMP->SetBadFlag();
+        lit = mvpMatchMapPoints.erase(lit);
+
+      } /*else if(((int)nCurrentKFid.first - (int)pMP->mFirstKfId.first) >= 2 && nCurrentKFid.second != pMP->mFirstFrame.second && pMP->Observations() <= cnThObs) {
+        pMP->SetBadFlag();
+        lit = mlpRecentAddedMapPoints.erase(lit);
+
+      } else if(((int)nCurrentKFid.first - (int)pMP->mFirstKfId.first) >= 3) {
+        lit = mlpRecentAddedMapPoints.erase(lit);
+
+      }*/ else {
+        lit++;
+      }
+    }
   }
 
   void MapMatcher::InsertKF(kfptr pKF) {
@@ -730,7 +884,7 @@ namespace macslam {
 
             keyFrameFirstMapC.insert(pKF->mId.first);
             keyFrameSecondMapC.insert(pCon->mId.first);
-            std::cout << "Added CovMsgC!" << std::endl;
+            //std::cout << "Added CovMsgC!" << std::endl;
           }
         } else if(suAssClientsM.count(pKF->mId.second) && suAssClientsM.count(pCon->mId.second)) {
           // Only add key frames of the simple trajectory without the in-trajectory visibility.
@@ -740,7 +894,7 @@ namespace macslam {
 
             keyFrameFirstMapM.insert(pKF->mId.first);
             keyFrameSecondMapM.insert(pCon->mId.first);
-            std::cout << "Added CovMsgM!" << std::endl;
+            //std::cout << "Added CovMsgM!" << std::endl;
           }
         } else {
           CovMsgCM.points.push_back(p1);
@@ -752,9 +906,11 @@ namespace macslam {
       }
     }
 
+    /*
     cout << "Publishing Merged Cov Graph Eges CC with " << CovMsgC.points.size() << " points" << endl;
     cout << "Publishing Merged Cov Graph MM with " << CovMsgM.points.size() << " points" << endl;
     cout << "Publishing Merged Cov Graph CM with " << CovMsgCM.points.size() << " points" << endl;
+    */
 
     mPubMarker.publish(CovMsgC);
     mPubMarker.publish(CovMsgM);
