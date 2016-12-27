@@ -454,7 +454,7 @@ void KeyFrame::UpdateBestCovisibles()
         lWs.push_front(vPairs[i].first);
     }
 
-    mvpOrderedConnectedKeyFrames = vector<kfptr>(lKFs.begin(),lKFs.end());
+    mvpOrderedConnectedKeyFrames = vector<kfptr>(lKFs.begin(), lKFs.end());
     mvOrderedWeights = vector<int>(lWs.begin(), lWs.end());
 }
 
@@ -863,12 +863,15 @@ void KeyFrame::SetBadFlag()
         }
     }
 
-    for(map<kfptr,int>::iterator mit = mConnectedKeyFrameWeights.begin(), mend=mConnectedKeyFrameWeights.end(); mit!=mend; mit++)
+    for(map<kfptr,int>::iterator mit = mConnectedKeyFrameWeights.begin(), mend=mConnectedKeyFrameWeights.end(); mit!=mend; mit++) {
         mit->first->EraseConnection(this->shared_from_this());
+    }
 
-    for(size_t i=0; i<mvpMapPoints.size(); i++)
-        if(mvpMapPoints[i])
+    for(size_t i=0; i<mvpMapPoints.size(); i++) {
+        if(mvpMapPoints[i]) {
             mvpMapPoints[i]->EraseObservation(this->shared_from_this());
+        }
+    }
     {
         unique_lock<mutex> lock(mMutexConnections);
         unique_lock<mutex> lock1(mMutexFeatures);
