@@ -70,6 +70,9 @@ private:
     void PublishLoopEdges();
     void ClearLoopEdges();
 
+    void KeyFrameCulling(boost::shared_ptr<KeyFrame> mpCurrentKF, boost::shared_ptr<KeyFrame> mpMatchedKF);
+    void MapPointCulling(std::vector<boost::shared_ptr<MapPoint>> mvpLoopMapPoints, std::vector<boost::shared_ptr<MapPoint>> mvpCurrentMatchedPoints);
+
     //Reset
     void ResetIfRequested();
     bool mbResetRequested;
