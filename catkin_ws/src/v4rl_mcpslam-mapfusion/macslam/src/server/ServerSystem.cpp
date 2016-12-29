@@ -159,6 +159,8 @@ void ServerSystem::InitializeMapMatcher()
     mNhPrivate.param("SkipKeyframeNumber",MMParams.mKFsToSkip,10);
     mNhPrivate.param("LoopLockSleep",MMParams.mLockSleep,1000);
 
+    mNhPrivate.param("KfCullingWhileMergingRedundancyThres", MMParams.mKeyFrameRedThreshold, 0.9);
+
     cout << "Server Map Matcher Params: " << endl;
     cout << "KFs to skip: " << MMParams.mKFsToSkipAtStart << endl;
     cout << "Solver Iterations: " << MMParams.mSolverIterations << endl;

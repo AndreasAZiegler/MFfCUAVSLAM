@@ -101,12 +101,12 @@ struct MapMatchingParams
                       int MatchesThres = 20, int InliersThres = 20, int TotalMatchesThres = 40,
                       double prob = 0.99, int minInliers = 6, int maxIterations = 300,
                       int minHitsForMerge = 3, int GBAIterations = 20,
-                      int KFsToSkipAtStart = 10,int KFsToSkip = 10, int LockSleep = 1000)
+                      int KFsToSkipAtStart = 10,int KFsToSkip = 10, int LockSleep = 1000, float KeyFrameRedThreshold = 0.9)
         : mSolverIterations(SolverIterations),
           mMatchesThres(MatchesThres), mInliersThres(InliersThres), mTotalMatchesThres(TotalMatchesThres),
           mProbability(prob), mMinInliers(minInliers), mMaxIterations(maxIterations),
           mMinHitsForMerge(minHitsForMerge), mGBAIterations(GBAIterations),
-          mKFsToSkipAtStart(KFsToSkipAtStart), mLockSleep(LockSleep)
+          mKFsToSkipAtStart(KFsToSkipAtStart), mLockSleep(LockSleep), mKeyFrameRedThreshold(KeyFrameRedThreshold)
           {}
     int mSolverIterations;
     int mMatchesThres; //matches that need to be found by SearchByBoW()
@@ -123,6 +123,8 @@ struct MapMatchingParams
     int mGBAIterations;
     //Timing
     int mLockSleep;
+    //Key frame cullin
+    double mKeyFrameRedThreshold;
 };
 
 } //end namespace

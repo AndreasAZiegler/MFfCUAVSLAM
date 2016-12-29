@@ -10,7 +10,8 @@ namespace macslam {
       mLastLoopKFid(0), mbResetRequested(false),
       mMMParams(MMParams),
       mbFixScale(false),
-      mKFcount(0){
+      mKFcount(0)
+  {
     mNhPrivate.param("MapMatchRate", mMapMatchRate, 5000);
 
     if(pMap0) {
@@ -665,7 +666,7 @@ namespace macslam {
       }
 
       //if(nRedundantObservations > (mRedundancyThres * nMPs)) {
-      if(nRedundantObservations > (0.9 * nMPs)) {
+      if(nRedundantObservations > (mMMParams.mKeyFrameRedThreshold * nMPs)) {
         pKF->SetBadFlag();
       }
     }
