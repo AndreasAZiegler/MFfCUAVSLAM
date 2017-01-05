@@ -196,20 +196,20 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
   ax1.set_zlim(mid_z - max_range, mid_z + max_range)
 
   fig = plt.figure()
-  fig.suptitle('Choosen Leica points Map 1')
+  fig.suptitle('Choosen ground truth points Map 1')
   ax2 = fig.add_subplot(111, projection='3d')
   ax2.set_xlabel('X')
   ax2.set_ylabel('Y')
   ax2.set_zlabel('Z')
-  legend_all = ax2.scatter(list_gt_x_1[:], list_gt_y_1[:], list_gt_z_1[:], c='green', label='All leica points')
+  legend_all = ax2.scatter(list_gt_x_1[:], list_gt_y_1[:], list_gt_z_1[:], c='green', label='All ground truth points')
   for i in range(0, 1):
     ax2.text(list_gt_x_1[i], list_gt_y_1[i], list_gt_z_1[i], '%s' % (list_gt_timestamp_1[i]), size=20, zorder=1)
-  legend_matched = ax2.scatter(gt_1[:, 1], gt_1[:, 2], gt_1[:, 3], c='red', s=100, label='Matched leica points')
+  legend_matched = ax2.scatter(gt_1[:, 1], gt_1[:, 2], gt_1[:, 3], c='red', s=100, label='Matched ground truth points')
   for i in range(len(slam_1_transformed[:,0])):
     if i%4 == 0:
       ax2.text(gt_1[i, 1], gt_1[i, 2], gt_1[i, 3], '%s' % (i), size=20, zorder=1)
-  #legend_all = ax2.plot(list_gt_x_1[0:5*50], list_gt_y_1[0:5*50], list_gt_z_1[0:5*50], c='green', label='All leica points')
-  #legend_matched = ax2.plot(gt_1[0:50,1], gt_1[0:50,2], gt_1[0:50,3], c='red', label='Matched leica points')
+  #legend_all = ax2.plot(list_gt_x_1[0:5*50], list_gt_y_1[0:5*50], list_gt_z_1[0:5*50], c='green', label='All ground truth points')
+  #legend_matched = ax2.plot(gt_1[0:50,1], gt_1[0:50,2], gt_1[0:50,3], c='red', label='Matched ground truth points')
   # Make scaling equal
   max_range = np.array([gt_1[:, 1].max() - gt_1[:, 1].min(), gt_1[:, 2].max() - gt_1[:, 2].min(), gt_1[:, 3].max() - gt_1[:, 3].min()]).max() / 2.0
   mid_x = (gt_1[:, 1].max() + gt_1[:, 1].min()) * 0.5
@@ -221,13 +221,13 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
   plt.legend(handles=[legend_all, legend_matched])
 
   fig = plt.figure()
-  fig.suptitle('Choosen Leica points Map 2')
+  fig.suptitle('Choosen ground truth points Map 2')
   ax2 = fig.add_subplot(111, projection='3d')
   ax2.set_xlabel('X')
   ax2.set_ylabel('Y')
   ax2.set_zlabel('Z')
-  legend_all = ax2.scatter(list_gt_x_2, list_gt_y_2, list_gt_z_2, c='green', label='All leica points')
-  legend_matched = ax2.scatter(gt_2[:, 1], gt_2[:, 2], gt_2[:, 3], c='red', s=100, label='Matched leica points')
+  legend_all = ax2.scatter(list_gt_x_2, list_gt_y_2, list_gt_z_2, c='green', label='All ground truth points')
+  legend_matched = ax2.scatter(gt_2[:, 1], gt_2[:, 2], gt_2[:, 3], c='red', s=100, label='Matched ground truth points')
   # Make scaling equal
   max_range = np.array([gt_2[:, 1].max() - gt_2[:, 1].min(), gt_2[:, 2].max() - gt_2[:, 2].min(), gt_2[:, 3].max() - gt_2[:, 3].min()]).max() / 2.0
   mid_x = (gt_2[:, 1].max() + gt_2[:, 1].min()) * 0.5
@@ -239,7 +239,7 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
   plt.legend(handles=[legend_all, legend_matched])
 
   fig = plt.figure()
-  fig.suptitle('Leica and SLAM transformed Map 1')
+  fig.suptitle('Ground truth and SLAM transformed Map 1')
   ax3 = fig.add_subplot(111, projection='3d')
   ax3.set_xlabel('X')
   ax3.set_ylabel('Y')
@@ -252,13 +252,13 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
   """
   #legend_slam = ax3.plot(slam_1_transformed[:100,0], slam_1_transformed[0:100,1], slam_1_transformed[0:100,2], c='blue', label='SLAM transformed')
   #legend_slam = ax3.scatter(slam_1[:,0], slam_1[:,1], slam_1[:,2], c='blue', label='SLAM transformed')
-  legend_leica = ax3.scatter(gt_1[:, 1], gt_1[:, 2], gt_1[:, 3], c='red', label='Leica')
+  legend_gt = ax3.scatter(gt_1[:, 1], gt_1[:, 2], gt_1[:, 3], c='red', label='ground truth')
   """
   for i in range(len(gt_1[:,1])):
     if i%4 == 0:
       ax3.text(gt_1[i,1], gt_1[i,2], gt_1[i,3], '%s' % (i), size=20, zorder=1)
   """
-  #legend_leica = ax3.plot(gt_1[0:100,1], gt_1[0:100,2], gt_1[0:100,3], c='red', label='Leica')
+  #legend_gt = ax3.plot(gt_1[0:100,1], gt_1[0:100,2], gt_1[0:100,3], c='red', label='ground truth')
 
   # Make scaling equal
   max_range = np.array([gt_1[:, 1].max() - gt_1[:, 1].min(), gt_1[:, 2].max() - gt_1[:, 2].min(), gt_1[:, 3].max() - gt_1[:, 3].min()]).max() / 2.0
@@ -269,11 +269,11 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
   ax3.set_ylim(mid_y - max_range, mid_y + max_range)
   ax3.set_zlim(mid_z - max_range, mid_z + max_range)
 
-  plt.legend(handles=[legend_slam, legend_leica])
+  plt.legend(handles=[legend_slam, legend_gt])
 
 
   fig = plt.figure()
-  fig.suptitle('Leica and SLAM transformed Map 2')
+  fig.suptitle('Ground truth and SLAM transformed Map 2')
   ax4 = fig.add_subplot(111, projection='3d')
   ax4.scatter(slam_2_transformed[:,0], slam_2_transformed[:,1], slam_2_transformed[:,2], c='blue')
   #ax4.plot(slam_2_transformed[0:100,0], slam_2_transformed[0:100,1], slam_2_transformed[0:100,2], c='blue')
@@ -326,7 +326,7 @@ if __name__ == '__main__':
 
   list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2 = open_ground_truth()
 
-  offset = 42.4
+  offset = 42.2
   list_gt_timestamp_1 = time_offset(list_gt_timestamp_1, offset)
   list_gt_timestamp_2 = time_offset(list_gt_timestamp_2, offset)
 
