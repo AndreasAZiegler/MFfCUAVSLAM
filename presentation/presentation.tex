@@ -27,10 +27,11 @@
 \usepackage{pgfpages}
 
 \usepackage{tikz}
+\usetikzlibrary{er,positioning}
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage{xcolor}
-\usetikzlibrary{er,positioning}
+\usepackage[acronym]{glossaries}
 
 %\usepackage{natbib}
 \bibliographystyle{apalike}
@@ -70,6 +71,8 @@
 		\parsep    0\p@   \@plus\p@
 		\itemsep   #2}}
 \makeatother
+
+\newacronym{KF}{KF}{key frame}
 
 \begin{document}
 
@@ -123,13 +126,13 @@
 \frame{ \frametitle{Motivation}
 	\begin{itemize}
   \visible<1-4>{
-  \item Using multiple key frame matches to guarantee no false map merging
+\item Using multiple \gls{KF} matches to guarantee no false map merging
   }
   \visible<2-4>{
-  \item Using multiple key frame matches to obtain an optimal map alignment
+  \item Using multiple \gls{KF} matches to obtain an optimal map alignment
   }
   \visible<3-4>{
-  \item Perform key frame culling to remove redundant information as bundle adjustment complexity grows with the number of key frames
+  \item Perform \gls{KF} culling to remove redundant information as bundle adjustment complexity grows with the number of \gls{KF}
   }
   \visible<4>{
   \item A multi agent SLAM system based on ORB-SLAM2 should be extended
@@ -146,7 +149,7 @@
 \frame{	\frametitle{Map merging - Old approach}
    Old approach:
 	\begin{itemize}
-    \item As soon as a key frame match was detected, maps were merged
+    \item As soon as a \gls{KF} match was detected, maps were merged
 	\end{itemize}
 }
 
@@ -156,13 +159,13 @@
   New approach:
 	\begin{enumerate}
     \pause
-    \item After a keyframe match is found skip $m$ keyframes before processing the next keyframe match
+  \item After a \gls{KF} match is found skip $m$ \gls{KF} before processing the next \gls{KF} match
     \pause
-    \item Wait for $n$ key frame matches
+  \item Wait for $n$ \gls{KF} matches
     \pause
-    \item Merge the two maps with the transformation of one of the keyframe matches
+  \item Merge the two maps with the transformation of one of the \gls{KF} matches
     \pause
-    \item Fuse map points in the ($n-1$) keyframe matches
+  \item Fuse map points in the ($n-1$) \gls{KF} matches
     \pause
     \item Pose graph optimization over essential graph
     \pause
@@ -173,7 +176,7 @@
 \frame{
   \frametitle{Map merging - New approach}
   \only<1>{
-  Find $n$ keyframe matches
+  Find $n$ \gls{KF} matches
   \begin{center}
   \begin{tikzpicture}
     \coordinate (A1) at (0, 3);
@@ -345,12 +348,12 @@
 
 \subsection{Results}
 \frame{
-  \frametitle{Map merging - Results - skipping of key frames}
-  \textcolor{green}{green}: Covisibility graph of first map\\ \textcolor{yellow}{yellow}: Covisibility graph of second map\\ \textcolor{red}{red}: Covisibility between the key frame matches
+  \frametitle{Map merging - Results - skipping of \gls{KF}}
+  \textcolor{green}{green}: Covisibility graph of first map\\ \textcolor{yellow}{yellow}: Covisibility graph of second map\\ \textcolor{red}{red}: Covisibility between the \gls{KF} matches
   \begin{figure}[H]
     \centering
-    \subcaptionbox{1 key frame skipped after a kf match}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
-  \subcaptionbox{10 key frame skipped after a kf match}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
+    \subcaptionbox{1 \gls{KF} skipped after a \gls{KF} match}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
+    \subcaptionbox{10 \gls{KF} skipped after a \gls{KF} match}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
   \end{figure}
 }
 
@@ -368,17 +371,27 @@
 \frame{\tableofcontents[currentsection]}
 
 \frame{
-  \frametitle{Culling - Remove redundant key frames}
+  \frametitle{Culling - Remove redundant \gls{KF}}
   \begin{itemize}
-    \item Remove redundant key frames after $n$ key frame matches were found
-    \item{Performs culling for every key frame match separately
+    \visible<1-4>{
+    \item Remove redundant \gls{KF} after $n$ \gls{KF} matches were found
+    }
+    \visible<2-4>{
+    \item{Performs culling for every \gls{KF} match separately
+    }
       \begin{itemize}
-        \item Check key frames which are directly connected to one of the key frames in the co-visibility graph
+        \visible<3-4>{
+        \item Check \gls{KF}s which are directly connected to one of the \gls{KF}s in the co-visibility graph
+        }
+        \visible<4>{
+        \item If x\% of the observations of a \gls{KF} are also observed in another \gls{KF}, this \gls{KF} will be deleted.
+        }
       \end{itemize}
     }
 
   \end{itemize}
 
+  \visible<3-4>{
   \begin{center}
     \begin{tikzpicture}[auto]
       \node[entity] (key frame match) {kf match}
@@ -393,14 +406,51 @@
           child {node[entity,minimum size=1cm] {kf 1}}
           child {node[entity,minimum size=1cm] {kf 2}}
           child {node[entity,minimum size=1cm] {kf $l$}}};
-
     \end{tikzpicture}
   \end{center}
+  }
 }
 
 \subsection{Results}
 \frame{
   \frametitle{Culling - Results}
+  PGO := pose graph optimization\\
+  GBA := global bundle adjustment\\
+
+  \begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c}
+    Culling &  \# matches & \# \gls{KF}s skipped & PGO [ms] & GBA [ms] \\ 
+    \hline 
+    No & 1 & 0 &142.25 & 163.89 \\
+    Yes & 1 & 0 & 42.01 & 72.33 \\
+    No & 10 & 10 & 532.28 & 3659.48 \\
+    Yes & 10 & 10 & 178.83 & 1098.37 \\
+    %\hline 
+  \end{tabular}
+  \end{center}
+  \caption{Time measurements of PGO and GBA without and with culling.}
+  \label{tab:results_time}
+  \end{table}
+}
+
+\frame{
+  \frametitle{Culling - Results}
+  \begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{c|c|c|c}
+    Culling &  \# matches & \# \gls{KF}s skipped & \textit{rmse} [m] \\ 
+    \hline 
+    No & 1 & 0 & 0.1310 \\
+    Yes & 1 & 0 & 0.2187 \\
+    No & 10 & 10 & 0.0961 \\
+    Yes & 10 & 10 & 0.0965 \\
+    %\hline 
+  \end{tabular}
+  \end{center}
+  \caption{\textit{rmse} without and with culling.}
+  \label{tab:results_rmse}
+  \end{table}
 }
 
 \section{Use dog leg optimizer for GBA}
@@ -408,6 +458,7 @@
 
 \frame{
   \frametitle{Use dog leg optimizer for GBA}
+  As proposed in \cite{Lourakis2005}
 }
 
 \section{Results}
