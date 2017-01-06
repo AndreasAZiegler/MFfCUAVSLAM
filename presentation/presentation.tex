@@ -72,7 +72,15 @@
 		\itemsep   #2}}
 \makeatother
 
-\newacronym{KF}{KF}{key frame}
+\newacronym{kf}{KF}{key frame}
+\newacronym{kfm}{KFM}{key frame match}
+\newacronym{ba}{BA}{bundle adjustment}
+\newacronym{gba}{GBA}{global bundle adjustment}
+\newacronym{pgo}{PGO}{pose graph optimization}
+\newacronym{lm}{LM}{Levenberg-Marquardt}
+\newacronym{dl}{DL}{Powell's dog leg}
+
+\makeglossaries
 
 \begin{document}
 
@@ -126,13 +134,13 @@
 \frame{ \frametitle{Motivation}
 	\begin{itemize}
   \visible<1-4>{
-\item Using multiple \gls{KF} matches to guarantee no false map merging
+\item Using multiple \glspl{kfm} to guarantee no false map merging
   }
   \visible<2-4>{
-  \item Using multiple \gls{KF} matches to obtain an optimal map alignment
+  \item Using multiple \glspl{kfm} to obtain an optimal map alignment
   }
   \visible<3-4>{
-  \item Perform \gls{KF} culling to remove redundant information as bundle adjustment complexity grows with the number of \gls{KF}
+  \item Perform \gls{kf} culling to remove redundant information as bundle adjustment complexity grows with the number of \gls{kf}
   }
   \visible<4>{
   \item A multi agent SLAM system based on ORB-SLAM2 should be extended
@@ -142,30 +150,34 @@
   \visible<4>{\cite{Mur-Artal2015,Mur-Artal2016}}
 }
 
+\frame{ \frametitle{Acronyms}
+  %\printglossaries
+  \printglossary[nonumberlist,type=\acronymtype]
+}
+
 \section{Map merging}
 \frame{\tableofcontents[currentsection]}
 
-\subsection{Old approach}
+\subsection{Approaches}
 \frame{	\frametitle{Map merging - Old approach}
    Old approach:
 	\begin{itemize}
-    \item As soon as a \gls{KF} match was detected, maps were merged
+    \item As soon as a \glspl{kfm} was detected, maps were merged
 	\end{itemize}
 }
 
-\subsection{New approach}
 \frame{
   \frametitle{Map merging - New approach}
   New approach:
 	\begin{enumerate}
     \pause
-  \item After a \gls{KF} match is found skip $m$ \gls{KF} before processing the next \gls{KF} match
+  \item After a \gls{kfm} is found skip $m$ \gls{kf} before processing the next \gls{kfm}
     \pause
-  \item Wait for $n$ \gls{KF} matches
+  \item Wait for $n$ \glspl{kfm}
     \pause
-  \item Merge the two maps with the transformation of one of the \gls{KF} matches
+  \item Merge the two maps with the transformation of one of the \glspl{kfm}
     \pause
-  \item Fuse map points in the ($n-1$) \gls{KF} matches
+  \item Fuse map points in the ($n-1$) \glspl{kfm}
     \pause
     \item Pose graph optimization over essential graph
     \pause
@@ -176,7 +188,7 @@
 \frame{
   \frametitle{Map merging - New approach}
   \only<1>{
-  Find $n$ \gls{KF} matches
+  Find $n$ \glspl{kfm}
   \begin{center}
   \begin{tikzpicture}
     \coordinate (A1) at (0, 3);
@@ -348,12 +360,12 @@
 
 \subsection{Results}
 \frame{
-  \frametitle{Map merging - Results - skipping of \gls{KF}}
-  \textcolor{green}{green}: Covisibility graph of first map\\ \textcolor{yellow}{yellow}: Covisibility graph of second map\\ \textcolor{red}{red}: Covisibility between the \gls{KF} matches
+  \frametitle{Map merging - Results - skipping of \gls{kf}}
+  \textcolor{green}{green}: Covisibility graph of first map\\ \textcolor{yellow}{yellow}: Covisibility graph of second map\\ \textcolor{red}{red}: Covisibility between the \glspl{kfm}
   \begin{figure}[H]
     \centering
-    \subcaptionbox{1 \gls{KF} skipped after a \gls{KF} match}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
-    \subcaptionbox{10 \gls{KF} skipped after a \gls{KF} match}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
+    \subcaptionbox{1 \gls{kf} skipped after a \gls{kfm}}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
+    \subcaptionbox{10 \gls{kf} skipped after a \gls{kfm}}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
   \end{figure}
 }
 
@@ -371,20 +383,20 @@
 \frame{\tableofcontents[currentsection]}
 
 \frame{
-  \frametitle{Culling - Remove redundant \gls{KF}}
+  \frametitle{Culling - Remove redundant \gls{kf}}
   \begin{itemize}
     \visible<1-4>{
-    \item Remove redundant \gls{KF} after $n$ \gls{KF} matches were found
+    \item Remove redundant \gls{kf} after $n$ \glspl{kfm} were found
     }
     \visible<2-4>{
-    \item{Performs culling for every \gls{KF} match separately
+    \item{Performs culling for every \gls{kfm} separately
     }
       \begin{itemize}
         \visible<3-4>{
-        \item Check \gls{KF}s which are directly connected to one of the \gls{KF}s in the co-visibility graph
+        \item Check \gls{kf}s which are directly connected to one of the \glspl{kf} in the co-visibility graph
         }
         \visible<4>{
-        \item If x\% of the observations of a \gls{KF} are also observed in another \gls{KF}, this \gls{KF} will be deleted.
+        \item If x\% of the observations of a \gls{kf} are also observed in another \gls{kf}, this \gls{kf} will be deleted.
         }
       \end{itemize}
     }
@@ -406,6 +418,10 @@
           child {node[entity,minimum size=1cm] {kf 1}}
           child {node[entity,minimum size=1cm] {kf 2}}
           child {node[entity,minimum size=1cm] {kf $l$}}};
+
+      \draw[blue,thick,dashed] (-2.25,-2.25) ellipse (1.5 and 0.5);
+      \draw[blue,thick,dashed] (2.25,-2.25) ellipse (1.5 and 0.5);
+      \draw[red,thick,dashed] (0,-2.25) ellipse (5 and 1.5);
     \end{tikzpicture}
   \end{center}
   }
@@ -414,13 +430,13 @@
 \subsection{Results}
 \frame{
   \frametitle{Culling - Results}
-  PGO := pose graph optimization\\
-  GBA := global bundle adjustment\\
+  \gls{pgo} := pose graph optimization\\
+  \gls{gba} := global bundle adjustment\\
 
   \begin{table}[ht!]
   \begin{center}
   \begin{tabular}{c|c|c|c|c}
-    Culling &  \# matches & \# \gls{KF}s skipped & PGO [ms] & GBA [ms] \\ 
+    Culling &  \# matches & \# \glspl{kf} skipped & \gls{pgo} [ms] & \gls{gba} [ms] \\ 
     \hline 
     No & 1 & 0 &142.25 & 163.89 \\
     Yes & 1 & 0 & 42.01 & 72.33 \\
@@ -429,7 +445,7 @@
     %\hline 
   \end{tabular}
   \end{center}
-  \caption{Time measurements of PGO and GBA without and with culling.}
+  \caption{Time measurements of \gls{pgo} and \gls{gba} without and with culling.}
   \label{tab:results_time}
   \end{table}
 }
@@ -439,7 +455,7 @@
   \begin{table}[ht!]
   \begin{center}
   \begin{tabular}{c|c|c|c}
-    Culling &  \# matches & \# \gls{KF}s skipped & \textit{rmse} [m] \\ 
+    Culling &  \# matches & \# \glspl{kf}s skipped & \textit{rmse} [m] \\ 
     \hline 
     No & 1 & 0 & 0.1310 \\
     Yes & 1 & 0 & 0.2187 \\
@@ -453,12 +469,57 @@
   \end{table}
 }
 
-\section{Use dog leg optimizer for GBA}
+\section{Dog leg opt.}
 \frame{\tableofcontents[currentsection]}
 
 \frame{
-  \frametitle{Use dog leg optimizer for GBA}
-  As proposed in \cite{Lourakis2005}
+  \frametitle{Use dog leg optimizer - Idea}
+  \begin{block}{}
+  Considerable computational benefits can be gained by substituting the \acrfull{lm} algorithm in the implementation of \acrfull{ba} with a variant of \acrfull{dl} non-linear least squares technique \cite{Lourakis2005}
+  \end{block}
+}
+
+\frame{
+  \frametitle{Use dog leg optimizer - Approach}
+  \begin{itemize}
+    \visible<1-4>{
+    \item Tried \acrfull{pgo} and \acrfull{gba} with the \acrfull{dl} optimizer.
+    }
+    \visible<2-4>{
+    \item \gls{pgo} performs slightly worser using the \gls{dl} optimizer instead of the \gls{lm} optimizer.
+    }
+    \visible<3-4>{
+    \item \gls{gba} performs better using the \gls{dl} optimizer instead of the \gls{lm} optimizer.
+    }
+  \end{itemize}
+
+  \visible<4>{
+  \begin{block}{Conclusion}
+    \gls{lm} optimizer for \gls{pgo} and dog leg optimizer for \gls{gba}
+  \end{block}
+  }
+}
+
+\subsection{Results}
+
+\frame{
+  \frametitle{Use dog leg optimizer - Results}
+
+  \begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c}
+    Opt. & \# matches & \# \glspl{kf} skipped & \gls{pgo} [ms] & \gls{gba} [ms] \\ 
+    \hline 
+    \gls{lm}/\gls{lm} & 1 & 0 & 43.01 & 72.33 \\
+    \gls{lm}/\gls{dl} & 1 & 0 &  &  \\
+    \gls{lm}/\gls{lm} & 10 & 10 & 178.83 & 1098.37 \\
+    \gls{lm}/\gls{dl} & 10 & 10 & 178.70 & 383.54 \\
+    %\hline 
+  \end{tabular}
+  \end{center}
+  \caption{Time measurements of \gls{lm} and \gls{dl} optimizer.}
+  \label{tab:results_dogleg_time}
+  \end{table}
 }
 
 \section{Results}
