@@ -58,7 +58,7 @@
 %\setbeameroption{show notes}
 
 \logo{\includegraphics[width=1.5cm]{gfx/eth_logo_kurz_pos}}
-\title{Semester Project}
+\title{Map Fusion for Collaborative UAV SLAM}
 \subtitle{Map Fusion for Collaborative UAV SLAM}
 \author{Andreas Ziegler}
 \institute{V4RL \\ ETH Zürich}
@@ -79,6 +79,8 @@
 \newacronym{pgo}{PGO}{pose graph optimization}
 \newacronym{lm}{LM}{Levenberg-Marquardt}
 \newacronym{dl}{DL}{Powell's dog leg}
+\newacronym{slam}{SLAM}{Simultaneous Localisation and Mapping}
+\newacronym{uav}{UAV}{Unmanned aerial vehicle}
 
 \makeglossaries
 
@@ -106,17 +108,17 @@
 \frame{ \frametitle{Introduction}
 	\begin{itemize}
 	\visible<1-5>{
-	\item SLAM is one of the most important challenges for robots to be autonomous.
+  \item \glspl{slam} is one of the most important challenges for robots to be autonomous.
 	}
 	\visible<2-5>{
-	\item For a team of UAVs collaboratively performing tasks, a common map is required
+  \item For a team of \glspl{uav} collaboratively performing tasks, a common map is required
   }
-	\visible<3-5>{
+  \visible<3-5>{
+  \item To build a common map from the maps of the \glspl{uav}, the maps need to be merged
+  }
+	\visible<4-5>{
 	\item To merge two maps, the alignment of them has to be found
 	}
-  \visible<4-5>{
-  \item To build a common map from the maps of the UAVs, the maps need to be merged
-  }
 	\visible<5>{	
 	\item Redundant information should be removed to achieve a better performance
 	}
@@ -170,25 +172,25 @@
   \frametitle{Map merging - New approach}
   New approach:
 	\begin{enumerate}
-    \pause
+  \pause
   \item After a \gls{kfm} is found skip $m$ \gls{kf} before processing the next \gls{kfm}
-    \pause
+  \pause
   \item Wait for $n$ \glspl{kfm}
-    \pause
+  \pause
   \item Merge the two maps with the transformation of one of the \glspl{kfm}
-    \pause
+  \pause
   \item Fuse map points in the ($n-1$) \glspl{kfm}
-    \pause
-    \item Pose graph optimization over essential graph
-    \pause
-    \item Global bundle adjustment
+  \pause
+  \item \acrfull{pgo} over essential graph
+  \pause
+  \item \acrfull{gba}
 	\end{enumerate}
 }
 
 \frame{
   \frametitle{Map merging - New approach}
   \only<1>{
-  Find $n$ \glspl{kfm}
+  Find $n$ \acrfull{kfm}
   \begin{center}
   \begin{tikzpicture}
     \coordinate (A1) at (0, 3);
@@ -393,7 +395,7 @@
     }
       \begin{itemize}
         \visible<3-4>{
-        \item Check \gls{kf}s which are directly connected to one of the \glspl{kf} in the co-visibility graph
+        \item Check \textcolor{red}{\glspl{kf}} which are directly connected to one of the \glspl{kf} of the \gls{kfm} by the \textcolor{blue}{co-visibility graph}
         }
         \visible<4>{
         \item If x\% of the observations of a \gls{kf} are also observed in another \gls{kf}, this \gls{kf} will be deleted.
@@ -430,13 +432,14 @@
 \subsection{Results}
 \frame{
   \frametitle{Culling - Results}
-  \gls{pgo} := pose graph optimization\\
-  \gls{gba} := global bundle adjustment\\
+  \visible<1-2>{
+  \acrfull{pgo}\\
+  \acrfull{gba}\\
 
   \begin{table}[ht!]
   \begin{center}
   \begin{tabular}{c|c|c|c|c}
-    Culling &  \# matches & \# \glspl{kf} skipped & \gls{pgo} [ms] & \gls{gba} [ms] \\ 
+    Culling &  \# matches & \# \glspl{kf} skipped & \acrshort{pgo} [ms] & \acrshort{gba} [ms] \\ 
     \hline 
     No & 1 & 0 &142.25 & 163.89 \\
     Yes & 1 & 0 & 42.01 & 72.33 \\
@@ -448,10 +451,18 @@
   \caption{Time measurements of \gls{pgo} and \gls{gba} without and with culling.}
   \label{tab:results_time}
   \end{table}
+  }
+
+  \visible<2>{
+    \begin{block}{}
+      Performance increases significantly when culling is enabled
+    \end{block}
+  }
 }
 
 \frame{
   \frametitle{Culling - Results}
+  \visible<1-2>{
   \begin{table}[ht!]
   \begin{center}
   \begin{tabular}{c|c|c|c}
@@ -467,6 +478,13 @@
   \caption{\textit{rmse} without and with culling.}
   \label{tab:results_rmse}
   \end{table}
+  }
+
+  \visible<2>{
+    \begin{block}{}
+      Accuracy gets worser if not enough information is available.\\No problem with multiple \acrfull{kfm}.
+    \end{block}
+  }
 }
 
 \section{Dog leg opt.}
@@ -495,7 +513,7 @@
 
   \visible<4>{
   \begin{block}{Conclusion}
-    \gls{lm} optimizer for \gls{pgo} and dog leg optimizer for \gls{gba}
+    \gls{lm} optimizer for \gls{pgo} and \gls{dl} optimizer for \gls{gba}
   \end{block}
   }
 }
@@ -504,6 +522,9 @@
 
 \frame{
   \frametitle{Use dog leg optimizer - Results}
+  \visible<1-2>{
+  \acrfull{pgo}\\
+  \acrfull{gba}\\
 
   \begin{table}[ht!]
   \begin{center}
@@ -511,7 +532,7 @@
     Opt. & \# matches & \# \glspl{kf} skipped & \gls{pgo} [ms] & \gls{gba} [ms] \\ 
     \hline 
     \gls{lm}/\gls{lm} & 1 & 0 & 43.01 & 72.33 \\
-    \gls{lm}/\gls{dl} & 1 & 0 &  &  \\
+    \gls{lm}/\gls{dl} & 1 & 0 & 43.83 & 68.77 \\
     \gls{lm}/\gls{lm} & 10 & 10 & 178.83 & 1098.37 \\
     \gls{lm}/\gls{dl} & 10 & 10 & 178.70 & 383.54 \\
     %\hline 
@@ -520,94 +541,65 @@
   \caption{Time measurements of \gls{lm} and \gls{dl} optimizer.}
   \label{tab:results_dogleg_time}
   \end{table}
+  }
+
+  \visible<2>{
+  \begin{block}{}
+    Accuracy stays them same while the performance is increased
+  \end{block}
+  }
 }
-
-\section{Results}
-\frame{\tableofcontents[currentsection]}
-
-\begin{frame}
-	\frametitle{Results}
-	\begin{itemize}
-	\visible<1-6>{
-	\item The measurements of a motion detection system (VICON) serve as ground truth
-	}
-	\visible<2-6>{
-	\item For comparison the $\textit{rmse}$ and the $\textit{rmse}_{xy}$ of the EKF and of the UWB system were calculated and compared
-	}
-	\visible<3-6>{
-	\item The accuracy of the EKF is at least doubled compared to the UWB system
-	}
-	\visible<4-6>{
-	\item For the cases, where the visual tracker found the object
-	}
-	\visible<5-6>{
-	\item Inaccuracies in the system are possible
-	}
-	\end{itemize}
-	%\tiny
-	%\begin{table}
-%		\begin{center}
-%			\begin{tabular}{c|c|c|c|c}
-%				Experiment number & $\textit{rmse}$ of UWB & $\textit{rmse}$ of EKF & $\textit{rmse}_{xy}$ of UWB & $\textit{rmse}_{xy}$ of EKF\\ 
-%				\hline 
-%				1 & 0.0667 & 0.0350 & 0.0621 & 0.0270 \\
-%				2 & 0.0771 & 0.0364 & 0.0734 & 0.0260 \\
-%				3 & 0.1304 & 0.0379 & 0.1275 & 0.0312 \\
-%				4 & 0.1169 & 0.0344 & 0.1126 & 0.0265 \\
-%				5* & 0.1273 & 0.1195 & 0.1159 & 0.1055
-				%\hline 
-%			\end{tabular}
-%		\end{center}
-%	\end{table}
-%	\normalsize
-	\vspace{1cm}
-	\visible<6>{
-	See demo video!
-	}
-\end{frame}
 
 \section{Conclusion}
 \frame{\tableofcontents[currentsection]}
 
-\subsection{Conclusion}
-\frame { \frametitle{Conclusion/Limitation}
-	Conclusion:
+\begin{frame}
+	\frametitle{Conclusion}
 	\begin{itemize}
-	\pause
-	\item The proposed method of fusing UWB and visual tracker impoved the accuracy
-	\pause
-	\item The implemented re-detection mechanism performs well
+		\only<1-2>{
+		  \item The map merging with multiple \glspl{kfm} increases the accuracy and reduces drift
+		}
+		\only<2>{
+		  \item Also the skipping of \glspl{kf} after a \gls{kfm} was found increases the accuracy and reduces drift
+		}
+	\end{itemize}
+	\only<3-6>{
+    \begin{block}{Higher accuracy}
+	 The use of \glspl{kfm} from a bigger area serves \gls{pgo} and \gls{gba} with more information $\rightarrow$ higher accuracy
+    \end{block}
+	}
+
+	\begin{itemize}
+		\only<4-5>{
+		\item Culling after $n$ \glspl{kfm} were found removes redundant \glspl{kf} $\rightarrow$ better performance
+		}
+		\only<5>{
+		 \item The use of the \gls{dl} optimizer for the \gls{gba} also improves performance
+		}
 	\end{itemize}
 
-	\pause
-	Limitation:
+  \only<6>{
+    \begin{block}{Better performance}
+      Culling and the use of the \gls{dl} optimizer increase the performance
+    \end{block}
+  }
+\end{frame}
+
+\section{Outlook}
+
+\frame{\tableofcontents[currentsection]}
+
+\frame { \frametitle{Limitations \& Outlook}
 	\begin{itemize}
 	\pause
-	\item The EKF does not consists of an outlier-detection
+  \item Currently the transformation of the first \gls{kfm} is used to align the two maps
 	\pause
-	\item Parameter tuning required for the re-detection mechanism
+  \item Only the direct neighbors (in the co-visibility graph) of the \glspl{kf} are currently checked for redundancy
 	\end{itemize}
 }
 
-\subsection{Outlook}
-\frame { \frametitle{Outlook}
-	Outlook:
-	\begin{itemize}
-	\pause
-	\item Profiling/C++ implementation for usage with higher frequency
-	\pause
-	\item More sophisticated re-detection
-	\pause
-	\item Calibration of the UWB system with the help of ArUco
-	\pause
-	\item Automatic target detection/learning
-	\pause
-	\item Multi target tracking
-	\end{itemize}
-}
-
-\frame { \frametitle{Questions}
-	\section{Questions}
+\section{Q\&A}
+\frame { \frametitle{Q\&A}
 	\begin{center}
 	\includegraphics[height=0.75\textheight]{gfx/q&a.jpg}
 	\end{center}
