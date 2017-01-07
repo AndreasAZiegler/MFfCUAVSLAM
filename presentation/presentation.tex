@@ -31,7 +31,7 @@
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage{xcolor}
-\usepackage[acronym]{glossaries}
+\usepackage[acronym,sort=def]{glossaries}
 
 %\usepackage{natbib}
 \bibliographystyle{apalike}
@@ -72,15 +72,18 @@
 		\itemsep   #2}}
 \makeatother
 
+\newacronym{slam}{SLAM}{Simultaneous Localisation and Mapping}
+\newacronym{uav}{UAV}{Unmanned aerial vehicle}
+
 \newacronym{kf}{KF}{key frame}
 \newacronym{kfm}{KFM}{key frame match}
+
 \newacronym{ba}{BA}{bundle adjustment}
 \newacronym{gba}{GBA}{global bundle adjustment}
 \newacronym{pgo}{PGO}{pose graph optimization}
+
 \newacronym{lm}{LM}{Levenberg-Marquardt}
 \newacronym{dl}{DL}{Powell's dog leg}
-\newacronym{slam}{SLAM}{Simultaneous Localisation and Mapping}
-\newacronym{uav}{UAV}{Unmanned aerial vehicle}
 
 \makeglossaries
 
@@ -198,10 +201,30 @@
     \coordinate (A1MP2) at (0, 3.75);
     \coordinate (A1MP3) at (0.5, 3.5);
 
+    \coordinate (AB11) at (4/3, 3);
+    \coordinate (AB11MP1) at (-0.25+4/3, 3.25);
+    \coordinate (AB11MP2) at (4/3, 3.5);
+    \coordinate (AB11MP3) at (0.25+4/3, 3.25);
+
+    \coordinate (AB12) at (8/3, 3);
+    \coordinate (AB12MP1) at (-0.25+8/3, 3.25);
+    \coordinate (AB12MP2) at (8/3, 3.5);
+    \coordinate (AB12MP3) at (0.25+8/3, 3.25);
+
     \coordinate (B1) at (4, 3);
     \coordinate (B1MP1) at (3.2, 3.15);
     \coordinate (B1MP2) at (3.4, 3.6);
     \coordinate (B1MP3) at (3.9, 3.5);
+
+    \coordinate (BC11) at (4, 4);
+    \coordinate (BC11MP1) at (3.75, 4.25);
+    \coordinate (BC11MP2) at (3.5, 4.0);
+    \coordinate (BC11MP3) at (3.75, 3.75);
+
+    \coordinate (BC12) at (4, 5);
+    \coordinate (BC12MP1) at (3.75, 5.25);
+    \coordinate (BC12MP2) at (3.5, 5.0);
+    \coordinate (BC12MP3) at (3.75, 4.75);
 
     \coordinate (C1) at (4, 6);
     \coordinate (C1MP1) at (3.5, 6.5);
@@ -213,17 +236,47 @@
     \coordinate (A2MP2) at (0, 0.75);
     \coordinate (A2MP3) at (0.5, 0.5);
 
+    \coordinate (AB21) at (2, 0);
+    \coordinate (AB21MP1) at (1.75, 0.25);
+    \coordinate (AB21MP2) at (2, 0.5);
+    \coordinate (AB21MP3) at (2.25, 0.25);
+
+    \coordinate (AB22) at (4, 0);
+    \coordinate (AB22MP1) at (3.75, 0.25);
+    \coordinate (AB22MP2) at (4, 0.5);
+    \coordinate (AB22MP3) at (4.25, 0.25);
+
+    \coordinate (AB23) at (6, 0);
+    \coordinate (AB23MP1) at (5.75, 0.25);
+    \coordinate (AB23MP2) at (6, 0.5);
+    \coordinate (AB23MP3) at (6.25, 0.25);
+
     \coordinate (B2) at (8, 0);
     \coordinate (B2MP1) at (7.2, 0.15);
     \coordinate (B2MP2) at (7.4, 0.6);
     \coordinate (B2MP3) at (7.9, 0.5);
+
+    \coordinate (BC21) at (8, 1.5);
+    \coordinate (BC21MP1) at (7.75, 1.75);
+    \coordinate (BC21MP2) at (7.5, 1.5);
+    \coordinate (BC21MP3) at (7.75, 1.25);
+
+    \coordinate (BC22) at (8, 3);
+    \coordinate (BC22MP1) at (7.75, 3.25);
+    \coordinate (BC22MP2) at (7.5, 3.0);
+    \coordinate (BC22MP3) at (7.75, 2.75);
+
+    \coordinate (BC23) at (8, 4.5);
+    \coordinate (BC23MP1) at (7.75, 4.75);
+    \coordinate (BC23MP2) at (7.5, 4.5);
+    \coordinate (BC23MP3) at (7.75, 4.25);
 
     \coordinate (C2) at (8, 6);
     \coordinate (C2MP1) at (7.5, 6.5);
     \coordinate (C2MP2) at (7.25, 6.0);
     \coordinate (C2MP3) at (7.5, 5.5);
 
-    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (A1) {};
+    \node [fill=orange!70, circle,inner sep=3pt, text width=0.1mm] at (A1) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP1) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
@@ -231,7 +284,23 @@
     \draw [green!50, dashed, line width=0.05cm] (A1) to (A1MP2);
     \draw [green!50, dashed, line width=0.05cm] (A1) to (A1MP3);
 
-    \node [fill=orange!70, circle, inner sep=2pt, text width=0.1mm] at (B1) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (AB11) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP3);
+
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (AB12) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP3);
+
+    \node [fill=orange!70, circle, inner sep=3pt, text width=0.1mm] at (B1) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (B1MP3) {};
@@ -239,7 +308,23 @@
     \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP2);
     \draw [green!50, dashed, line width=0.05cm] (B1) to (B1MP3);
 
-    \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
+    \node [fill=orange!30, circle, inner sep=2pt, text width=0.1mm] at (BC11) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP3);
+
+    \node [fill=orange!30, circle, inner sep=2pt, text width=0.1mm] at (BC12) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP3);
+
+    \node [fill=orange!70, circle,inner sep=3pt, text width=0.1mm] at (C1) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP2) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C1MP3) {};
@@ -247,7 +332,7 @@
     \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP2);
     \draw [green!50, dashed, line width=0.05cm] (C1) to (C1MP3);
 
-    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (A2) {};
+    \node [fill=blue!70, circle,inner sep=3pt, text width=0.1mm] at (A2) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP1) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP2) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (A2MP3) {};
@@ -255,7 +340,31 @@
     \draw [green!50, dashed, line width=0.05cm] (A2) to (A2MP2);
     \draw [green!50, dashed, line width=0.05cm] (A2) to (A2MP3);
 
-    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (B2) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (AB21) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB21MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB21MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB21MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB21) to (AB21MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB21) to (AB21MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB21) to (AB21MP3);
+
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (AB22) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB22MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB22MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB22MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB22) to (AB22MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB22) to (AB22MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB22) to (AB22MP3);
+
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (AB23) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB23MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB23MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB23MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB23) to (AB23MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB23) to (AB23MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB23) to (AB23MP3);
+
+    \node [fill=blue!70, circle,inner sep=3pt, text width=0.1mm] at (B2) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP1) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP2) {};
     \node [fill=green!70, circle,inner sep=2pt, text width=0.1mm] at (B2MP3) {};
@@ -263,7 +372,31 @@
     \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP2);
     \draw [green!50, dashed, line width=0.05cm] (B2) to (B2MP3);
 
-    \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (BC21) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP3);
+
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (BC22) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP3);
+    
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (BC23) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP3);
+
+    \node [fill=blue!70, circle,inner sep=3pt, text width=0.1mm] at (C2) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP1) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP2) {};
     \node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] at (C2MP3) {};
@@ -279,6 +412,17 @@
     \draw [red!50, line width=0.05cm, dashed] (A1) to (A2);
     \draw [red!50, line width=0.05cm, dashed] (B1) to (B2);
     \draw [red!50, line width=0.05cm, dashed] (C1) to (C2);
+
+    \node[draw] at (0.5, 5.3)
+    {
+    \scriptsize
+    \begin{tabular}{cl}
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & key frames of a match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] & skipped key frames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & map points
+    \end{tabular}
+    };
+
   \end{tikzpicture}
   \end{center}
   }
@@ -291,10 +435,30 @@
     \coordinate (A1MP2) at (0, 1.0);
     \coordinate (A1MP3) at (0.5, 0.75);
 
+    \coordinate (AB11) at (4/3, 0.25);
+    \coordinate (AB11MP1) at (-0.25+4/3, 0.5);
+    \coordinate (AB11MP2) at (4/3, 0.75);
+    \coordinate (AB11MP3) at (0.25+4/3, 0.5);
+
+    \coordinate (AB12) at (8/3, 0.25);
+    \coordinate (AB12MP1) at (-0.25+8/3, 0.5);
+    \coordinate (AB12MP2) at (8/3, 0.75);
+    \coordinate (AB12MP3) at (0.25+8/3, 0.5);
+
     \coordinate (B1) at (4, 0.25);
     \coordinate (B1MP1) at (3.2, 0.15);
     \coordinate (B1MP2) at (3.4, 0.6);
     \coordinate (B1MP3) at (3.9, 0.5);
+
+    \coordinate (BC11) at (4, 4.75/3);
+    \coordinate (BC11MP1) at (3.75, 4.75/3 + 0.25);
+    \coordinate (BC11MP2) at (3.5, 4.75/3);
+    \coordinate (BC11MP3) at (3.75, 4.75/3 - 0.25);
+
+    \coordinate (BC12) at (4, 4.75/1.5);
+    \coordinate (BC12MP1) at (3.75, 4.75/1.5 + 0.25);
+    \coordinate (BC12MP2) at (3.5, 4.75/1.5);
+    \coordinate (BC12MP3) at (3.75, 4.75/1.5 - 0.25);
 
     \coordinate (C1) at (4, 5);
     \coordinate (C1MP1) at (3.5, 5.5);
@@ -304,6 +468,21 @@
     \coordinate (A2) at (0, 0);
 
     \coordinate (B2) at (5.5, 0);
+
+    \coordinate (BC21) at (5.5, 4.75/4);
+    \coordinate (BC21MP1) at (5.25, 4.75/4 + 0.25);
+    \coordinate (BC21MP2) at (5.0, 4.75/4);
+    \coordinate (BC21MP3) at (5.25, 4.75/4 - 0.25);
+
+    \coordinate (BC22) at (5.5, 4.75/2);
+    \coordinate (BC22MP1) at (5.25, 4.75/2 + 0.25);
+    \coordinate (BC22MP2) at (5.0, 4.75/2);
+    \coordinate (BC22MP3) at (5.25, 4.75/2 - 0.25);
+
+    \coordinate (BC23) at (5.5, 3*4.75/4);
+    \coordinate (BC23MP1) at (5.25, 3*4.75/4 + 0.25);
+    \coordinate (BC23MP2) at (5.0, 3*4.75/4);
+    \coordinate (BC23MP3) at (5.25, 3*4.75/4 - 0.25);
 
     \coordinate (C12) at (4.5, 5.0);
     \coordinate (C2) at (5.5, 5);
@@ -316,6 +495,22 @@
     \draw [green!50, line width=0.05cm] (A1) to (A1MP2);
     \draw [green!50, line width=0.05cm] (A1) to (A1MP3);
 
+    \node [fill=orange!30, circle,inner sep=1.5pt, text width=0.1mm] at (AB11) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB11MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB11) to (AB11MP3);
+
+    \node [fill=orange!30, circle,inner sep=1.5pt, text width=0.1mm] at (AB12) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (AB12MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP1);
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP2);
+    \draw [green!50, dashed, line width=0.025cm] (AB12) to (AB12MP3);
+
     \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (B1) {};
     \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP1) {};
     \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (B1MP2) {};
@@ -323,6 +518,22 @@
     \draw [green!50, line width=0.05cm] (B1) to (B1MP1);
     \draw [green!50, line width=0.05cm] (B1) to (B1MP2);
     \draw [green!50, line width=0.05cm] (B1) to (B1MP3);
+
+    \node [fill=orange!30, circle, inner sep=1.5pt, text width=0.1mm] at (BC11) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC11MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC11) to (BC11MP3);
+
+    \node [fill=orange!30, circle, inner sep=1.5pt, text width=0.1mm] at (BC12) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC12MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC12) to (BC12MP3);
 
     \node [fill=orange!70, circle,inner sep=2pt, text width=0.1mm] at (C1) {};
     \node [fill=green!30, circle, inner sep=2pt, text width=0.1mm] at (C1MP1) {};
@@ -342,6 +553,30 @@
     \draw [green!50, line width=0.05cm] (B2) to (B1MP2);
     \draw [green!50, line width=0.05cm] (B2) to (B1MP3);
 
+    \node [fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] at (BC21) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC21MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC21) to (BC21MP3);
+
+    \node [fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] at (BC22) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC22MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC22) to (BC22MP3);
+
+    \node [fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] at (BC23) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP1) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP2) {};
+    \node [fill=green!30, circle,inner sep=1pt, text width=0.1mm] at (BC23MP3) {};
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP1);
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP2);
+    \draw [green!50, dashed, line width=0.025cm] (BC23) to (BC23MP3);
+
     \node [fill=blue!70, circle,inner sep=2pt, text width=0.1mm] at (C2) {};
     \draw [green!50, line width=0.05cm] (C2) to (C1MP1);
     \draw [green!50, line width=0.05cm] (C2) to (C1MP2);
@@ -355,6 +590,16 @@
     \draw [red!50, line width=0.05cm, dashed] (A1) to (A2);
     \draw [red!50, line width=0.05cm, dashed] (B1) to (B2);
     \draw [red!50, line width=0.05cm, dashed] (C1) to (C2);
+
+    \node[draw] at (0.25, 4.0)
+    {
+    \scriptsize
+    \begin{tabular}{cl}
+      \tikz\node[fill=orange!70, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=2pt, text width=0.1mm] {}; & key frames of a match \\
+      \tikz\node[fill=orange!30, circle,inner sep=1.5pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] & skipped key frames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & map points
+    \end{tabular}
+    };
   \end{tikzpicture}
   \end{center}
   }
