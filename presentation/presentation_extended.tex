@@ -823,6 +823,30 @@
 
 \frame{
   \frametitle{Culling - Results}
+  \acrfull{pgo}\\
+  \acrfull{gba}\\
+  \textcolor{orange}{v} / \textcolor{blue}{e}: numbers of \textcolor{orange}{verteces} / \textcolor{blue}{edges} of the graph to optimize
+
+  \begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{c|c|c|c|c}
+    Culling &  \# \glspl{kfm} & \# \glspl{kf} skip & \acrshort{pgo} \textcolor{orange}{v} / \textcolor{blue}{e} & \acrshort{gba} \textcolor{orange}{v} / \textcolor{blue}{e} \\ 
+    \hline \hline
+    No & 1 & 0 & \textcolor{orange}{59} / \textcolor{blue}{754} & \textcolor{orange}{2308} / \textcolor{blue}{22193} \\
+    Yes & 1 & 0 & \textcolor{orange}{36} / \textcolor{blue}{283} & \textcolor{orange}{1893} / \textcolor{blue}{13222} \\
+    \hline
+    No & 10 & 10 & \textcolor{orange}{150} / \textcolor{blue}{1949} & \textcolor{orange}{4806} / \textcolor{blue}{49765} \\
+    Yes & 10 & 10 & \textcolor{orange}{93} / \textcolor{blue}{657} & \textcolor{orange}{4165} / \textcolor{blue}{30453} \\
+    %\hline 
+  \end{tabular}
+  \end{center}
+  \caption{Time measurements of \gls{pgo} and \gls{gba} without and with culling.}
+  \label{tab:results_ve}
+  \end{table}
+}
+
+\frame{
+  \frametitle{Culling - Results}
   \visible<1-2>{
   \acrfull{pgo}\\
   \acrfull{gba}\\
