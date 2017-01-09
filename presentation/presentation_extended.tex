@@ -904,14 +904,70 @@
   }
 }
 
-\section{Dog leg opt.}
+\section{Different opt.}
 \frame{\tableofcontents[currentsection]}
 
 \frame{
-  \frametitle{Use dog leg optimizer - Idea}
-  \begin{block}{}
+  \frametitle{Different optimizer - Use dog leg optimizer}
+  \begin{block}{Motivation}
   Considerable computational benefits can be gained by substituting the \acrfull{lm} algorithm in the implementation of \acrfull{ba} with a variant of \acrfull{dl} non-linear least squares technique \cite{Lourakis2005}
   \end{block}
+}
+
+\frame{
+  \frametitle{Different optimizer - \gls{lm}}
+  \visible<1->{
+    The \gls{lm} solves iteratively $$(\mathbf{J}^T \mathbf{J} + \lambda \mathbf{I}) \delta = \mathbf{J}^T \boldsymbol{\epsilon} \text{, where } \boldsymbol{\epsilon} = [\mathbf{y} - \mathbf{f(\boldsymbol{\beta})}]$$
+  }
+
+  \only<2->{
+  \begin{itemize}
+    \visible<2->{ \item With a small $\lambda$ \gls{lm} becomes a Gauss-Newton method}
+    \visible<3->{ \item With a big $\lambda$ \gls{lm} behaves like a Gradient-descent method}
+    \visible<4->{ \item If an update doesn't reduce the error, $\lambda$ will be increased and the equation must be solved again}
+  \end{itemize}
+  }
+
+}
+
+\frame{
+  \frametitle{Different optimizer - \gls{dl}}
+  \visible<1->{
+    The \gls{dl} solves iteratively
+    $$\min_\delta 2(\frac{1}{2} \boldsymbol{\epsilon}^T \boldsymbol{\epsilon} - (\mathbf{J}\boldsymbol{\epsilon})^T \delta + \frac{1}{2} \delta^T \mathbf{J}^T \mathbf{J} \delta) \text{, subjected to } ||\delta|| \le \Delta$$
+
+    For $\kappa \in [0, 2]$, the dog leg trajectory is defined as
+    \begin{equation*}
+      \mathbf{\delta}(\kappa) = 
+      \begin{cases}
+        \kappa \mathbf{\delta}_{gd} & 0 \le \kappa \le 1 \\
+        \mathbf{\delta}_{gd} + (\kappa -1)(\mathbf{\delta}_{gn} - \mathbf{\delta}_{gd}) & 1 \le \kappa \le 2
+      \end{cases}
+    \end{equation*}
+  }
+}
+
+\frame{
+  \frametitle{Different optimizer - \gls{dl}}
+  With
+  $$\delta_{gd} = \frac{\mathbf{g}^T\mathbf{g}}{\mathbf{g}^T\mathbf{J}^T\mathbf{J}\mathbf{g}}\mathbf{g}$$
+  and $\delta_{gn}$ the solution of
+  $$\mathbf{J}^T\mathbf{J} \delta_{gn} = \mathbf{g}$$
+  the dog leg trajectory looks like\let\thefootnote\relax\footnote{Figure from \cite{Lourakis2005}}
+  \begin{center}
+    \includegraphics[scale=0.3]{gfx/dogleg}
+  \end{center}
+}
+
+\frame{
+  \frametitle{Different optimizer - \gls{dl}}
+  \only<1->{
+  \begin{itemize}
+    \visible<1->{ \item Once the Gauss-Newton step has been determined, the \gls{dl} algorithm can solve the subproblem for various $\Delta$ without resolving an equation}
+    \visible<2->{ \item Reducing the number of times the Gauss-Newton step has to be determined is crucial for the overall performance of the minimization process}
+    \visible<3->{ \item For the mentioned reasons the \gls{dl} algorithm requires less computational effort compared to the \gls{lm} algorithm}
+  \end{itemize}
+  }
 }
 
 \frame{
