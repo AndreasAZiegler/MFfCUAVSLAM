@@ -771,6 +771,26 @@
   Reduction of the error from $\text{rmse} = 0.1311$ to $\text{rmse} = 0.0961$
 }
 
+\frame{
+  \frametitle{Map merging - Results}
+
+  \begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{c|c|c}
+    \# \glspl{kfm} & \# \glspl{kf} skip & rmse\\ 
+    \hline
+    1 & 0 & 0.1311 \\
+    5 & 20 & 0.0912 \\
+    10 & 5 & 0.1236 \\
+    10 & 10 & 0.0961\\
+    %\hline 
+  \end{tabular}
+  \end{center}
+  \caption{Error (rmse) of different settings (\glspl{kfm} and \gls{kf} skipps).}
+  \label{tab:results_new_approach}
+  \end{table}
+}
+
 \section{Culling}
 \frame{\tableofcontents[currentsection]}
 
