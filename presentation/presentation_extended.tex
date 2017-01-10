@@ -756,8 +756,8 @@
   \textcolor{green}{green}: Covisibility graph of first map\\ \textcolor{yellow}{yellow}: Covisibility graph of second map\\ \textcolor{red}{red}: Covisibility between the \glspl{kfm}
   \begin{figure}[H]
     \centering
-    \subcaptionbox{1 \gls{kf} skipped after a \gls{kfm}}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
-    \subcaptionbox{10 \gls{kf} skipped after a \gls{kfm}}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
+    \subcaptionbox{1 \gls{kf} skipped after a \gls{kfm} was found}{\includegraphics[scale=0.21]{gfx/covgraph_minHits_5_skip_1}}
+    \subcaptionbox{10 \gls{kf} skipped after a \gls{kfm} was found}{\includegraphics[scale=0.17]{gfx/covgraph_minHits_5_skip_10}}
   \end{figure}
 }
 
@@ -768,7 +768,7 @@
     \subcaptionbox{original approach}{\includegraphics[scale=0.225]{gfx/m1_skf0_cut}}
     \subcaptionbox{new approach}{\includegraphics[scale=0.225]{gfx/m10_skf10_cut}}
   \end{figure}
-
+  Reduction of the error from $\text{rmse} = 0.1311$ to $\text{rmse} = 0.0961$
 }
 
 \section{Culling}
@@ -884,7 +884,7 @@
   \begin{tabular}{c|c|c|c}
     Culling &  \# \glspl{kfm} & \# \glspl{kf} skipped & \textit{rmse} [m] \\ 
     \hline \hline
-    No & 1 & 0 & 0.1310 \\
+    No & 1 & 0 & 0.1311 \\
     Yes & 1 & 0 & \textcolor{red}{0.2187} \\
     \hline
     No & 10 & 10 & 0.0961 \\
