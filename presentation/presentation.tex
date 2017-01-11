@@ -90,8 +90,8 @@
 \newacronym{slam}{SLAM}{Simultaneous Localisation and Mapping}
 \newacronym{uav}{UAV}{Unmanned Aerial Vehicle}
 
-\newacronym{kf}{KF}{Key Frame}
-\newacronym[longplural={Key Frame Matches}]{kfm}{KFM}{Key Frame Match}
+\newacronym{kf}{KF}{KeyFrame}
+\newacronym[longplural={KeyFrame Matches}]{kfm}{KFM}{KeyFrame Match}
 
 \newacronym{ba}{BA}{Bundle Adjustment}
 \newacronym{pgo}{PGO}{Pose Graph Optimization}
@@ -168,11 +168,11 @@
 \begin{frame}
   \frametitle{Introduction - What is a \acrfull{kfm}?}
   \only<1->{
-    \acrfull{kf}: The most ``representative'' poses\\ 
+    \acrfullpl{kf}: The most ``representative'' poses\\ 
     \medskip
   }
   \only<2>{
-  Two clients each with an own map and \acrfullpl{kf}
+  Two clients each with an own landmarks and \acrfullpl{kf}
   \begin{center}
   \begin{tikzpicture}
     \coordinate (A) at (0, 0);
@@ -209,7 +209,7 @@
     \acrfull{kfm}: A pair of two \acrfullpl{kf} observing the same location\\
   }
   \only<4>{
-    \acrfull{kfm}: A pair of two \acrfullpl{kf} observing the same location $\rightarrow$ Can obtain transformation
+    \acrfull{kfm}: Two \acrfullpl{kf} observing the same location $\rightarrow$ Can obtain transformation
   }
     
   \only<3-4>{
@@ -248,7 +248,7 @@
   \end{center}
   }
   \only<5>{
-  \acrfull{kfm}: A pair of two \acrfullpl{kf} observing the same location\\
+  \acrfull{kfm}: Two \acrfullpl{kf} observing the same location\\
   \medskip
   With the transformation $\rightarrow$ maps can be aligned
   \begin{center}
@@ -329,18 +329,16 @@
   \item A multi agent SLAM system based on ORB-SLAM2 should be extended
   }
   \visible<2->{
-  \item So far, as soon as a \acrfullpl{kfm} was detected, maps were merged
-  }
-  \visible<2->{
-  \item Using multiple \glspl{kfm} to guarantee no false map merging
+  \item So far, as soon as a \acrfull{kfm} was detected, maps were merged
   }
   \visible<3->{
-  \item Using multiple \glspl{kfm} to obtain an optimal map alignment
+  \item Using multiple \glspl{kfm} to guarantee no false map merging
   }
   \visible<4->{
+  \item Using multiple \glspl{kfm} to obtain an optimal map alignment
   }
   \end{itemize}
-  \visible<5>{\tiny{\cite{Mur-Artal2016}}}
+  \visible<1->{\tiny{\cite{Mur-Artal2016}}}
 }
 
 \section{Map merging}
@@ -390,9 +388,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
 
@@ -436,9 +434,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
 
@@ -578,9 +576,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
   \end{tikzpicture}
@@ -720,9 +718,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
   \end{tikzpicture}
@@ -954,9 +952,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
 
@@ -1189,9 +1187,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
 
@@ -1368,9 +1366,9 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=2pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=1.5pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] {}; & Skipped Key Frames \\
-      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Land Marks)
+      \tikz\node[fill=orange!70, circle,inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=2pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=1.5pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=1.5pt, text width=0.1mm] {}; & Skipped KeyFrames \\
+      \tikz\node [fill=green!70, circle, inner sep=2pt, text width=0.1mm] {}; \tikz\node[fill=green!30, circle,inner sep=1pt, text width=0.1mm] {}; & Map Points (Landmarks)
     \end{tabular}
     };
   \end{tikzpicture}
@@ -1392,7 +1390,7 @@
   \frametitle{Map merging - Results - skipping of \gls{kf}}
   \only<1>{
   \begin{block}{Co-visibility graph}
-    Connections/Edges between \acrfullpl{kf} which observe the same map points (land marks)
+    Connections/Edges between \acrfullpl{kf} which observe the same map points (landmarks)
   \end{block}
   }
   \only<2->{
@@ -1520,8 +1518,8 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2.0pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2.0pt, text width=0.1mm] {}; & Key Frames \\
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2.0pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2.0pt, text width=0.1mm] {}; & KeyFrames \\
     \end{tabular}
     };
     \end{tikzpicture}
@@ -1545,6 +1543,7 @@
 %    \end{tikzpicture}
   \end{center}
   }
+
   \only<5>{
   \begin{center}
     \begin{tikzpicture}[auto]
@@ -1629,8 +1628,100 @@
     {
     \scriptsize
     \begin{tabular}{cl}
-      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & Key Frames of a Match \\
-      \tikz\node[fill=orange!30, circle,inner sep=2.0pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2.0pt, text width=0.1mm] {}; & Key Frames \\
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2.0pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2.0pt, text width=0.1mm] {}; & KeyFrames \\
+    \end{tabular}
+    };
+    \end{tikzpicture}
+  \end{center}
+  }
+
+  \only<6>{
+  \begin{center}
+    \begin{tikzpicture}[auto]
+    \coordinate (A1) at (-0.5, 0);
+    \coordinate (KFM11) at (1, 0);
+    \coordinate (A1MP1) at (-0.5, 0);
+    \coordinate (A1MP2) at (0, 0);
+    \coordinate (A1MP3) at (0.5, 0);
+    \coordinate (A1MP4) at (1.5, 0);
+    \coordinate (A1MP5) at (2, 0);
+    \coordinate (A1MP6) at (2.5, 0);
+
+    \coordinate (B1) at (6.5, 0);
+    \coordinate (KFM12) at (5, 0);
+    \coordinate (B1MP1) at (5.5, 0);
+    \coordinate (B1MP2) at (6.0, 0);
+    \coordinate (B1MP3) at (6.5, 0);
+    \coordinate (B1MP4) at (4.5, 0);
+    \coordinate (B1MP5) at (4.0, 0);
+    \coordinate (B1MP6) at (3.5, 0);
+
+    \coordinate (A2) at (-0.5, -3);
+    \coordinate (KFM21) at (1, -3);
+    \coordinate (A2MP1) at (-0.5, -3);
+    \coordinate (A2MP2) at (0, -3);
+    \coordinate (A2MP3) at (0.5, -3);
+    \coordinate (A2MP4) at (1.5, -3);
+    \coordinate (A2MP5) at (2, -3);
+    \coordinate (A2MP6) at (2.5, -3);
+
+    \coordinate (B2) at (6.5, -3);
+    \coordinate (KFM22) at (5, -3);
+    \coordinate (B2MP1) at (5.5, -3);
+    \coordinate (B2MP2) at (6.0, -3);
+    \coordinate (B2MP3) at (6.5, -3);
+    \coordinate (B2MP4) at (4.5, -3);
+    \coordinate (B2MP5) at (4.0, -3);
+    \coordinate (B2MP6) at (3.5, -3);
+
+    \node [red] at (A1MP1) {$\boldsymbol{\times}$};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP2) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP3) {};
+    \node [fill=blue!70, circle,inner sep=3pt, text width=0.1mm] at (KFM11) {};
+    \node [red] at (A1MP4) {$\boldsymbol{\times}$};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP5) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (A1MP6) {};
+
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (B1MP1) {};
+    \node [red] at (B1MP2) {$\boldsymbol{\times}$};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (B1MP3) {};
+    \node [fill=blue!70, circle,inner sep=3pt, text width=0.1mm] at (KFM12) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (B1MP4) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (B1MP5) {};
+    \node [fill=blue!30, circle,inner sep=2pt, text width=0.1mm] at (B1MP6) {};
+
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (A2MP1) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (A2MP2) {};
+    \node [red] at (A2MP3) {$\boldsymbol{\times}$};
+    \node [fill=orange!70, circle,inner sep=3pt, text width=0.1mm] at (KFM21) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (A2MP4) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (A2MP5) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (A2MP6) {};
+
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (B2MP1) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (B2MP2) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (B2MP3) {};
+    \node [fill=orange!70, circle,inner sep=3pt, text width=0.1mm] at (KFM22) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (B2MP4) {};
+    \node [fill=orange!30, circle,inner sep=2pt, text width=0.1mm] at (B2MP5) {};
+    \node [red] at (B2MP6) {$\boldsymbol{\times}$};
+
+    \draw [blue!50, line width=0.05cm] (A1) to (B1);
+    \draw [orange!50, line width=0.05cm] (A2) to (B2);
+
+    \draw [red!50, line width=0.05cm, dashed] (KFM11) to (KFM21);
+    \draw [red!50, line width=0.05cm, dashed] (KFM12) to (KFM22);
+
+    \draw[black,thick,dashed] (-1, 0.5) -- (2.9, 0.5) -- (2.9, -3.5) -- (-1, -3.5) -- (-1, 0.5);
+    \draw[black,thick,dashed] (3.1, 0.5) -- (7.0, 0.5) -- (7.0, -3.5) -- (3.1, -3.5) -- (3.1, 0.5);
+
+    \node[draw] at (3.0, -4.25)
+    {
+    \scriptsize
+    \begin{tabular}{cl}
+      \tikz\node[fill=orange!70, circle,inner sep=3pt, text width=0.1mm] {}; \tikz\node[fill=blue!70, circle,inner sep=3pt, text width=0.1mm] {}; & KeyFrames of a Match \\
+      \tikz\node[fill=orange!30, circle,inner sep=2.0pt, text width=0.1mm] {}; \tikz\node[fill=blue!30, circle,inner sep=2.0pt, text width=0.1mm] {}; & KeyFrames \\
     \end{tabular}
     };
     \end{tikzpicture}
@@ -1649,8 +1740,6 @@
 
   \visible<2->{
   \smallskip
-  \acrfull{pgo}\\
-  \acrfull{ba}\\
 
   \begin{table}[ht!]
   \begin{center}
@@ -1672,6 +1761,8 @@
       Performance increases significantly when culling is enabled
     \end{block}
   }
+  {\small\acrfull{pgo}}\\
+  {\small\acrfull{ba}}\\
 }
 
 \frame{
@@ -1743,8 +1834,6 @@
 \frame{
   \frametitle{Optimization - Results}
   \visible<1-2>{
-  \acrfull{pgo}\\
-  \acrfull{ba}\\
 
   \begin{table}[ht!]
   \begin{center}
@@ -1763,9 +1852,11 @@
 
   \visible<2>{
   \begin{block}{}
-    Accuracy stays them same while the performance is increased
+    Accuracy stays the same while the performance is increased
   \end{block}
   }
+  {\small\acrfull{pgo}}\\
+  {\small\acrfull{ba}}\\
 }
 
 \section{Conclusion}
