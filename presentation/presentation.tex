@@ -131,17 +131,31 @@
 \frame{\tableofcontents[currentsection]}
 
 \frame{ \frametitle{Introduction}
-	\begin{itemize}
-	\visible<1->{
-  \item A common map is required
+	\only<1>{
+  \begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.8]{gfx/uav_collaborative}
+  \end{figure}
   }
-  \visible<2->{
-  \item The maps need to be merged
+
+  \only<2>{
+  \begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.4]{gfx/map_1_2_1}
+  \end{figure}
   }
-	\visible<3->{
-	\item The alignment of them has to be found
-	}
-	\end{itemize}
+  \only<3>{
+  \begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.4]{gfx/map_1_2_2}
+  \end{figure}
+  }
+  \only<4>{
+  \begin{figure}[H]
+    \centering
+    \includegraphics*[scale=0.3]{gfx/map_1_2_merge}
+  \end{figure}
+  }
 }
 \note[enumerate]
 {
