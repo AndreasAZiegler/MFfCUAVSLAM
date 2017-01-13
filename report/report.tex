@@ -1,0 +1,117 @@
+%==============================================================================
+% ETHV4RL - Template for student projects at the V4RL
+% 2017.01: Patrik Schmuck
+% This template is based on the ASL Latex template by Péter Fankhauser.
+%==============================================================================
+
+\documentclass[10pt,twoside,a4paper]{report}
+
+% ETHV4RL package
+% TODO Choose options according to your project
+% som/bt/st/mt: Studies on Mechatronics, Bachelor Thesis, Semester Thesis, Master Thesis
+% fs/hs: Spring term, Autumn term
+% german/english: German/English
+\usepackage[st,hs,english]{packages/ethv4rl}
+
+% Activate for german language
+%\usepackage{german}
+%\usepackage{ae}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX preamble
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{preambles/v4rl_preamble}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title page
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+% TODO Add your title
+\title{Map Fusion for Collaborative UAV SLAM}
+%\subtitle{bla bla bla}
+
+% TODO Add name of the authors
+\studentA{Andreas Ziegler}
+%\studentB{Student 2}
+% \studentC{Student 3}
+
+% TODO Add name of the supervisors
+\supervisionA{Patrik Schmuck}
+\supervisionB{Prof. Dr. Margarita Chli}
+\supervisionC{Prof. Dr. Roland Siegwart}
+
+% TODO Change if necessary
+%\projectYear{\the\year} % This year
+\projectYear{2016} % This year
+%\projectYear{\advance\year by -1 \the\year\advance\year by 1} % Last year
+
+\maketitle
+\pagestyle{plain}
+\pagenumbering{roman}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Declaration of originality
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{empty}
+
+% TODO Modify placeholders in declaration.tex
+\input{chapters/declaration}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table on contents
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Table of Contents depth (TODO change if necessary)
+\setcounter{tocdepth}{2}
+
+\tableofcontents
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters standard
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{chapters/preface}
+\cleardoublepage
+\input{chapters/abstract}
+\cleardoublepage
+\input{chapters/acronyms}
+\cleardoublepage
+\input{chapters/symbols}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapters custom
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}
+\pagenumbering{arabic}
+
+% TODO Add your own chapters here
+\input{chapters/introduction}
+\cleardoublepage
+\input{chapters/chapter}
+\cleardoublepage
+% \input{}
+% \cleardoublepage
+% \input{}
+% \cleardoublepage
+% ...
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{bibliography/IEEEtranN}
+\bibliography{bibliography/references}
+\addcontentsline{toc}{chapter}{Bibliography}
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\input{chapters/appendix_text}
+\cleardoublepage
+\input{chapters/appendix_datasheets}
+
+\end{document}

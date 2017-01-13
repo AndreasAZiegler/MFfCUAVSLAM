@@ -1,0 +1,21 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+%\chapter*{Zusammenfassung}
+%\addcontentsline{toc}{chapter}{Zusammenfassung}
+
+\paragraph*{Motivation}
+\ac{SLAM} is one of the most important challenges for robots to be autonomous. For multiple robots, for example \acp{UAV}, to collaboratively performing task as observation, maintenance or rescue a common map is required. A common map is required that the robots can localize each other which is crucial for planning and performing tasks together.
+\\
+A common map is achieved by fusing the maps of single robots together to obtain a map containing the information of the maps of all of the robots. The merging of the maps is a delicate task as a false alignment of the maps would result in a wrong common map.
+
+\paragraph*{Problem statement}
+In this semester project an existing multi agent \ac{SLAM} system should be extended to merge maps of single robots in a way that no false map alignment is guaranteed and that an optimal alignment is achieved. Also redundant information, a consequence of the merge of two maps, should be removed in order to get a good performance of the optimization routines e.g. \ac{BA}.
+
+\paragraph*{Approach}
+To achieve the first goal, a new approach is proposed which uses multiple \acp{KFM} to merge two maps. This proposed approach also use a novel idea to spread the \acp{KFM} over a bigger area by skipping \acp{KF} while detecting \acp{KFM}.\\
+To remove redundant information \ac{KF} culling is performed after all \acp{KFM} were detected and before the main map merging. This way information which were present in both maps appear only once in the merged map and the \ac{PGO} and the \ac{BA} does not have unnecessary data to process.\\
+To reduce the runtime of the optimization part (\ac{PGO} and \ac{BA}), the usage of Powell's dog leg non-linear least squares technique instead of the Levenberg-Marquardt optimization was evaluated and the system was adapted that the performance is increased.
+
+
+\paragraph*{Result}
+The proposed map merging approach reduces drift and achieves a better accuracy compared to the old approach. With the implemented \ac{KF} culling the number of \acp{KF} which the \ac{PGO} and the \ac{BA} have to process is decreased significantly and therefore a better timing is achieved. The usage of Powell's dog leg non-linear least squares technique reduced the runtime of the optimization furthermore.
