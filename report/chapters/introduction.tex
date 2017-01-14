@@ -1,0 +1,24 @@
+\chapter{Introduction}
+\label{sec:introduction}
+
+\ac{SLAM} is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.
+
+For a team of \acp{UAV} collaboratively performing tasks, e.g. inspection of a structure, a common map is required which can be used amongst the team of \ac{UAV}.
+
+To create this map, a place recognition system detects overlaps between maps constructed by different \ac{UAV}. If enough correspondences are detected between two maps, these maps can be fused into one, which is further on used by multiple \ac{UAV} simultaneously.\\
+
+This work aims to implement a pipeline that, given two SLAM maps with multiple place matches, produces an optimized merged map. This includes finding an optimal alignment of the two maps by a 3D transformation, applying optimization techniques for improved alignment and identifying and fusing redundant information in the fused map. To allow for the Map Fusion to run online in real-world UAV experiments, furthermore the efficiency of the fusion algorithm will be taken into account.
+
+%The report of this semester project starts with an introduction to the problems and the challenges which this semester project should tackle. This is followed by a motivation how the problems and challenges could be approached. After the motivation, the three main parts of this semester project, map merging, \ac{KF} culling and the use of different optimization methods, are discussed in detail. The evaluation method, which was used to get the results of the experiments is introduced afterwards, followed by the results itself. In the final part of this report a conclusion will be drawn and an outlook will be presented.
+
+%\section{Introduction}
+%\label{subsec:introduction}
+
+%\ac{SLAM} is one of the most important challenges for robots to be autonomous. For multiple robots, for example \acp{UAV}, to collaboratively performing task as observation, maintenance or rescue a common map is required. A common map is required that the robots can localize each other which is crucial for planning and performing tasks together.
+%\\
+%A common map is achieved by fusing the maps of single robots together to obtain a map containing the information of the maps of all of the robots. This can be done if the robots observe the same location. The merging of the maps is a delicate task as a false alignment of the maps would result in a wrong common map.
+
+%\section{Motivation}
+%\label{subsec:Motivation}
+%Using only one place match to align two maps could lead to a false map merge which would be disastroulsly for the robots. By using multiple place matches no false map merging can be guaranteed and an optimal map alignment should be achieved.\\
+%As the performance of optimization techniques as \ac{PGO} and \ac{BA} depends on the amount of information they have to process \cite{Mur-Artal2015}, removing redundant information is beneficial. The whole system should be able to work in real-time and therefore the performance of the used optimization methods is important.

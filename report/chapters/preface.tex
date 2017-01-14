@@ -1,13 +1,11 @@
 % !TEX root = ../report.tex
 \chapter*{Preface}
 \addcontentsline{toc}{chapter}{Preface}
-%\chapter*{Vorwort}
-%\addcontentsline{toc}{chapter}{Vorwort}
 
-Simultaneous Localization And Mapping (SLAM) is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.
+\ac{SLAM} is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.
 
-For a team of UAVs collaboratively performing tasks, e.g. inspection of a structure, a common map is required which can be used amongst the team of UAVs.
+For a team of \acp{UAV} collaboratively performing tasks, e.g. inspection of a structure, a common map is required which can be used amongst the team of \ac{UAV}.
 
-To create this map, a place recognition system detects overlaps between maps constructed by different UAVs. If enough correspondences are detected between two maps, these maps can be fused into one, which is futher on used by multiple UAVs simultaneously.\\
+To create this map, a place recognition system detects overlaps between maps constructed by different \ac{UAV}. If enough correspondences are detected between two maps, these maps can be fused into one, which is further on used by multiple \ac{UAV} simultaneously.\\
 
 This work aims to implement a pipeline that, given two SLAM maps with multiple place matches, produces an optimized merged map. This includes finding an optimal alignment of the two maps by a 3D transformation, applying optimization techniques for improved alignment and identifying and fusing redundant information in the fused map. To allow for the Map Fusion to run online in real-world UAV experiments, furthermore the efficiency of the fusion algorithm will be taken into account.
