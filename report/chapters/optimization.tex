@@ -1,0 +1,88 @@
+\chapter{Optimization}
+\label{sec:optimization}
+
+Optimization such as \acf{PGO} and \acf{BA} are typically the most time consuming computation arising in a \acf{SLAM} system like ORB-SLAM(2) \cite{Mur-Artal2015,Mur-Artal2016} on which this semester project is based on.
+
+\ac{BA} amounts to a large scale optimization problem that is solved by simultaneously refining the 3D structure and viewing parameters, to achieve a reconstruction which is optimal. The optimization is obtained by using non-linear least squares algorithms, of which \acf{LM} has become a very popular choice \cite{Lourakis2005}.\\
+
+\cite{Lourakis2005} argues that considerable computational benefits can be gained by substituting the \ac{LM} algorithm in the implementation of \ac{BA} with a variant of \ac{DL} non-linear least squares technique.\\
+
+ORB-SLAM(2) also uses the \ac{LM} algorithm for the \ac{PGO} and the \ac{BA} and therefore as stated in \cite{Lourakis2005} this semester project could also benefit from better timing by using the \ac{DL} algorithm instead of the \ac{LM} algorithm.\\
+
+As the reader might not be familiar to the \ac{LM} algorithm and the \ac{DL} algorithm in detail, a short description of them, based on \cite{Lourakis2005}, will follow in the next two sections.
+
+Afterwards the finally used setup which performs best for the \ac{PGO} and the \ac{BA} will be explained.
+
+\section{\acf{LM} algorithm}
+
+The principle of the \ac{LM} algorithm is to solve a non-linear optimization problem by iteratively solving a linear approximation of the original problem \cite{Dahmen2013}. Therefore instead of solving $\min ||f(\mathbf{p})||_2$, $f$ is replaced by a linear Taylor series expansion
+\begin{equation}
+  f(\mathbf{p} + \delta_{\mathbf{p}}) \approx f(\mathbf{p}) + \mathbf{J} \delta_{\mathbf{p}}
+\end{equation}
+and so in each iteration, the algorithm has to find the step $\delta_{\mathbf{p}}$ that minimizes
+\begin{equation}
+  || \mathbf{x} - f(\mathbf{p} + \delta_{\mathbf{p}})|| \approx ||\mathbf{x} - f(\mathbf{p}) - \mathbf{J} \delta_{\mathbf{p}}||
+\end{equation}
+The solution to this minimum least square problem is obtained when $\mathbf{J}\delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})$ is orthogonal to the column space of $\mathbf{J}$, therefore $\mathbf{J}^T(\mathbf{J} \delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})) = \mathbf{0}$. Reordering this equation results in: 
+\begin{equation}
+  \mathbf{J}^T\mathbf{J}\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} - f(\mathbf{p}))
+  \label{eq:normal}
+\end{equation}
+which is also known as the normal equations. The solution of the normal equation is the Gauss-Newton step $\delta_{\mathbf{p}}$.
+The \ac{LM} method then solves a variation of \autoref{eq:normal}, the so-called augmented normal equations:
+\begin{equation}
+  (\mathbf{J}^T\mathbf{J} + \mu \mathbf{I})\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} -f(\mathbf{p})) \text{, with } \mu > 0
+  \label{eq:augnormal}
+\end{equation}
+$\mu$ is called the damping term and makes the \ac{LM} algorithm to a combination of Gradient-descent and the Gauss-Newton method.
+
+When the current solution is far from a local minimum, the damping term $\mu$ is chosen small and the \ac{LM} algorithm becomes a Gauss-Newton method. If the current solution is close to a local minimum, the damping term $\mu$ is chosen big and the \ac{LM} algorithm behaves like a Gradient-descent method.\\
+
+The \ac{LM} algorithm controls the damping term $\mu$ the following way. If the updated parameter $\mathbf{p} + \delta_{\mathbf{p}}$ with $\delta_{\mathbf{p}}$ calculated from \autoref{eq:augnormal} leads to a reduction in the error, the update is accepted and the process repeats with a decreased damping term $\mu$. Otherwise, the damping term $\mu$ is increased, the augmented normal equations are solved again and the process iterates until a value of $\delta_{\mathbf{p}}$ is found, which decreases the error.\\
+
+The disadvantage of the \ac{LM} algorithm is, that \autoref{eq:augnormal} has to be solved repeatedly until the error decreased, in every iteration. As the result of \autoref{eq:augnormal} can't be used if the error was not decreased, the \ac{LM} performs a lot of unproductive effort.
+
+\section{\acf{DL} algorithm}
+Similar to the \ac{LM} algorithm, the \ac{DL} algorithm also tries combinations of the Gauss-Newton and Gradient-descent directions. In contrast to the \ac{LM} algorithm, the \ac{DL} algorithm controls the combination of Gauss-Newton and Gradient-descent via the use of a trust region.\\
+
+In a trust region framework, information regarding the function $f$ is gathered and used to construct a quadratic model function $L$ whose behavior in the neighborhood of the current point is similar to that of $f$. Within a hypersphere of radius $\Delta$ around the current point, the model function $L$ is trusted to accurately represent $f$.\\
+
+A new candidate step minimizing $f$ is found by minimizing $L$ over the trust region. The model function is
+\begin{align}
+  L(\delta) = 2(\frac{1}{2} (\mathbf{x} - f(\mathbf{p}))^T(\mathbf{x} - f(\mathbf{p})) - (\mathbf{J}(\mathbf{x} - f(\mathbf{p})))^T \delta + \frac{1}{2} \delta^T \mathbf{J}^T \mathbf{J} \delta)\\
+  \text{subjected to } ||\delta|| \le \Delta \nonumber
+\end{align}
+and the candidate step is the solution of the following subproblem:
+\begin{equation}
+  \min_\delta L(\delta) \text{, subjected to } ||\delta|| \le \Delta
+  \label{eq:dlmin}
+\end{equation}
+The radius of the trust region is crucial to the success of a step and chosen based on the success of the model in approximating the objective function during the previous iterations.\\
+If the model is accurately predicting the behavior of the objective function, the radius is increased to allow longer steps. On the other hand, if the model fails to predict the objective function over the current trust region, the radius of the latter is reduced and \autoref{eq:dlmin} is solved again.
+
+The solution of \autoref{eq:dlmin} as a function of the trust region radius is a curve, shown in \autoref{fig:dogleg}. Powell \cite{powell1970hybrid} proposed to approximate this curve with a piecewise linear trajectory consisting of two line segments. The first line segment goes from the current point to the Cauchy point, given by
+\begin{equation}
+  \delta_{sd} = \frac{\mathbf{g}^T\mathbf{g}}{\mathbf{g}^T\mathbf{J}^T\mathbf{J}\mathbf{g}} \mathbf{g}
+\end{equation}
+The second runs from $\delta_{sd}$ to the Gauss-Newton step $\delta_{gn}$, given by the solution of
+\begin{equation}
+  \mathbf{J}^T\mathbf{J} \delta_{gn} = \mathbf{g}
+\end{equation}
+For $\kappa \in [0, 2]$ the dog leg trajectory is then defined as
+\begin{equation}
+  \delta(\kappa) = 
+    \begin{cases}
+      \kappa \delta_{gd} & 0 \le \kappa \le 1 \\
+      \delta_{gd} + (\kappa -1)(\delta_{gn} - \delta_{gd}) & 1 \le \kappa \le 2
+    \end{cases}
+\end{equation}
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{images/dogleg}
+  \caption{Dog leg approximation of the curved optimal trajectory (shown dashed)}
+  \label{fig:dogleg}
+\end{figure}
+
+\section{Final set-up}
