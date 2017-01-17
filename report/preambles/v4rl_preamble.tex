@@ -31,10 +31,42 @@
 %\usepackage{subfigure}
 \usepackage{subcaption}
 
-% TiKZ
-\usepackage{tikz}
-\usetikzlibrary{er,positioning,shapes,shadows}
-%\usepackage{tikzscale}
+% Listings
+\usepackage{listings}
+\lstdefinelanguage{Python}{
+  keywords={typeof, null, catch, switch, in, int, str, float, self},
+  keywordstyle=\color{ForestGreen}\bfseries,
+  ndkeywords={boolean, throw, import},
+  ndkeywords={return, class, if ,elif, endif, while, do, else, True, False , catch, def},
+  ndkeywordstyle=\color{BrickRed}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{\#},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily, numbers=left,%
+	numberstyle={\tiny \color{black}},% size of the numbers
+	numbersep=9pt, % this defines how far the numbers are from the text
+  escapechar=|,
+  escapeinside=||,
+  numberblanklines=false,
+}
+\let\origthelstnumber\thelstnumber
+\makeatletter
+\newcommand*\Suppressnumber{%
+  \lst@AddToHook{OnNewLine}{%
+    \let\thelstnumber\relax%
+     \advance\c@lstnumber-\@ne\relax%
+    }%
+}
+\newcommand*\Reactivatenumber[1]{%
+  \setcounter{lstnumber}{\numexpr#1-1\relax}
+  \lst@AddToHook{OnNewLine}{%
+   \let\thelstnumber\origthelstnumber%
+   \refstepcounter{lstnumber}
+  }%
+}
+\makeatother
 
 % Acronyms
 \usepackage{acronym}
@@ -48,13 +80,19 @@
 \usepackage{multirow}
 
 % Colors
-\usepackage{color}
+%\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{colortbl}
 \definecolor{black}{rgb}{0,0,0}
 \definecolor{white}{rgb}{1,1,1}
 \definecolor{darkred}{rgb}{0.5,0,0}
 \definecolor{darkgreen}{rgb}{0,0.5,0}
 \definecolor{darkblue}{rgb}{0,0,0.5}
+
+% TiKZ
+\usepackage{tikz}
+\usetikzlibrary{er,positioning,shapes,shadows}
+%\usepackage{tikzscale}
 
 % Additional math functionality
 \usepackage{amsmath}

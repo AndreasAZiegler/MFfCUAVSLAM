@@ -101,10 +101,80 @@ The whole \ac{ROS} setup is illustrated in \autoref{fig:ros_setup}.
 \end{figure}
 
 \subsection{Re-timing node}
-The re-timing \ac{ROS} node subscribes to the topics providing the ground truth position and the grayscale image and republishes the messages of these topics with the time stamp set to the current system time.
+The re-timing \ac{ROS} node subscribes to the topics providing the ground truth position and the greyscale image and republishes the messages of these topics with the time stamp set to the current system time.
 
 \subsection{Recording node}
 \label{subsec:record_node}
 The recording \ac{ROS} node subscribes to the topic, the re-timing \ac{ROS} node publishes, which contains the ground truth position. It saves the ground truth positions into a list and at the end writes all the positions together with their time stamps into a text file.
 
 \section{Evaluation}
+To evaluate the proposed new map merging approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy an evaluation procedure was developed in this semester project. The evaluation procedure performs the following steps:
+
+\begin{enumerate}
+  \item Loads ground truth and \ac{SLAM} positions
+  \item Find corresponding (in time) ground truth and \ac{SLAM} positions
+  \item Perform a 7DoF alignment between the ground truth and the \ac{SLAM} positions
+  \item Calculate the \acf{RMSE} between the ground truth and the \ac{SLAM} positions
+\end{enumerate}
+
+In the following subsections each step will be described in more detail.
+
+\subsection{Loading of the ground truth and \ac{SLAM} positions}
+This step involves the loading of the positions from the text files, applying the time offset $t_{\text{off}}$ and applying the camera-to-marker transformation $T_{\text{camera\_marker}}$.\\
+
+The offset $t_{\text{off}}$ has to be applied as there is a time offset, emerging from the fact that the \ac{ROS} messages with the greyscale image and the \ac{ROS} messages with the ground truth position do not have the same time of travel, which has to be compensated.\\
+For the \ac{UAV} data set the time offset varies a lot as both topic are received over a unreliable wireless LAN connection. To counteract this situation different time offset are tried by brute-forcing and the time offset which results in the smallest \ac{RMSE} is taken.\\ 
+
+As the camera and the marker of the motion tracking system do not have the same position, the transformation $T_{\text{camera\_marker}}$ has to be applied that the ground truth positions and the \ac{SLAM} positions are in the same coordinate system for the evaluation.
+
+\subsection{Find corresponding ground truth and \ac{SLAM} positions}
+In this step for every \ac{SLAM} position the first ground truth position with a time stamp higher than the one of the \ac{SLAM} position is searched in line \autoref{line:corr1}. After that the absolute time difference between the time stamp of the \ac{SLAM} position and the time stamp of the ground truth position right before the one which was found in the previous step is calculated in line \autoref{line:corr2}. If this absolute time difference is smaller than the specified accuracy, the ground truth and the \ac{SLAM} positions are saved in a new array (lines \autoref{line:corr2}-\autoref{line:corr3}). The full procedure is listed in \autoref{lst:correspond}.
+
+\lstset{language=Python}
+\begin{lstlisting}[frame=single, caption=Find corresponding positions in time, label=lst:correspond]
+def time_matching(list_gt_x,list_slam_x,gt_coordinates,
+                  slam_coordinates,accuracy):
+
+  # Matching of the datasets according to their time stamps
+  gt = np.zeros((len(list_gt_x), 4))
+  slam = np.zeros((len(list_slam_x), 4))
+
+  pos = 0
+  offset = 1
+  break_flag = False
+  for i in range(len(list_gt_x)):
+    for j in range(offset, len(list_slam_x)):
+      # value where slam time > gt time
+      if gt_coordinates[i,0] < slam_coordinates[j,0]:|\label{line:corr1}|
+        # check the one before
+        if abs(gt_coordinates[i,0]-slam_coordinates[j-1,0])|\label{line:corr2}||\Suppressnumber|
+                                                < accuracy:|\Reactivatenumber{17}|
+          gt[pos] = gt_coordinates[i]
+          slam[pos] = slam_coordinates[j - 1]|\label{line:corr3}|
+          pos = pos + 1
+          if pos >= len(slam_coordinates):
+            break_flag = True
+            break
+          offset = j
+          continue
+    if break_flag==True:
+      break
+
+  # Remove empty rows
+  slam = slam[~(slam == 0).all(1)]
+  gt = gt[~(gt == 0).all(1)]
+
+  return slam, gt
+\end{lstlisting}
+
+\subsection{Perform a 7DoF alignment}
+A 7DoF alignment is necessary as monocular \ac{SLAM} systems, as the one this semester project is based on, doesn't provide a scale and position and rotation of the \ac{SLAM} coordinate system and the one of the ground truth doesn't have to be the same one.\\
+
+To perform the 7DoF alignment an implementation of the algorithm proposed in \cite{Umeyama1991} was used. This algorithm determines the transformation and the scaling which results in the least \ac{RMSE}. With this transformation and scaling the \ac{SLAM} positions are transformed and scaled accordingly.
+
+\subsection{Calculate the \acf{RMSE}}
+The \acf{RMSE} between the ground truth and the \ac{SLAM} positions is calculated according to
+\begin{equation}
+  \textit{rmse} = \sqrt{\frac{1}{N - 1} \sum_i^N \big( (x_{\text{SLAM},i} - x_{\text{gt},i})^2 + (y_{\text{SLAM},i} - y_{\text{gt},i})^2 + (z_{\text{SLAM},i} - z_{\text{gt},i})^2\big)}
+\end{equation}
+where $N$ is the total number of positions, $x_{\text{SLAM},i}$, $y_{\text{SLAM},i}$ and $z_{\text{SLAM},i}$ are the positions of the \ac{SLAM} system and $x_{\text{gt},i}$, $y_{\text{gt},i}$ and $z_{\text{gt},i}$ are the ground truth positions provided by a motion tracking system.
