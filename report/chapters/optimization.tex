@@ -13,24 +13,24 @@ As the reader might not be familiar to the \ac{LM} algorithm and the \ac{DL} alg
 
 Afterwards the finally used setup which performs best for the \ac{PGO} and the \ac{BA} will be explained.
 
-\section{\acf{LM} algorithm}
+\section{\acf{LM} algorithm} 
 
 The principle of the \ac{LM} algorithm is to solve a non-linear optimization problem by iteratively solving a linear approximation of the original problem \cite{Dahmen2013}. Therefore instead of solving $\min ||f(\mathbf{p})||_2$, $f$ is replaced by a linear Taylor series expansion
-\begin{equation}
+\begin{equation} 
   f(\mathbf{p} + \delta_{\mathbf{p}}) \approx f(\mathbf{p}) + \mathbf{J} \delta_{\mathbf{p}}
 \end{equation}
 and so in each iteration, the algorithm has to find the step $\delta_{\mathbf{p}}$ that minimizes
-\begin{equation}
+\begin{equation} 
   || \mathbf{x} - f(\mathbf{p} + \delta_{\mathbf{p}})|| \approx ||\mathbf{x} - f(\mathbf{p}) - \mathbf{J} \delta_{\mathbf{p}}||
 \end{equation}
 The solution to this minimum least square problem is obtained when $\mathbf{J}\delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})$ is orthogonal to the column space of $\mathbf{J}$, therefore $\mathbf{J}^T(\mathbf{J} \delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})) = \mathbf{0}$. Reordering this equation results in: 
-\begin{equation}
+\begin{equation} 
   \mathbf{J}^T\mathbf{J}\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} - f(\mathbf{p}))
   \label{eq:normal}
 \end{equation}
 which is also known as the normal equations. The solution of the normal equation is the Gauss-Newton step $\delta_{\mathbf{p}}$.
 The \ac{LM} method then solves a variation of \autoref{eq:normal}, the so-called augmented normal equations:
-\begin{equation}
+\begin{equation} 
   (\mathbf{J}^T\mathbf{J} + \mu \mathbf{I})\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} -f(\mathbf{p})) \text{, with } \mu > 0
   \label{eq:augnormal}
 \end{equation}
@@ -53,7 +53,7 @@ A new candidate step minimizing $f$ is found by minimizing $L$ over the trust re
   \text{subjected to } ||\delta|| \le \Delta \nonumber
 \end{align}
 and the candidate step is the solution of the following subproblem:
-\begin{equation}
+\begin{equation} 
   \min_\delta L(\delta) \text{, subjected to } ||\delta|| \le \Delta
   \label{eq:dlmin}
 \end{equation}
@@ -67,6 +67,7 @@ The solution of \autoref{eq:dlmin} as a function of the trust region radius is a
 The second runs from $\delta_{sd}$ to the Gauss-Newton step $\delta_{gn}$, given by the solution of
 \begin{equation}
   \mathbf{J}^T\mathbf{J} \delta_{gn} = \mathbf{g}
+  \label{eq:dlgn}
 \end{equation}
 For $\kappa \in [0, 2]$ the dog leg trajectory is then defined as
 \begin{equation}
@@ -77,12 +78,26 @@ For $\kappa \in [0, 2]$ the dog leg trajectory is then defined as
     \end{cases}
 \end{equation}
 
-
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{images/dogleg}
   \caption{Dog leg approximation of the curved optimal trajectory (shown dashed)}
   \label{fig:dogleg}
 \end{figure}
+
+The dog leg step is defined as follows: If the Cauchy point lies outside the trust region, the \ac{DL} step is chosen as the truncated Cauchy step, i.e. the intersection of the Cauchy step with the boundary of the trust region. Otherwise, and if the Gauss-Newton step is within the trust region, the \ac{DL} step is taken to be equal to it. Finally, when the Cauchy point is in the trust region and the Gauss-Newton step is outside, the next trial point is computed as the intersection of the boundary of the trust region and the straight line joining the Cauchy point and the Gauss-Newton step, as shown in \autoref{fig:dogleg}. In every case, the dog leg path intersects the boundary of the trust region at most once and the point of intersection can be determined analytically, without search.\\
+
+The advantage of the \ac{DL} algorithm is, that once the Gauss-Newton step has been determined, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$, without the need to resolve \autoref{eq:dlgn}.
+
+\section{\ac{DL} vs. \ac{LM}}
+In the previous section, the disadvantage of the \ac{LM} algorithm and the advantage of the \ac{DL} algorithm was already mentioned. In this section the disadvantage of the \ac{LM} and the advantage of the \ac{DL} will be recapitulated shortly and a conclusion will be drawn.\\
+
+When a \ac{LM} step fails, the \ac{LM} algorithm has to resolve the augmented equations with an increased damping term. In other words, every update to the damping term requires that the augmented equations are solved again. Therefore failed steps entail unproductive effort.\\
+Opposite to this, once the Gauss-Newton step has been calculated, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$ without resorting to solving again \autoref{eq:dlgn}.\\
+Another fact is, that when the truncated Cauchy step is taken, the \ac{DL} algorithm can avoid solving \autoref{eq:dlgn}, while the \ac{LM} algorithm always needs to solve \autoref{eq:augnormal}, even if it chooses a step smaller than the Cauchy step.\\
+
+Since the \ac{BA} problem involves many parameters, linear algebra costs dominate the computational overhead associated with every inner iteration of both algorithms and therefore reducing the number of times that \autoref{eq:dlgn} needs to be solved is crucial for the overall performance of the minimization process.\\
+For the mentioned reasons, the \ac{DL} algorithm is a more promising implementation of the non-linear minimization arising in \ac{BA} in terms of the required computational effort.
+
 
 \section{Final set-up}
