@@ -41,5 +41,13 @@ As the culling removes information one has to be careful not to remove to many i
 
 With the right choice of the redundancy threshold, the number of edges and vertices in the optimization can be reduced significantly which results in a reduced runtime while achieving the same accuracy. 
 
-
 \section{Optimization}
+
+The timing of both optimization procedures (\ac{PGO} and \ac{BA}) with the \ac{LM} and the \ac{DL} algorithm were recorded and presented in \autoref{tab:res_timing_2}, \autoref{tab:res_timing_3}, \autoref{tab:res_timing_4} and \autoref{tab:res_timing_5}
+
+The results, listed in \autoref{tab:res_timing_6} and \autoref{tab:res_timing_7}, have shown, that the best results are achieved if for the \ac{PGO} the \ac{LM} algorithm and for the \ac{BA} the \ac{DL} algorithm is used.\\
+
+That only the \ac{BA} performs better with the \ac{DL} algorithm may comes from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized and the \ac{LM} algorithm performs better for smaller optimization problems.\\
+
+With the change of the \ac{BA} from using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.
+
