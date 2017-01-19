@@ -1,0 +1,310 @@
+% !TEX root = ../report.tex
+\chapter{Results}
+\label{chap:results}
+
+In this chapter the results of the proposed new map merging appproach, of the culling and of the different optimization algorithm settings are presented.
+
+\section{New map merging approach}
+This section presents the results of the proposed new map merging approach with the different data sets. With the first data set, the vi\_loops\_close data set a variety of different settings (number of \ac{KFM} and number of \acp{KF} to skip after a \ac{KFM}) was evaluated to get an idea of the influence of the two parameters and to choose a selection of suitable settings for the other data sets.\\
+
+For all settings three runs were performed from which an average for the two maps was calculated. This averages for both maps as well as the average of the averaged map results are listed in the following results.
+
+\subsection{Hand held data sets}
+
+\paragraph{vi\_loop\_close data set}: The \acp{RMSE} of the vi\_loop\_close data set for a variety of settings is listed in \autoref{tab:res_1}.
+
+\begin{table}[ht!]
+  \begin{center}
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    1 & 0 & 0.499766666666667 & 0.507333333333333 & 0.50355 \\
+    3 & 0 & 0.470333333333333 & 0.6175 & 0.543916666666667 \\
+    3 & 5 & 0.445266666666667 & 0.6091 & 0.527183333333333 \\
+    3 & 10 & 0.400266666666667 & 0.6392 & 0.519733333333333 \\
+    3 & 20 & 0.465733333333333 & 0.628033333333333 & 0.546883333333333 \\
+    5 & 0 & 0.5424 & 0.65 & 0.5962 \\
+    5 & 5 & 0.465333333333333 & 0.523066666666667 & 0.4942 \\
+    5 & 10 & 0.4081 & 0.5128 & 0.46045 \\
+    5 & 20 & 0.366833333333333 & 0.4907 & 0.428766666666667 \\
+    5 & 30 & 0.4094 & 0.445533333333333 & 0.427466666666667 \\
+    5 & 40 & 0.312866666666667 & 0.414266666666667 & 0.363566666666667 \\
+    7 & 10 & 0.439433333333333 & 0.5149 & 0.477166666666667 \\
+    7 & 20 & 0.396566666666667 & 0.531466666666667 & 0.464016666666667 \\
+    10 & 5 & 0.460466666666667 & 0.536466666666667 & 0.498466666666667 \\
+    10 & 10 & 0.4283 & 0.438533333333333 & 0.433416666666667 \\
+    15 & 5 & 0.4329 & 0.4862 & 0.45955 \\
+    15 & 10 & 0.44 & 0.510633333333333 & 0.475316666666667 \\
+  \end{tabular}
+  \end{center}
+  \caption{\acp{RMSE} of the vi\_loop\_close data set}
+  \label{tab:res_1}
+\end{table}
+
+\paragraph{vi\_loop\_far data set}: The \acp{RMSE} of the vi\_loop\_far data set for selection of settings is listed in \autoref{tab:res_2}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    1 & 0 & 0.553166666666667 & 0.4617 & 0.507433333333333 \\
+    5 & 20 & 0.3373 & 0.353066666666667 & 0.345183333333333 \\
+    10 & 5 & 0.377166666666667 & 0.312666666666667 & 0.344916666666667 \\
+    10 & 10 & 0.356933333333333 & 0.3429 & 0.349916666666667 \\
+  \end{tabular}
+  \caption{\acp{RMSE} of the vi\_loop\_far data set}
+  \label{tab:res_2}
+\end{table}
+
+
+\subsection{\acf{UAV} data set}
+
+The timings of the different parts (Map Point Fusion (MPF), \ac{PGO} and \ac{BA}) for the selected settings are listed in \autoref{tab:res_timing_1}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    1 & 0 & 0 & 142.25 & 163.886333333333 \\
+    5 & 20 & 44.31 & 649.516666666667 & 2112.18333333333 \\
+    10 & 5 & 57.4133333333333 & 372.417666666667 & 1334.04333333333 \\
+    10 & 10 & 98.1233333333333 & 532.276666666667 & 3659.48 \\
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set}
+  \label{tab:res_timing_1}
+  \end{center}
+\end{table}
+
+The \acp{RMSE} of the vi\_loop\_uav data set for selection of settings is listed in \autoref{tab:res_3}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    1 & 0 & 0.114066666666667 & 0.148066666666667 & 0.131066666666667 \\
+    5 & 20 & 0.0736 & 0.108733333333333 & 0.091166666666667 \\
+    10 & 5 & 0.1129 & 0.134233333333333 & 0.123566666666667 \\
+    10 & 10 & 0.0846 & 0.107533333333333 & 0.096066666666667 \\
+\end{tabular}
+\caption{\acp{RMSE} of the vi\_loop\_uav data set}
+\label{tab:res_3}
+\end{table}
+
+\section{Culling}
+
+The numbers of edges an verteces which the \ac{PGO} and the \ac{BA} had to process witout culling are listed in \autoref{tab:res_4} and for the case with culling in \autoref{tab:res_5}.\\
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{0}
+  \begin{tabular}{r|r|n{5}{0}|n{5}{0}|n{5}{0}|n{5}{0}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {PGO \# edges} & {\ac{PGO} \# verteces} & {\ac{BA} \# edges} & {\ac{BA} \# verteces} \\ \hline
+    1 & 0 & 753.666666666667 & 58.6666666666667 & 22193 & 2308 \\
+    10 & 10 & 1949.33333333333 & 149.666666666667 & 49765.3333333333 & 4806.33333333333 \\
+  \end{tabular}
+  \caption{number of edges and verteces in the \ac{PGO} and in the \ac{BA} without culling}
+  \label{tab:res_4}
+\end{table}
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{0}
+  \begin{tabular}{r|r|n{5}{0}|n{5}{0}|n{5}{0}|n{5}{0}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {PGO \# edges} & {\ac{PGO} \# verteces} & {\ac{BA} \# edges} & {\ac{BA} \# verteces} \\ \hline
+    1 & 0 & 282.666666666667 & 35.6666666666667 & 13221.6666666667 & 1892.66666666667 \\
+    10 & 10 & 656.666666666667 & 92.6666666666667 & 30453 & 4165 \\
+  \end{tabular}
+  \caption{number of edges and verteces in the \ac{PGO} and in the \ac{BA} with culling}
+  \label{tab:res_5}
+\end{table}
+
+The reduction of the edges and vertices in both the \ac{PGO} and the \ac{BA} in percentage are listed in \autoref{tab:res_percentage_1} and \autoref{tab:res_percentage_2}.
+
+\begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{r|r|r|r}
+    \# \acp{KFM} & \# \acp{KF} skip & \ac{PGO} edges red. [\%] & \ac{PGO} vertices red. [\%]   \\ 
+    \hline 
+    1 & 0 & 62.47 & 38.98 \\ 
+    10 & 10 & 66.29 & 38.00 \\ 
+  \end{tabular} 
+  \end{center}
+  \caption{Reduction of edges and vertices in the \ac{PGO} with culling in percent}
+  \label{tab:res_percentage_1}
+\end{table}
+
+\begin{table}[ht!]
+  \begin{center}
+  \begin{tabular}{r|r|r|r}
+    \# \acp{KFM} & \# \acp{KF} skip & \ac{BA} edges red. [\%] & \ac{BA} vertices red. [\%]   \\ 
+    \hline 
+    1 & 0 & 40.42 & 17.98 \\ 
+    10 & 10 & 38.81 & 13.34 \\ 
+  \end{tabular} 
+  \end{center}
+  \caption{Reduction of edges and vertices in the \ac{BA} with culling in percent}
+  \label{tab:res_percentage_2}
+\end{table}
+
+The timings of the different parts (Map Point Fusion (MPF), \ac{PGO} and \ac{BA}) for the selected settings with enabled culling and a redundancy thresold of 90\% are listed in \autoref{tab:res_timing_2}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    1 & 0 & 0 & 43.0133333333333 & 72.3266666666667 \\
+    5 & 20 & 10.08 & 119.776666666667 & 410.913333333333 \\
+    10 & 5 & 16.2366666666667 & 86.09 & 209.413333333333 \\
+    10 & 10 & 19.7866666666667 & 204.193333333333 & 378.81 \\
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 90\%}
+  \label{tab:res_timing_2}
+  \end{center}
+\end{table}
+
+\autoref{tab:res_timing_3} lists the timing results of the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM} with culling and a redundancy threshold of 94\%.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    10 & 10 & 33.78 & 178.83 & 1098.36666666667 \\
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 94\%}
+  \label{tab:res_timing_3}
+  \end{center}
+\end{table}
+
+\autoref{tab:res_6} lists the \acp{RMSE} with enabled culling with a redundancy threshold of 90\% with the vi\_loop\_uav data set.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    1 & 0 & 0.199066666666667 & 0.238233333333333 & 0.21865 \\
+    5 & 20 & 0.114966666666667 & 0.1315 & 0.123233333333333 \\
+    10 & 5 & 0.075033333333333 & 0.088333333333333 & 0.081683333333333 \\
+    10 & 10 & 0.1259 & 0.161166666666667 & 0.143533333333333 \\
+  \end{tabular}
+  \caption{\acp{RMSE} with culling and 90\% redundancy threshold with the vi\_loop\_uav data set}
+  \label{tab:res_6}
+\end{table}
+
+\autoref{tab:res_7} lists the \acp{RMSE} with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM} with enabled culling and a redundancy threshold of 94\% with the vi\_loop\_uav data set.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    10 & 10 & 0.083066666666667 & 0.109933333333333 & 0.0965 \\
+  \end{tabular}
+  \caption{\acp{RMSE} with culling and 94\% redundancy threshold with the vi\_loop\_uav data set}
+  \label{tab:res_7}
+\end{table}
+
+\textcolor{red}{Percentage of removed \acp{KF}}
+
+\section{Different optimization algorithms}
+
+The timings with both \ac{PGO} and \ac{BA} using the \ac{DL} algorithm with culling and a redundancy threshold of 90\% are listed in \autoref{tab:res_timing_4}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    1 & 0 & 0 & 48.75 & 68.2433333333333 \\ \hline
+    5 & 20 & 7.89 & 139.3 & 225.996666666667 \\ \hline
+    10 & 5 & 14.2733333333333 & 92.7866666666667 & 164.97 \\ \hline
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 90\%, \ac{PGO} and \ac{BA} both using the \ac{DL} algorithm}
+  \label{tab:res_timing_4}
+  \end{center}
+\end{table}
+
+\autoref{tab:res_timing_5} lists the timings with both \ac{PGO} and \ac{BA} using the \ac{DL} algorithm with culling and a redundancy threshold of 94\% of the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    10 & 10 & 35.2933333333333 & 243.346666666667 & 446.753333333333 \\ \hline
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 94\%, \ac{PGO} and \ac{BA} both using the \ac{DL} algorithm}
+  \label{tab:res_timing_5}
+  \end{center}
+\end{table}
+
+The timings with \ac{PGO} using the \ac{LM} and \ac{BA} using the \ac{DL} algorithm with culling and a redundancy threshold of 90\% are listed in \autoref{tab:res_timing_6}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    1 & 0 & 0 & 43.8266666666667 & 68.7666666666667 \\
+    5 & 20 & 6.74 & 99.8033333333333 & 204.363333333333 \\
+    10 & 5 & 16 & 93.4466666666667 & 164.576666666667 \\
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 90\%, \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm}
+  \label{tab:res_timing_6}
+  \end{center}
+\end{table}
+
+\autoref{tab:res_timing_7} lists the timings with \ac{PGO} using the \ac{LM} and \ac{BA} using the \ac{DL} algorithm with culling and a redundancy threshold of 94\% of the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM}.
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{2}
+  \begin{center}
+  \begin{tabular}{r|r|n{4}{2}|n{4}{2}|n{4}{2}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {MPF [ms]} & {\ac{PGO} [ms]} & {\ac{BA} [ms]} \\ \hline
+    10 & 10 & 33.9466666666667 & 178.696666666667 & 383.539666666667 \\
+  \end{tabular}
+  \caption{Timings of the \ac{UAV} data set with culling and a redundancy threshold of 90\%, \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm}
+  \label{tab:res_timing_7}
+  \end{center}
+\end{table}
+
+\autoref{tab:res_8} lists the \acp{RMSE} with enabled culling and a redundancy threshold of 90\% \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm. 
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    1 & 0 & 0.1907 & 0.254533333333333 & 0.222616666666667 \\
+    5 & 20 & 0.0759 & 0.1099 & 0.0929 \\
+    10 & 5 & 0.0656 & 0.089093333333333 & 0.077346666666667 \\
+  \end{tabular}
+  \caption{\acp{RMSE} with \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm with same settings as in \autoref{tab:res_6}}
+  \label{tab:res_8}
+\end{table}
+
+\autoref{tab:res_9} lists the \acp{RMSE} with enabled culling and a redundancy threshold of 94\% for the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM} \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm. 
+
+\begin{table}[ht!]
+  \npdecimalsign{.}
+  \nprounddigits{4}
+  \begin{tabular}{r|r|n{1}{4}|n{1}{4}|n{1}{4}}
+    {\# \acp{KFM}} & {\# \acp{KF} skip} & {\ac{RMSE} Map 1 [m]} & {\ac{RMSE} Map 2 [m]} & {\ac{RMSE} Average [m]} \\ \hline
+    10 & 10 & 0.061566666666667 & 0.095233333333333 & 0.0784\\
+  \end{tabular}
+  \caption{\acp{RMSE} with \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm with same settings as in \autoref{tab:res_7}}
+  \label{tab:res_9}
+\end{table}
