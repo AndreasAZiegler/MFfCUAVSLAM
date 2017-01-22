@@ -3,11 +3,13 @@
 
 Culling is motivated by the fact, that \ac{BA} complexity grows with the number of \acp{KF} and that it enables lifelong operation in the same environment as the number of \acp{KF} will not grow unbounded \cite{Mur-Artal2015}.
 
-ORB-SLAM2 already implemented a \ac{KF} culling mechanism which works locally. As the proposed new approach uses multiple \acp{KFM} to merge two maps, \ac{KF} culling within the merging procedure could remove redundant \acp{KF} in bigger area compared to the standard \ac{KF} culling approach of ORB-SLAM2.
+ORB-SLAM2 \cite{Mur-Artal2016} already implemented a \ac{KF} culling mechanism which works locally. As the proposed new approach uses multiple \acp{KFM} to merge two maps, \ac{KF} culling within the merging procedure could remove redundant \acp{KF} from a bigger area compared to the standard \ac{KF} culling approach of ORB-SLAM2.
 
 \section{Approach}
 
-The culling of \acp{KF} is an additional step in the map merging procedure which is executed after $n$ \acp{KFM} were found and before the maps were aligned and the \acp{MP} fused.
+The culling of \acp{KF} is an additional step in the map merging procedure which is executed after $n$ \acp{KFM} were found and before the maps are aligned and the \acp{MP} fused.
+
+The culling during the map merging follows the same approach as the one used for the local \ac{KF} culling in ORB-SLAM \cite{Mur-Artal2015}: All the \acp{KF} are discarded which observe a certain percentage of \acp{MP}, the redundancy threshold, which have been seen in at least other three \acp{KF} in the same or finer scale.
 
 Culling of \acp{KF} is performed for every \ac{KFM} separately. Therefore the \acp{KF} which are considered for culling per \ac{KFM} are the two \acp{KF} of the \ac{KFM} and their direct neighbors in the co-visibility graph. \autoref{fig:culling0} visualizes this, where the \textcolor{blue}{blue ellipses} indicate the direct neighbors in the co-visibility graph and the \textcolor{red}{red ellipse} surrounds all the \acp{KF} which are considered for the culling for one \ac{KFM}.
 
@@ -78,7 +80,7 @@ Culling of \acp{KF} is performed for every \ac{KFM} separately. Therefore the \a
   \label{fig:culling0}
 \end{figure}
 
-To illustrate this, \autoref{fig:culling1} shows the maps of two robots in a toy example.
+To illustrate the culling procedure, \autoref{fig:culling1} shows the maps of two robots in a toy example.
 
 \begin{figure}[H]
   \centering
@@ -170,7 +172,7 @@ To illustrate this, \autoref{fig:culling1} shows the maps of two robots in a toy
   \label{fig:culling1}
 \end{figure}
 
-\autoref{fig:culling2} shows the \acp{KF} which are directly connected to the \acp{KF} of a \ac{KFM} indicated by dashed rectangles.
+\autoref{fig:culling2} then shows the \acp{KF} which are directly connected to the \acp{KF} of a \ac{KFM} indicated by dashed rectangles.
 
 \begin{figure}[H]
   \centering
@@ -265,7 +267,7 @@ To illustrate this, \autoref{fig:culling1} shows the maps of two robots in a toy
   \label{fig:culling2}
 \end{figure}
 
-The toy example with culled \acp{KF} is shown in \autoref{fig:culling3}.
+The toy example with culled \acp{KF} is shown in \autoref{fig:culling3}, where the \textcolor{red}{x} represent culled \acp{KF}.
 
 \begin{figure}[H]
   \centering

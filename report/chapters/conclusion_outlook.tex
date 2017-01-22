@@ -11,11 +11,11 @@ The evaluation of the \ac{LM} and the \ac{DL} algorithm for the optimization pro
 With the new map merging approach, the culling of \acp{KF} and the usage of optimal optimization algorithms with respect to the runtime, a existing multi agent \ac{SLAM} system was improved which was the goal of this semester project.
 
 \section{Limitations}
-In the proposed map merging approach the number of \acp{KFM} and the number of \acp{KF} which are skipped after a \ac{KFM} depends on the data set. If a data set contains a big overlapping area between the maps of the clients, the number of \ac{KFM} and the number of \ac{KF} skips can be chosen high and the map merging approach will be able to merge the maps with high accuracy.
+In the proposed map merging approach the number of \acp{KFM} and the number of \acp{KF} which are skipped after a \ac{KFM} depends on the data set. If a data set contains a big overlapping area between the map of the clients, the number of \ac{KFM} and the number of \ac{KF} skips can be chosen high and the map merging approach will be able to merge the maps with high accuracy.
 
-If the same settings are now used with a data set, that contains only a small overlapping area, the map merging approach will probably fail as it won't be able to find the required number of matches.
+If the same settings are now used with a data set, that contains only a small overlapping area, the map merging approach will probably fail as it won't be able to find the required number of \acp{KFM}.
 
-Contrary, if a setting with a small number of \acp{KFM} and \ac{KF} skips is used, the map merging approach will be able to merge the maps with both data sets but it might will achieve a lower accuracy on the data set with a large overlap compared to a setting with a higher number of \acp{KFM} and \ac{KF} skips.
+Contrary, if a setting with a small number of \acp{KFM} and \ac{KF} skips is used, the map merging approach will be able to merge the maps with both data sets but it might achieves a lower accuracy on the data set with a large overlap compared to a setting with a higher number of \acp{KFM} and \ac{KF} skips.
 
 \section{Outlook}
 

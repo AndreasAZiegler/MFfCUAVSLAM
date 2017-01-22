@@ -1,11 +1,11 @@
 % !TEX root = ../report.tex
 \chapter{Discussion}
-I this chapter the results of \autoref{chap:results} will be discussed. The three parts of this semester project, namely map merging, culling and optimization, will be discusses each in an own section as their ideas are independent from each other.
+In this chapter the results of \autoref{chap:results} will be discussed. The three parts of this semester project, namely map merging, culling and different optimization algorithm settings, will be discusses each in an own section as their ideas are independent from each other.
 
 \section{Map merging}
-In \autoref{tab:res_1} one can see, that wiht only three \acp{KFM} the \ac{RMSE} gets higher which may result from the fact that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformation for the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
+In \autoref{tab:res_1} one can see, that with only three \acp{KFM} the \ac{RMSE} gets higher which may result from the fact that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformation for the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
 
-The setting with five \acp{KFM} and no \acp{KF} skipped also results in a worse \ac{RMSE} which could be explained with the same reason mentioned above.
+The setting with five \acp{KFM} and no \acp{KF} skipped also results in a worse \ac{RMSE} which could be explained with the same reason mentioned before.
 
 The settings with five and more \acp{KFM} and skipped \acp{KF} results in a lower \ac{RMSE} and therefore a higher accuracy compared to the old approach.\\
 
@@ -25,11 +25,11 @@ The selected settings which will also be evaluated with other data sets are list
   \label{tab:dis_settings}
 \end{table}
 
-The selected settings are may not the ones performing best on the first data set (vi\_loop\_close) but they are well suited for other data sets as they e.g. do not skipp too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map merging in data sets with less overlap.\\
+The selected settings are may not the ones performing best on the first data set (vi\_loop\_close) but they are also well suited for other data sets as they e.g. do not skipp too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map merging in data sets with less overlap.\\
 
 In \autoref{tab:res_2} and \autoref{tab:res_3} one can see, that the \ac{RMSE} is also decreased for the selected settings with the data sets vi\_loop\_far, respective vi\_loop\_uav.\\
 
-The presented results show, that with the usage of multiple \acp{KFM} and the skipping of \acp{KF}, the \ac{RMSE} can be reduced, respective the accuracy is increased.
+The presented results show therefore, that with the usage of multiple \acp{KFM} and the skipping of \acp{KF}, the \ac{RMSE} can be reduced, respective the accuracy can be increased.
 
 \section{Culling}
 
@@ -49,5 +49,5 @@ The results, listed in \autoref{tab:res_timing_6} and \autoref{tab:res_timing_7}
 
 That only the \ac{BA} performs better with the \ac{DL} algorithm may comes from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized and the \ac{LM} algorithm performs better for smaller optimization problems.\\
 
-With the change of the \ac{BA} from using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.
+With the change of the \ac{BA}, using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.
 

@@ -1,11 +1,14 @@
 \chapter{Map merging}
 \label{sec:mapmerging}
-In this chapter the proposed map merging approach is explained. Firstly, the reader will be introduced to the terms needed to explain map merging in general and the new map merging approach especially.
+In this chapter the proposed map merging approach is explained. Firstly, the reader will be introduced to the terms needed to explain map merging in general and the new map merging approach especially. Then the previous map merging approach is introduced followed by the new proposed approach.
 
 \section{Terms}
 
+\subsection{\acf{MP} / Landmarks}
+The terms \acf{MP} and Landmarks are used interchangeably in this report and are defined as uniquely identifiable objects in the world whose location can be estimated by a sensor \cite{wiki:landmark}.
+
 \subsection{\acf{KF}}
-\acfp{KF} are the most representative poses of the trajectory of a robot. As an example in the sketch in figure \autoref{fig:kf}, $x_0$ and $x_3$ are \acp{KF} whereas $x_1$ and $x_2$ are not \acp{KF} as they are may not enough representative.
+\acfp{KF} are the most representative poses of the trajectory of a robot. As an example in the sketch in figure \autoref{fig:kf}, $x_0$ and $x_3$ are \acp{KF} whereas $x_1$ and $x_2$ are not \acp{KF} as they are not enough representative because they do not contribute additional (unseen) \acp{MP}.
 
 \begin{figure}[H]
    \centering
@@ -14,7 +17,7 @@ In this chapter the proposed map merging approach is explained. Firstly, the rea
    \label{fig:kf}
 \end{figure}
 
-In ORB-SLAM \cite{Mur-Artal2015}, on which this semester project is based, the following conditions must be fulfilled to insert a new key frame:
+In ORB-SLAM \cite{Mur-Artal2015}, on which this semester project is based, the following conditions must be fulfilled to insert a new \ac{KF}:
 
 \begin{itemize}
   \item More than 20 frames must have passed from the last global relocalization
@@ -24,7 +27,7 @@ In ORB-SLAM \cite{Mur-Artal2015}, on which this semester project is based, the f
 \end{itemize}
 
 \subsection{\acf{KFM}}
-A \ac{KFM} is if two \acp{KF}, on per client, observed the same location (\autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (\autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (\autoref{fig:kfm3}).
+A \acf{KFM} is if two \acp{KF}, on per client, observed the same location (\autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (\autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (\autoref{fig:kfm3}).
 
 \begin{figure}[H]
   \centering
@@ -57,7 +60,7 @@ A \ac{KFM} is if two \acp{KF}, on per client, observed the same location (\autor
     \node [fill=black, circle,inner sep=1pt, text width=0.5mm] at (D1) {};
     \node [fill=black, circle,inner sep=1pt, text width=0.5mm] at (D2) {};
   \end{tikzpicture}
-  \caption{Two clients each with own landmarks and \acp{KF}}
+  \caption{Two clients each with own landmarks and \acp{KF} with a \ac{KF} observing the same location}
   \label{fig:kfm1}
 \end{figure}
 
@@ -127,46 +130,55 @@ A \ac{KFM} is if two \acp{KF}, on per client, observed the same location (\autor
 
     \node [fill=black, circle,inner sep=1pt, text width=0.5mm] at (D) {};
   \end{tikzpicture}
-  \caption{Maps can be aligned}
+  \caption{The two maps aligned}
   \label{fig:kfm3}
 \end{figure}
 
 In conclusion, a \ac{KFM} contains:
 \begin{itemize}
-  \item Two \acp{KF} (One per map)
+  \item Two \acp{KF} (One per map/client)
   \item The transformation ($T \in \text{Sim(3)}$) between the two \acp{KF}
 \end{itemize}
 
 \subsection{Co-visibility graph}
-\textcolor{red}{!!Check for illustration in [7] of ORB-SLAM.!!}
+Co-visibility is represented as an undirected weighted graph, a co-visibility graph. Each node is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} an the resulting co-visibility graph is shown in \autoref{fig:covis}.
 
-Co-visibility is represented as an undirected weighted graph. Each node is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}.
+\begin{figure}[H]
+	\centering
+	\subcaptionbox{\acp{KF} (blue), Current Camera (gree), \acp{MP} (black, red), Current Local \acp{MP} (red)\label{fig:covis1}}{\includegraphics[width=0.45\textwidth]{images/002.eps}}
+	\quad
+	\subcaptionbox{Co-visibility Graph\label{fig:covis2}}{\includegraphics[width=0.45\textwidth]{images/004.eps}}
+	\caption{\acp{KF} and resulting co-visibility graph (Figure taken from \cite{Mur-Artal2015})}
+	\label{fig:covis}
+\end{figure}
 
 \section{Old approach}
-In the old approach as soon as a \ac{KFM} was detected, the maps were merged. In a real world example this procedure looks the following:
+In the old approach, as soon as a \ac{KFM} was detected, the maps were merged. In a real world example this procedure looks the following:
 
 \begin{enumerate}
-  \item {Two clients observed the same location, shown in figure \autoref{fig:kfm4}
+  \item {Two clients observed the same location (shown in figure \autoref{fig:kfm4})
     \begin{figure}[H]
       \centering
       \includegraphics[width=0.75\textwidth]{images/map_1_2_1}
-      \caption{Two clients each with own landmarks and \acp{KF}}
+      \caption{Two clients each with own landmarks and \acp{KF} observing the same location}
       \label{fig:kfm4}
     \end{figure}}
-  \item {The transformation between the two \acp{KF} can be obtained, shown in figure \autoref{fig:kfm5}
+  \item {The transformation between the two maps can be obtained (shown in figure \autoref{fig:kfm5})
     \begin{figure}[H]
       \centering
       \includegraphics[width=0.75\textwidth]{images/map_1_2_2}
       \caption{Transformation $T$ obtained from the poses of the two \acp{KF}}
       \label{fig:kfm5}
     \end{figure}}
-  \item {The maps can be aligned, shown in figure \autoref{fig:kfm6}
+  \item {The maps can be aligned (shown in figure \autoref{fig:kfm6})
     \begin{figure}[H]
       \centering
       \includegraphics[width=0.75\textwidth]{images/map_1_2_merge}
       \caption{Aligned maps}
       \label{fig:kfm6}
     \end{figure}}
+  \item Perform \acf{PGO}
+  \item Perform \acf{BA}
 \end{enumerate}
 
 \section{New approach}
@@ -174,19 +186,19 @@ The proposed map merging approach works as follow:
 
 \begin{enumerate}
   \item After a \ac{KFM} is found skip $m$ \acp{KF} before processing the next \acs{KF}
-  \item Wait for $n$ \acp{KFM}
+  \item Wait until $n$ \acp{KFM} were detected
   \item Merge the two maps with the transformation of one of the \acp{KFM}
   \item Fuse map points in the ($n-1$) \acp{KFM}
-  \item Perform \ac{PGO} over essential graph
+  \item Perform \ac{PGO}
   \item Perform \ac{BA}
 \end{enumerate}
 
-To give the reader a better intuition about how the proposed map merging approach works, the new approach will be visualized in an example step by step.\\
-The example starts with two \acp{KF}, one per client, which are checked if they observe the same location, shown in figure \autoref{fig:newapproach1}. If a \ac{KFM} was detected, as in \autoref{fig:newapproach2}, $m$ \acp{KF} are skipped before processing the next \acp{KF}, shown in \autoref{fig:newapproach3}.
+To give the reader a better intuition about how the proposed map merging approach works, it will be visualized in a synthetic example step by step.\\
+The example starts with two \acp{KF}, one per client, which are checked if they observe the same location (shown in figure \autoref{fig:newapproach1}). If a \ac{KFM} was detected, as in \autoref{fig:newapproach2}, $m$, in this example five, \acp{KF} are skipped before processing the next \acp{KF} (shown in \autoref{fig:newapproach3}).
 
 \begin{figure}[H]
     \centering
-    \subcaptionbox{Two client with one \acp{KF}\label{fig:newapproach1}}{
+    \subcaptionbox{Two client with one \ac{KF}\label{fig:newapproach1}}{
       \begin{tikzpicture}
         \coordinate (A1) at (0, 3);
         \coordinate (A1MP1) at (-0.5, 3.5);
@@ -264,7 +276,7 @@ The example starts with two \acp{KF}, one per client, which are checked if they 
           \end{tabular}
         };
       \end{tikzpicture}}
-      \caption{First two steps of the new map merging procedure}
+      \caption{First two steps of the new map merging example}
       \label{fig:newapproach12}
 \end{figure}
 
@@ -409,7 +421,7 @@ The example starts with two \acp{KF}, one per client, which are checked if they 
   \label{fig:newapproach3}
 \end{figure}
 
-After $m$ \acp{KF} are skipped, the system checks again, if a \ac{KFM} can be detected, shown in \autoref{fig:newapproach3}. \autoref{fig:newapproach4} shows the case, where the next \ac{KFM} could be detected.
+After $m(= 5)$ \acp{KF} are skipped, the system checks again, if a \ac{KFM} can be detected, shown in \autoref{fig:newapproach3}. \autoref{fig:newapproach4} then shows the case, where the next \ac{KFM} was be detected.
 
 \begin{figure}[H]
   \centering
@@ -785,7 +797,7 @@ After $m$ \acp{KF} are skipped, the system checks again, if a \ac{KFM} can be de
   \label{fig:newapproach5}
 \end{figure}
 
-Then again $m$ \ac{KF} are skipped, as shown in \autoref{fig:newapproach5}, before the last \ac{KFM} can be detected, shown in \autoref{fig:newapproach6}.
+Then again $m$ \acp{KF} are skipped, as shown in \autoref{fig:newapproach5}, before the last \ac{KFM} was detected, shown in \autoref{fig:newapproach6}.
 
 \begin{figure}[H]
   \centering
@@ -1021,7 +1033,7 @@ Then again $m$ \ac{KF} are skipped, as shown in \autoref{fig:newapproach5}, befo
   \label{fig:newapproach6}
 \end{figure}
 
-After the last \ac{KFM} was detected, the maps will be aligned with the transformation $T$ from the first \ac{KFM} and the \acp{MP} of the \acp{KF} belonging to a \ac{KFM} are fused, shown in \autoref{fig:newapproach7}.
+After the last \ac{KFM} was detected, the maps will be aligned with the transformation $T$ from the first \ac{KFM} and the \acp{MP} of the \acp{KF} belonging to a \ac{KFM} are fused, as shown in \autoref{fig:newapproach7}.
 
 \begin{figure}[H]
   \centering
@@ -1201,14 +1213,14 @@ After the last \ac{KFM} was detected, the maps will be aligned with the transfor
   \label{fig:newapproach7}
 \end{figure}
 
-After the two maps are aligned (possibly with still some miss alignment as in \autoref{fig:newapproach7}) the \ac{PGO} can be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, of the \acp{KF} and of the \acp{MP}.\\
+After the two maps are aligned (possibly with still some miss alignment as in \autoref{fig:newapproach7}) the \ac{PGO} can be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, the \acp{KF} and the \acp{MP}.\\
 
 The idea behind the usage of multiple \acp{KFM} was already discussed in contrary to the idea of skipping \acp{KF} after a \ac{KFM} was detected. This idea will be discussed next.
 
-If \acp{KF} are skipped after \ac{KFM} was detected, the next \ac{KFM} will potentially have a bigger distance to the previous \ac{KFM}. This leads that the \acp{KFM} will be more apart from each other and therefor will cover a bigger area. The \acp{KFM} from a bigger area provide the \ac{PGO} and the \ac{BA} with more information which hopefully leads to a reduction in drift and an increased accuracy.
+If \acp{KF} are skipped after \ac{KFM} was detected, the next \ac{KFM} will potentially have a bigger distance to the previous \ac{KFM}. This causes that the \acp{KFM} will be more apart from each other and therefor they will cover a bigger area. The \acp{KFM} from a bigger area provide the \ac{PGO} and the \ac{BA} with more information which hopefully leads to a reduction in drift and an increased accuracy.
 \textcolor{red}{\textbf{!!!Check \ac{PGO} implementation!!!}}
 
-To visualize the influence of the skipping of \acp{KF}, \autoref{fig:kfskip1} shows the co-visibility graph of an experiment where only one \ac{KF} was skipped after a \ac{KFM} was detected. \autoref{fig:kfskip2} on the other hand shows an experiment where 10 \acp{KF} were skipped after a \ac{KFM} was detected. One can easily see, that the \acp{KFM} in \autoref{fig:kfskip2} are more apart from each other and cover a bigger area compared to the \acp{KFM} in \autoref{fig:kfskip1}.
+To visualize the influence of this idea, \autoref{fig:kfskip1} shows the co-visibility graph of an experiment where only one \ac{KF} was skipped after a \ac{KFM} was detected. \autoref{fig:kfskip2} on the other hand shows an experiment where 10 \acp{KF} were skipped after a \ac{KFM} was detected. One can easily see, that the \acp{KFM} in \autoref{fig:kfskip2} are more apart from each other and cover a bigger area compared to the \acp{KFM} in \autoref{fig:kfskip1}.
 
 \begin{figure}[H]
    \centering

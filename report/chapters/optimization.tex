@@ -1,15 +1,15 @@
 \chapter{Optimization}
 \label{sec:optimization}
 
-Optimization such as \acf{PGO} and \acf{BA} are typically the most time consuming computation arising in a \acf{SLAM} system like ORB-SLAM(2) \cite{Mur-Artal2015,Mur-Artal2016} on which this semester project is based on.
+Optimizations such as \acf{PGO} and \acf{BA} are typically the most time consuming computations arising in a \ac{SLAM} system like ORB-SLAM(2) \cite{Mur-Artal2015,Mur-Artal2016} on which this semester project is based on.
 
 \ac{BA} amounts to a large scale optimization problem that is solved by simultaneously refining the 3D structure and viewing parameters, to achieve a reconstruction which is optimal. The optimization is obtained by using non-linear least squares algorithms, of which \acf{LM} has become a very popular choice \cite{Lourakis2005}.\\
 
-\cite{Lourakis2005} argues that considerable computational benefits can be gained by substituting the \ac{LM} algorithm in the implementation of \ac{BA} with a variant of \ac{DL} non-linear least squares technique.\\
+\cite{Lourakis2005} argues that considerable computational benefits can be gained by substituting the \ac{LM} algorithm in the implementation of \ac{BA} with a variant of \acf{DL} non-linear least squares technique.\\
 
-ORB-SLAM(2) also uses the \ac{LM} algorithm for the \ac{PGO} and the \ac{BA} and therefore as stated in \cite{Lourakis2005} this semester project could also benefit from better timing by using the \ac{DL} algorithm instead of the \ac{LM} algorithm.\\
+ORB-SLAM(2) also uses the \ac{LM} algorithm for the \ac{PGO} and the \ac{BA} and therefore as stated in \cite{Lourakis2005}, this semester project could also benefit from better timing by using the \ac{DL} algorithm instead of the \ac{LM} algorithm.\\
 
-As the reader might not be familiar to the \ac{LM} algorithm and the \ac{DL} algorithm in detail, a short description of them, based on \cite{Lourakis2005}, will follow in the next two sections.
+As the reader might not be familiar to the \ac{LM} and the \ac{DL} algorithm in detail, a short description of them, based on \cite{Lourakis2005}, will follow in the next two sections.
 
 Afterwards the finally used setup which performs best for the \ac{PGO} and the \ac{BA} will be explained.
 
@@ -19,11 +19,11 @@ The principle of the \ac{LM} algorithm is to solve a non-linear optimization pro
 \begin{equation} 
   f(\mathbf{p} + \delta_{\mathbf{p}}) \approx f(\mathbf{p}) + \mathbf{J} \delta_{\mathbf{p}}
 \end{equation}
-and so in each iteration, the algorithm has to find the step $\delta_{\mathbf{p}}$ that minimizes
+where $\mathbf{J}$ denotes the Jacobian matrix $\frac{\partial f(\mathbf{p})}{\partial \mathbf{p}}$. And so in each iteration, the algorithm has to find the step $\delta_{\mathbf{p}}$ that minimizes
 \begin{equation} 
   || \mathbf{x} - f(\mathbf{p} + \delta_{\mathbf{p}})|| \approx ||\mathbf{x} - f(\mathbf{p}) - \mathbf{J} \delta_{\mathbf{p}}||
 \end{equation}
-The solution to this minimum least square problem is obtained when $\mathbf{J}\delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})$ is orthogonal to the column space of $\mathbf{J}$, therefore $\mathbf{J}^T(\mathbf{J} \delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})) = \mathbf{0}$. Reordering this equation results in: 
+The solution to this minimum least square problem is obtained when $\mathbf{J}\delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})$ is orthogonal to the column space of $\mathbf{J}$, therefore $\mathbf{J}^T(\mathbf{J} \delta_{\mathbf{p}} - \mathbf{x} + f(\mathbf{p})) = \mathbf{0}$. Reordering this equation leads to in: 
 \begin{equation} 
   \mathbf{J}^T\mathbf{J}\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} - f(\mathbf{p}))
   \label{eq:normal}
@@ -34,7 +34,7 @@ The \ac{LM} method then solves a variation of \autoref{eq:normal}, the so-called
   (\mathbf{J}^T\mathbf{J} + \mu \mathbf{I})\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} -f(\mathbf{p})) \text{, with } \mu > 0
   \label{eq:augnormal}
 \end{equation}
-$\mu$ is called the damping term and makes the \ac{LM} algorithm to a combination of Gradient-descent and the Gauss-Newton method.
+Where $\mathbf{I}$ is the identity matrix and $\mu$ is called the damping term and makes the \ac{LM} algorithm to a combination of the Gradient-descent and the Gauss-Newton method.
 
 When the current solution is far from a local minimum, the damping term $\mu$ is chosen small and the \ac{LM} algorithm becomes a Gauss-Newton method. If the current solution is close to a local minimum, the damping term $\mu$ is chosen big and the \ac{LM} algorithm behaves like a Gradient-descent method.\\
 
@@ -73,15 +73,15 @@ For $\kappa \in [0, 2]$ the dog leg trajectory is then defined as
 \begin{equation}
   \delta(\kappa) = 
     \begin{cases}
-      \kappa \delta_{gd} & 0 \le \kappa \le 1 \\
-      \delta_{gd} + (\kappa -1)(\delta_{gn} - \delta_{gd}) & 1 \le \kappa \le 2
+      \kappa \delta_{sd} & 0 \le \kappa \le 1 \\
+      \delta_{sd} + (\kappa -1)(\delta_{gn} - \delta_{sd}) & 1 \le \kappa \le 2
     \end{cases}
 \end{equation}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{images/dogleg}
-  \caption{Dog leg approximation of the curved optimal trajectory (shown dashed)}
+  \caption{Dog leg approximation of the curved optimal trajectory (shown dashed) (Figure taken from \cite{Lourakis2005})}
   \label{fig:dogleg}
 \end{figure}
 
@@ -90,14 +90,14 @@ The dog leg step is defined as follows: If the Cauchy point lies outside the tru
 The advantage of the \ac{DL} algorithm is, that once the Gauss-Newton step has been determined, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$, without the need to resolve \autoref{eq:dlgn}.
 
 \section{\ac{DL} vs. \ac{LM}}
-In the previous section, the disadvantage of the \ac{LM} algorithm and the advantage of the \ac{DL} algorithm was already mentioned. In this section the disadvantage of the \ac{LM} and the advantage of the \ac{DL} will be recapitulated shortly and a conclusion will be drawn.\\
+In the previous section, the disadvantage of the \ac{LM} algorithm and the advantage of the \ac{DL} algorithm was already mentioned. In this section they will be recapitulated shortly and a conclusion will be drawn.\\
 
 When a \ac{LM} step fails, the \ac{LM} algorithm has to resolve the augmented equations with an increased damping term. In other words, every update to the damping term requires that the augmented equations are solved again. Therefore failed steps entail unproductive effort.\\
 Opposite to this, once the Gauss-Newton step has been calculated, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$ without resorting to solving again \autoref{eq:dlgn}.\\
 Another fact is, that when the truncated Cauchy step is taken, the \ac{DL} algorithm can avoid solving \autoref{eq:dlgn}, while the \ac{LM} algorithm always needs to solve \autoref{eq:augnormal}, even if it chooses a step smaller than the Cauchy step.\\
 
-Since the \ac{BA} problem involves many parameters, linear algebra costs dominate the computational overhead associated with every inner iteration of both algorithms and therefore reducing the number of times that \autoref{eq:dlgn} needs to be solved is crucial for the overall performance of the minimization process.\\
-For the mentioned reasons, the \ac{DL} algorithm is a more promising implementation of the non-linear minimization arising in \ac{BA} in terms of the required computational effort.
+Since the \ac{PGO} and the \ac{BA} problem involves many parameters, linear algebra costs dominate the computational overhead associated with every inner iteration of both algorithms (\ac{LM} and \ac{DL}) and therefore reducing the number of times that \autoref{eq:dlgn} needs to be solved is crucial for the overall performance of the minimization process.\\
+For the mentioned reasons, the \ac{DL} algorithm is a more promising implementation of the non-linear minimization arising in \ac{PGO} and \ac{BA} in terms of the required computational effort.
 
 \section{Final set-up}
-After evaluating the timing of the \ac{PGO} as well as the \ac{BA} with the \ac{LM} algorithm and also with the \ac{DL} algorithm the system was changed to the best performing setup, for which the results are presented in \textcolor{red}{!!Reference to the result section. Maybe explain that both implementations are taken from the g2o library!!}
+After evaluating the timing of the \ac{PGO} as well as the \ac{BA} with the \ac{LM} algorithm and also with the \ac{DL} algorithm the system was changed to the best performing setup, for which the results are presented in \autoref{chap:results}. For the implementation of the \ac{LM} and the \ac{DL} algorithm the g2o library \cite{Kummerle2011} was used.  

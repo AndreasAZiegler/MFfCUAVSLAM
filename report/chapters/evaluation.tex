@@ -1,21 +1,21 @@
 % !TEX root = ../report.tex
 \chapter{Evaluation}
-In this chapter it will be described how the proposed approaches were compared against the standard implementation and how they were evaluated.\\
+In this chapter it will be described how the proposed approaches were compared against each other and against the standard implementation and how they were evaluated.\\
 At first the data sets used for the comparison and the evaluation are described, then the \acf{ROS} setup will be explained and in the last section, the evaluation procedure itself will be described.
 
 \section{Data sets}
 Both of the used data sets were captured in a room equipped with a motion tracking system, VICON, which provided the ground truth for the comparison and the evaluation. As the whole setup is based on \ac{ROS}, the data sets were recorded with rosbags. The rosbags contain at least the following topics:
 \begin{itemize}
   \item The grayscale images as sensor\_msgs.msg.Image in the topic /cam0/image\_raw
-  \item The ground truth as geometry\_msgs.msg.PointStamped in the topic /camera\_imu/vrpn\_client/estimated\_transform respective
+  \item The ground truth as geometry\_msgs.msg.PointStamped in the topic /camera\_imu/vrpn\_client/estimated\_transform
 \end{itemize}
 
 The recorded rosbags were afterwards splitted into parts which do not contain any loop closure as loop closures would prohibit a fair comparison between the standard and the proposed new map merging approach.
 
-For the evaluation each client took the data from a seperate splitted rosbag simulating two clients running the same time in the same area.
+For the evaluation each client took the data from a seperate splitted rosbag simulating two clients running the same time.
 
 \subsection{Hand held}
-The hand held data set (vi\_loops\_close and vi\_loosp\_far) was recorded with a camera rig walking loops while facing the wall. In the data set ``vi\_loops\_close'', a frame of it shown in \autoref{fig:dataset_close}, the camera was close to the wall. In the data set ``vi\_loops\_far'', a frame of it shown in \autoref{fig:dataset_far}, the camera was far from the wall.
+The hand held data sets (vi\_loops\_close and vi\_loosp\_far) were recorded with a camera rig walking loops while facing the wall. In the data set ``vi\_loops\_close'', a frame of it shown in \autoref{fig:dataset_close}, the camera was close to the wall. In the data set ``vi\_loops\_far'', a frame of it shown in \autoref{fig:dataset_far}, the camera was far from the wall.
 
 \begin{figure}[H]
   \centering
@@ -49,8 +49,8 @@ The \ac{UAV} used to record this data set (vi\_loops\_uav) is shown in \autoref{
 \end{figure}
 
 \section{\acf{ROS} setup}
-As already mentioned, the data set for the two clients were created by splitting a bigger data set recorded with only one client. Because the splitted data sets don't have the same timing, a retiming \ac{ROS} node, explained in the next subsection, was written to work around this issue.\\
-To get the ground truth in a usable format, a record \ac{ROS} node, explained in \autoref{subsec:record_node}, was written which receives the ground truth position from the retimin \ac{ROS} node and writes it into a text file.\\
+As already mentioned, the data set for the two clients were created by splitting a bigger data set recorded with only one client. Because the split data sets don't have the same timing, a re-timing \ac{ROS} node, explained in the next subsection, was written to work around this issue.\\
+To get the ground truth in a usable format, a record \ac{ROS} node, explained in \autoref{subsec:record_node}, was written which receives the ground truth position from the re-timing \ac{ROS} node and writes it into a text file.\\
 
 The whole \ac{ROS} setup is illustrated in \autoref{fig:ros_setup}.
 
@@ -108,10 +108,10 @@ The re-timing \ac{ROS} node subscribes to the topics providing the ground truth 
 The recording \ac{ROS} node subscribes to the topic, the re-timing \ac{ROS} node publishes, which contains the ground truth position. It saves the ground truth positions into a list and at the end writes all the positions together with their time stamps into a text file.
 
 \section{Evaluation}
-To evaluate the proposed new map merging approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy an evaluation procedure was developed in this semester project. The evaluation procedure performs the following steps:
+To evaluate the proposed new map merging approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy an evaluation procedure was developed. The evaluation procedure performs the following steps:
 
 \begin{enumerate}
-  \item Loads ground truth and \ac{SLAM} positions
+  \item Load ground truth and \ac{SLAM} positions
   \item Find corresponding (in time) ground truth and \ac{SLAM} positions
   \item Perform a 7DoF alignment between the ground truth and the \ac{SLAM} positions
   \item Calculate the \acf{RMSE} between the ground truth and the \ac{SLAM} positions
@@ -128,7 +128,7 @@ For the \ac{UAV} data set the time offset varies a lot as both topic are receive
 As the camera and the marker of the motion tracking system do not have the same position, the transformation $T_{\text{camera\_marker}}$ has to be applied that the ground truth positions and the \ac{SLAM} positions are in the same coordinate system for the evaluation.
 
 \subsection{Find corresponding ground truth and \ac{SLAM} positions}
-In this step for every \ac{SLAM} position the first ground truth position with a time stamp higher than the one of the \ac{SLAM} position is searched in line \autoref{line:corr1}. After that the absolute time difference between the time stamp of the \ac{SLAM} position and the time stamp of the ground truth position right before the one which was found in the previous step is calculated in line \autoref{line:corr2}. If this absolute time difference is smaller than the specified accuracy, the ground truth and the \ac{SLAM} positions are saved in a new array (lines \autoref{line:corr2}-\autoref{line:corr3}). The full procedure is listed in \autoref{lst:correspond}.
+In this step for every \ac{SLAM} position the first ground truth position with a time stamp higher than the one of the \ac{SLAM} position is searched (line \autoref{line:corr1}). After that, the absolute time difference between the time stamp of the \ac{SLAM} position and the time stamp of the ground truth position right before the one which was found in the previous step is calculated (line \autoref{line:corr2}). If this absolute time difference is smaller than the specified accuracy, the ground truth and the \ac{SLAM} positions are saved in a new array (lines \autoref{line:corr2}-\autoref{line:corr3}). The full procedure is listed in \autoref{lst:correspond}.
 
 \lstset{language=Python}
 \begin{lstlisting}[frame=single, caption=Find corresponding positions in time, label=lst:correspond]

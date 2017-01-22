@@ -5,7 +5,7 @@
 In this chapter the results of the proposed new map merging appproach, of the culling and of the different optimization algorithm settings are presented.
 
 \section{New map merging approach}
-This section presents the results of the proposed new map merging approach with the different data sets. With the first data set, the vi\_loops\_close data set a variety of different settings (number of \ac{KFM} and number of \acp{KF} to skip after a \ac{KFM}) was evaluated to get an idea of the influence of the two parameters and to choose a selection of suitable settings for the other data sets.\\
+This section presents the results of the proposed new map merging approach with the different data sets. With the first data set, the vi\_loops\_close data set a variety of different settings (number of \acp{KFM} and number of \acp{KF} to skip after a \ac{KFM}) was evaluated to get an idea of the influence of the two parameters and to choose a selection of suitable settings for the other data sets.\\
 
 For all settings three runs were performed from which an average for the two maps was calculated. This averages for both maps as well as the average of the averaged map results are listed in the following results.
 
@@ -42,7 +42,7 @@ For all settings three runs were performed from which an average for the two map
   \label{tab:res_1}
 \end{table}
 
-\paragraph{vi\_loop\_far data set}: The \acp{RMSE} of the vi\_loop\_far data set for selection of settings is listed in \autoref{tab:res_2}.
+\paragraph{vi\_loop\_far data set}: The \acp{RMSE} of the vi\_loop\_far data set for a selection of settings is listed in \autoref{tab:res_2}.
 
 \begin{table}[ht!]
   \npdecimalsign{.}
@@ -79,7 +79,7 @@ The timings of the different parts (Map Point Fusion (MPF), \ac{PGO} and \ac{BA}
   \end{center}
 \end{table}
 
-The \acp{RMSE} of the vi\_loop\_uav data set for selection of settings is listed in \autoref{tab:res_3}.
+The \acp{RMSE} of the vi\_loop\_uav data set for selection of settings are listed in \autoref{tab:res_3}.
 
 \begin{table}[ht!]
   \npdecimalsign{.}
@@ -97,7 +97,7 @@ The \acp{RMSE} of the vi\_loop\_uav data set for selection of settings is listed
 
 \section{Culling}
 
-The numbers of edges an verteces which the \ac{PGO} and the \ac{BA} had to process witout culling are listed in \autoref{tab:res_4} and for the case with culling in \autoref{tab:res_5}.\\
+The numbers of edges an vertices which the \ac{PGO} and the \ac{BA} had to process witout culling are listed in \autoref{tab:res_4} and for the case with culling in \autoref{tab:res_5}.\\
 
 \begin{table}[ht!]
   \npdecimalsign{.}
@@ -107,7 +107,7 @@ The numbers of edges an verteces which the \ac{PGO} and the \ac{BA} had to proce
     1 & 0 & 753.666666666667 & 58.6666666666667 & 22193 & 2308 \\
     10 & 10 & 1949.33333333333 & 149.666666666667 & 49765.3333333333 & 4806.33333333333 \\
   \end{tabular}
-  \caption{number of edges and verteces in the \ac{PGO} and in the \ac{BA} without culling}
+  \caption{number of edges and vertices in the \ac{PGO} and in the \ac{BA} without culling}
   \label{tab:res_4}
 \end{table}
 
@@ -119,7 +119,7 @@ The numbers of edges an verteces which the \ac{PGO} and the \ac{BA} had to proce
     1 & 0 & 282.666666666667 & 35.6666666666667 & 13221.6666666667 & 1892.66666666667 \\
     10 & 10 & 656.666666666667 & 92.6666666666667 & 30453 & 4165 \\
   \end{tabular}
-  \caption{number of edges and verteces in the \ac{PGO} and in the \ac{BA} with culling}
+  \caption{number of edges and vertices in the \ac{PGO} and in the \ac{BA} with culling}
   \label{tab:res_5}
 \end{table}
 
@@ -213,8 +213,6 @@ The timings of the different parts (Map Point Fusion (MPF), \ac{PGO} and \ac{BA}
   \label{tab:res_7}
 \end{table}
 
-\textcolor{red}{Percentage of removed \acp{KF}}
-
 \section{Different optimization algorithms}
 
 The timings with both \ac{PGO} and \ac{BA} using the \ac{DL} algorithm with culling and a redundancy threshold of 90\% are listed in \autoref{tab:res_timing_4}.
@@ -296,7 +294,7 @@ The timings with \ac{PGO} using the \ac{LM} and \ac{BA} using the \ac{DL} algori
   \label{tab:res_8}
 \end{table}
 
-\autoref{tab:res_9} lists the \acp{RMSE} with enabled culling and a redundancy threshold of 94\% for the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM} \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm. 
+\autoref{tab:res_9} lists the \acp{RMSE} with enabled culling and a redundancy threshold of 94\% for the setting with 10 \acp{KFM} and skipping 10 \acp{KFM} after a \ac{KFM}, \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm. 
 
 \begin{table}[ht!]
   \npdecimalsign{.}
