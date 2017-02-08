@@ -15,7 +15,7 @@ Afterwards the finally used setup which performs best for the \ac{PGO} and the \
 
 \section{\acf{LM} algorithm} 
 
-The principle of the \ac{LM} algorithm is to solve a non-linear optimization problem by iteratively solving a linear approximation of the original problem \cite{Dahmen2013}. Therefore instead of solving $\min ||f(\mathbf{p})||_2$, $f$ is replaced by a linear Taylor series expansion
+The principle of the \ac{LM} algorithm is to solve a non-linear optimization problem by iteratively solving a linear approximation of the original problem \cite{Dahmen:937425}. Therefore instead of solving $\min ||f(\mathbf{p})||_2$, $f$ is replaced by a linear Taylor series expansion
 \begin{equation} 
   f(\mathbf{p} + \delta_{\mathbf{p}}) \approx f(\mathbf{p}) + \mathbf{J} \delta_{\mathbf{p}}
 \end{equation}
