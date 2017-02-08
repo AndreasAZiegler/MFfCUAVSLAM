@@ -3,17 +3,16 @@
 %\chapter*{Zusammenfassung}
 %\addcontentsline{toc}{chapter}{Zusammenfassung}
 
-\paragraph*{Motivation}
-A correct and accurate common map is crucial for multiple robots to collaboratively performing tasks. 
+%\paragraph*{Motivation}
+A correct and accurate common map is crucial for multiple robots to collaboratively performing tasks.\\
 
-\paragraph*{Problem statement}
-In this semester project an existing multi agent \ac{SLAM} system should be extended to merge maps of single robots in a way that no false map alignment is guaranteed and that an optimal alignment is achieved by using multiple place matches. Also redundant information, a consequence of the merge of two maps, should be removed in order to get a good performance of the optimization routines e.g. \ac{BA}.
+%\paragraph*{Problem statement}
+In this semester project an existing multi agent \ac{SLAM} system should be extended to merge maps of single robots in a way that no false map alignment is guaranteed and that an optimal alignment is achieved by using multiple place matches. Also redundant information, a consequence of the merge of two maps, should be removed in order to get a good performance of the optimization routines e.g. \ac{BA}.\\
 
-\paragraph*{Approach}
+%\paragraph*{Approach}
 To achieve the first goal, a new approach is proposed which uses multiple \acfp{KFM} to merge two maps. This proposed approach also use a novel idea to spread the \acp{KFM} over a bigger area by skipping \acfp{KF} between the detection of \acp{KFM}.\\
 To remove redundant information \ac{KF} culling is performed after all \acp{KFM} were detected and before the main map merging. This way information which were present in both maps appear only once in the merged map and the \ac{PGO} and the \ac{BA} does not have unnecessary data to process.\\
-To reduce the runtime of the optimization part (\ac{PGO} and \ac{BA}), the usage of \acf{DL} non-linear least squares technique instead of the \acf{LM} optimization was evaluated and the system was adapted in a way, that the performance is increased.
+To reduce the runtime of the optimization part (\ac{PGO} and \ac{BA}), the usage of \acf{DL} non-linear least squares technique instead of the \acf{LM} optimization was evaluated and the system was adapted in a way, that the performance is increased.\\
 
-
-\paragraph*{Result}
+%\paragraph*{Result}
 The proposed map merging approach reduces drift and achieves better accuracy compared to the previous approach. With the implemented \ac{KF} culling the number of \acp{KF} which the \ac{PGO} and the \ac{BA} have to process is decreased significantly and therefore better timing is achieved. The usage of \ac{DL} non-linear least squares technique reduced the runtime of the optimization furthermore.
