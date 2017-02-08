@@ -1,13 +1,19 @@
 \chapter{Introduction}
 \label{sec:introduction}
 
-\acf{SLAM} is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.
+\acf{SLAM} is the task of moving in a previously unknown environment while mapping the robot’s workspace and simultaneously estimating its position in this map. This task is one of the most important challenges on the way to full autonomy for a robot.\\
 
-For a team of \acfp{UAV} collaboratively performing tasks, e.g. inspection of a structure, a common map is required which can be used amongst the team of \acp{UAV}.
+Most \ac{SLAM} systems use onboard sensors as this allows them to not depend on external systems, with which they might loose connection and in this case also their sensing. Vision has become a popular sensor choice for mobile robots as it provides rich information about the environment, while having a low power consumption and providing portability.\\
 
-To create this map, a place recognition system detects overlaps between maps constructed by different \acp{UAV}. If enough correspondences are detected between two maps, these maps can be fused into one, which is further on used by multiple \acp{UAV} simultaneously.\\
+The \ac{SLAM} task is in general platform-agnostic but it is of special interest for \acfp{UAV} as they are capable of reaching remote places and are highly agile. This makes them a good choice for tasks like inspection, search and rescue or maintenance in inaccessible areas. 
 
-This work aims to implement a pipeline that, given two SLAM maps with multiple place matches, produces an optimized merged map. This includes finding an optimal alignment of the two maps by a 3D transformation, applying optimization techniques for improved alignment and identifying and fusing redundant information in the fused map. To allow for the Map Fusion to run online in real-world UAV experiments, furthermore the efficiency of the fusion algorithm will be taken into account.
+Another reason why \ac{SLAM} systems are often designed for \acp{UAV}, especially in research, is because they are the most challenging platform for \ac{SLAM} systems as they are more unstable and have faster dynamics to track compared to other types of robots and therefore they are an interesting target for research.\\
+
+With \ac{SLAM} systems for a single \ac{UAV} reaching considerable maturity, multi \acp{UAV} systems gaining increasingly interest. Collaborative \ac{SLAM} systems can boost the efficiency of a mission by sharing the workload of tasks amongst all \acp{UAV}. Furthermore, multiple \acp{UAV} also allow to increase the robustness of a \ac{SLAM} system as the \acp{UAV} can benefit from the measurements recorded by the other \acp{UAV}. Such a collaborative \ac{SLAM} systems enables a team of \acp{UAV} collaboratively performing tasks, e.g. inspection of a structure, maintenance or search and rescue.\\
+
+In a collaborative \ac{SLAM} system, the goal is to build a common map, which can be used amongst the team of \acp{UAV}. To create this map, a place recognition system detects overlaps between maps constructed by different \acp{UAV}. If enough correspondences are detected between two maps, these maps can be fused into one, which is further on used by multiple \acp{UAV} simultaneously.\\
+
+This work aims to implement a pipeline that, given two SLAM maps with multiple place matches, produces an optimized fused map. This includes finding an optimal alignment of the two maps by a $\text{Sim}(3)$ transformation, applying optimization techniques for improved alignment and identifying and fusing redundant information in the fused map. A $\text{Sim}(3)$ transformation is needed, as in monocular \ac{SLAM} there are seven degrees of freedom (three translations, three rotations and a scale factor). To allow for the Map Fusion to run online in real-world UAV experiments, furthermore the efficiency of the fusion algorithm will be taken into account.
 
 %The report of this semester project starts with an introduction to the problems and the challenges which this semester project should tackle. This is followed by a motivation how the problems and challenges could be approached. After the motivation, the three main parts of this semester project, map merging, \ac{KF} culling and the use of different optimization methods, are discussed in detail. The evaluation method, which was used to get the results of the experiments is introduced afterwards, followed by the results itself. In the final part of this report a conclusion will be drawn and an outlook will be presented.
 
