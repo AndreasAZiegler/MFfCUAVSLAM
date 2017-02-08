@@ -28,7 +28,7 @@ The solution to this minimum least square problem is obtained when $\mathbf{J}\d
   \mathbf{J}^T\mathbf{J}\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} - f(\mathbf{p}))
   \label{eq:normal}
 \end{equation}
-which is also known as the normal equations. The solution of the normal equation is the Gauss-Newton step $\delta_{\mathbf{p}}$.
+which is also known as the normal equations. The solution of the normal equations is the Gauss-Newton step $\delta_{\mathbf{p}}$.
 The \ac{LM} method then solves a variation of \autoref{eq:normal}, the so-called augmented normal equations:
 \begin{equation} 
   (\mathbf{J}^T\mathbf{J} + \mu \mathbf{I})\delta_{\mathbf{p}} = \mathbf{J}^T(\mathbf{x} -f(\mathbf{p})) \text{, with } \mu > 0
@@ -93,7 +93,7 @@ The advantage of the \ac{DL} algorithm is, that once the Gauss-Newton step has b
 In the previous section, the disadvantage of the \ac{LM} algorithm and the advantage of the \ac{DL} algorithm was already mentioned. In this section they will be recapitulated shortly and a conclusion will be drawn.\\
 
 When a \ac{LM} step fails, the \ac{LM} algorithm has to resolve the augmented equations with an increased damping term. In other words, every update to the damping term requires that the augmented equations are solved again. Therefore failed steps entail unproductive effort.\\
-Opposite to this, once the Gauss-Newton step has been calculated, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$ without resorting to solving again \autoref{eq:dlgn}.\\
+Opposite to this, once the Gauss-Newton step has been calculated, the \ac{DL} algorithm can solve the subproblem for various values of $\Delta$ without solving \autoref{eq:dlgn} again.\\
 Another fact is, that when the truncated Cauchy step is taken, the \ac{DL} algorithm can avoid solving \autoref{eq:dlgn}, while the \ac{LM} algorithm always needs to solve \autoref{eq:augnormal}, even if it chooses a step smaller than the Cauchy step.\\
 
 Since the \ac{PGO} and the \ac{BA} problem involves many parameters, linear algebra costs dominate the computational overhead associated with every inner iteration of both algorithms (\ac{LM} and \ac{DL}) and therefore reducing the number of times that \autoref{eq:dlgn} needs to be solved is crucial for the overall performance of the minimization process.\\

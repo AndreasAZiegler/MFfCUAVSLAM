@@ -37,7 +37,7 @@ With enabled culling the amount of edges and vertices the \ac{PGO} and the \ac{B
 
 The reduction in edges and vertices then results in a decrease of the runtime as shown in \autoref{tab:res_timing_1} and \autoref{tab:res_timing_2}\\
 
-As the culling removes information one has to be careful not to remove to many information. With a redundancy threshold of 90\% the accuracy of the setting with 10 \acp{KFM} and 10 \ac{KF} skipped got worse as shown in \autoref{tab:res_6}. Because of this reason another experiment with a redundancy threshold of 94\% was performed which showed a satisfactory result, shown in \autoref{tab:res_7}.\\
+As the culling removes information one has to be careful not to remove to many information. With a redundancy threshold of 90\% the accuracy of the setting with 10 \acp{KFM} and 10 \acp{KF} skipped got worse as shown in \autoref{tab:res_6}. Because of this reason another experiment with a redundancy threshold of 94\% was performed which showed a satisfactory result, shown in \autoref{tab:res_7}.\\
 
 With the right choice of the redundancy threshold, the number of edges and vertices in the optimization can be reduced significantly which results in a reduced runtime while achieving the same accuracy. 
 
@@ -47,7 +47,7 @@ The timing of both optimization procedures (\ac{PGO} and \ac{BA}) with the \ac{L
 
 The results, listed in \autoref{tab:res_timing_6} and \autoref{tab:res_timing_7}, have shown, that the best results are achieved if for the \ac{PGO} the \ac{LM} algorithm and for the \ac{BA} the \ac{DL} algorithm is used.\\
 
-That only the \ac{BA} performs better with the \ac{DL} algorithm may comes from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized and the \ac{LM} algorithm performs better for smaller optimization problems.\\
+That only the \ac{BA} performs better with the \ac{DL} algorithm may come from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized and the \ac{LM} algorithm performs better for smaller optimization problems.\\
 
 With the change of the \ac{BA}, using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.
 

@@ -27,7 +27,7 @@ In ORB-SLAM \cite{Mur-Artal2015}, on which this semester project is based, the f
 \end{itemize}
 
 \subsection{\acf{KFM}}
-A \acf{KFM} is if two \acp{KF}, on per client, observed the same location (\autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (\autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (\autoref{fig:kfm3}).
+A \acf{KFM} is if two \acp{KF}, one per client, observed the same location (\autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (\autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (\autoref{fig:kfm3}).
 
 \begin{figure}[H]
   \centering
@@ -421,7 +421,7 @@ The example starts with two \acp{KF}, one per client, which are checked if they 
   \label{fig:newapproach3}
 \end{figure}
 
-After $m(= 5)$ \acp{KF} are skipped, the system checks again, if a \ac{KFM} can be detected, shown in \autoref{fig:newapproach3}. \autoref{fig:newapproach4} then shows the case, where the next \ac{KFM} was be detected.
+After $m(= 5)$ \acp{KF} are skipped, the system checks again, if a \ac{KFM} can be detected, shown in \autoref{fig:newapproach3}. \autoref{fig:newapproach4} then shows the case, where the next \ac{KFM} was detected.
 
 \begin{figure}[H]
   \centering
@@ -1029,7 +1029,7 @@ Then again $m$ \acp{KF} are skipped, as shown in \autoref{fig:newapproach5}, bef
     \end{tabular}
     };
   \end{tikzpicture}
-  \caption{Last \acp{KFM}}
+  \caption{Last \ac{KFM}}
   \label{fig:newapproach6}
 \end{figure}
 
@@ -1218,7 +1218,7 @@ After the two maps are aligned (possibly with still some miss alignment as in \a
 The idea behind the usage of multiple \acp{KFM} was already discussed in contrary to the idea of skipping \acp{KF} after a \ac{KFM} was detected. This idea will be discussed next.
 
 If \acp{KF} are skipped after \ac{KFM} was detected, the next \ac{KFM} will potentially have a bigger distance to the previous \ac{KFM}. This causes that the \acp{KFM} will be more apart from each other and therefor they will cover a bigger area. The \acp{KFM} from a bigger area provide the \ac{PGO} and the \ac{BA} with more information which hopefully leads to a reduction in drift and an increased accuracy.
-\textcolor{red}{\textbf{!!!Check \ac{PGO} implementation!!!}}
+%\textcolor{red}{\textbf{!!!Check \ac{PGO} implementation!!!}}
 
 To visualize the influence of this idea, \autoref{fig:kfskip1} shows the co-visibility graph of an experiment where only one \ac{KF} was skipped after a \ac{KFM} was detected. \autoref{fig:kfskip2} on the other hand shows an experiment where 10 \acp{KF} were skipped after a \ac{KFM} was detected. One can easily see, that the \acp{KFM} in \autoref{fig:kfskip2} are more apart from each other and cover a bigger area compared to the \acp{KFM} in \autoref{fig:kfskip1}.
 

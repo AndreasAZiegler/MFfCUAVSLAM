@@ -123,7 +123,7 @@ In the following subsections each step will be described in more detail.
 This step involves the loading of the positions from the text files, applying the time offset $t_{\text{off}}$ and applying the camera-to-marker transformation $T_{\text{camera\_marker}}$.\\
 
 The offset $t_{\text{off}}$ has to be applied as there is a time offset, emerging from the fact that the \ac{ROS} messages with the greyscale image and the \ac{ROS} messages with the ground truth position do not have the same time of travel, which has to be compensated.\\
-For the \ac{UAV} data set the time offset varies a lot as both topic are received over a unreliable wireless LAN connection. To counteract this situation different time offset are tried by brute-forcing and the time offset which results in the smallest \ac{RMSE} is taken.\\ 
+For the \ac{UAV} data set the time offset varies a lot as both topics are received over a unreliable wireless LAN connection. To counteract this situation different time offsets are tried by brute-forcing and the time offset which results in the smallest \ac{RMSE} is taken.\\ 
 
 As the camera and the marker of the motion tracking system do not have the same position, the transformation $T_{\text{camera\_marker}}$ has to be applied that the ground truth positions and the \ac{SLAM} positions are in the same coordinate system for the evaluation.
 
