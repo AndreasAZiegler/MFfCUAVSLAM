@@ -1,0 +1,24 @@
+\chapter{Related work}
+\label{sec:related_work}
+
+This chapter briefly discusses the work which is related with this semester project, that the reader gets more familiar with already existing approaches and methods.
+
+\section{ORB-SLAM(2)}
+ORB-SLAM, proposed in \cite{Mur-Artal2015}, and the extension ORB-SLAM2, proposed in \cite{Mur-Artal2016}, are feature-based (monocular) \ac{SLAM} systems, which operate in real time and which are designed for indoor and outdoor environments. ORB-SLAM(2) uses the same features for all \ac{SLAM} tasks (tracking, mapping, relocalization, and loop closing) which makes ORB-SLAM(2) more efficient, simple and reliable. ORB-SLAM(2) uses ORB features, which are extremely fast to compute and match and have a good invariance to viewpoint. ORB-SLAM(2) generates a compact and trackable map that only grows if the scene content changes and therefore allows a lifelong operation. For this purpose, ORB-SLAM(2) uses a survival of the fittest strategy to select the points and \acfp{KF} which represent the reconstruction best.
+
+\section{Bags of Words}
+ORB-SLAM(2) uses a bags of words place recognition module, which is based on \cite{Galvez-Lopez2012}. ORB-SLAM(2) uses this module to perform loop detection and relocalization. A visual vocabulary is created offline with the ORB descriptors extracted from a large set of images. Visual words are then a discretization of the descriptor space, which is the visual vocabulary. If the images from which the vocabulary is built are enough general, the same vocabulary can be used for different environments getting a good performance. With the bag of words approach, querying the database can be done very efficiently as the system builds incrementally a database that contains an invert index, which stores for each visual word in the vocabulary, in which \acp{KF} it has been seen.
+
+\section{Co-visibility Graph and Essential Graph}
+In a co-visibility graph, each node node represents a \ac{KF} and there is an edge between two \acp{KF} if they share observations of the same \acfp{MP}. With the usage of such a co-visibility graph for the tracking and the mapping in ORB-SLAM(2), this two tasks focus in a local co-visible area, independent of the global map size.
+
+The essential graph is built from a spanning tree, loop closure links and strong edges from the co-visibility graph. Loop closing based on the optimization of an essential graph can be performed in real time as the essential graph retains all the \acp{KF} but only a reduced number of edges compared to the co-visibility graph and therefore the optimization is less computational demanding.
+
+\section{g$^2$o}
+The optimization framework g$^2$o \cite{Kummerle2011} is used by ORB-SLAM(2) for the different optimization tasks. g$^2$o is a general framework for optimizing graph-based nonlinear error functions as they often appear in many popular problems in robotics such as \ac{SLAM} or \acf{BA}. 
+
+\section{\acl{LM} vs. \acl{DL}}
+As in many other \ac{SLAM} systems, ORB-SLAM(2) uses the \acl{LM} optimization algorithm for the \ac{BA} and the \acf{PGO} by default. As argued in \cite{Lourakis2005} the \acf{DL} optimization algorithm has some advantages over the \ac{LM} algorithm and substituting the \ac{LM} algorithm in the implementation of the \ac{BA} with the \ac{DL} algorithm can lead to computational benefits.
+
+\section{Multi-UAV Collaborative Monocular SLAM}
+The multi-\ac{UAV} Collaborative \ac{SLAM} system proposed in \cite{Schmuck2017} consists of multiple \acp{UAV} and a central ground station. In the proposed system, each agent is able to independently explore the environment running a limited-memory \ac{SLAM} system onboard, while sending all collected information to the ground station which has increased computational resources. The ground station manages the maps of all the \acp{UAV}, detecting loop closures between them, and if necessary, triggering map fusion, optimization and distribution of information back to the \acp{UAV}. A single \ac{UAV} therefore can insert observations from the other \acp{UAV} in its \ac{SLAM} system on the fly.
