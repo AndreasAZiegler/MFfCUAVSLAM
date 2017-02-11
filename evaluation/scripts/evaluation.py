@@ -1,10 +1,12 @@
 # Imports
+import os
 import csv
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from align import align_sim3
 
+## Opens and loads the SLAM positions from the specified text file and returns the coordinates and the timestamps seperatly as lists.
 def open_slam():
   list_slam_timestamp_1 = []
   list_slam_x_1 = []
@@ -17,7 +19,7 @@ def open_slam():
   list_slam_z_2 = []
 
   # Add data points to the corresponding lists
-  with open('export_0.txt', 'rt') as csvfile:
+  with open('../export_0.txt', 'rt') as csvfile:
     reader = csv.reader(csvfile, delimiter=';')
     for row in reader:
       if int(row[1]) == 0:
@@ -25,15 +27,15 @@ def open_slam():
         list_slam_x_1.append(float(row[3]))
         list_slam_y_1.append(float(row[4]))
         list_slam_z_1.append(float(row[5]))
-        #print(row[3] + ", " + row[4] + ", " + row[5])
       elif int(row[1]) == 1:
         list_slam_timestamp_2.append(1000*float(row[2]))
         list_slam_x_2.append(float(row[3]))
         list_slam_y_2.append(float(row[4]))
         list_slam_z_2.append(float(row[5]))
-        #print(row[3] + ", " + row[4] + ", " + row[5])
+
   return list_slam_timestamp_1, list_slam_x_1, list_slam_y_1, list_slam_z_1, list_slam_timestamp_2, list_slam_x_2, list_slam_y_2, list_slam_z_2
 
+## Opens and loads the ground truth positions from the specified text file and returns the coordinates and the timestamps seperatly as lists.
 def open_ground_truth():
   list_gt_timestamp_1 = []
   list_gt_x_1 = []
@@ -45,36 +47,33 @@ def open_ground_truth():
   list_gt_y_2 = []
   list_gt_z_2 = []
 
-  with open('export_leica.csv', 'rt') as csvfile:
+  # Add data points to the corresponding lists
+  with open('../export_vicon.csv', 'rt') as csvfile:
     reader = csv.reader(csvfile, delimiter=';')
     for row in reader:
       if int(row[0]) == 0:
-        # Rack
-        #list_gt_timestamp_1.append(1000*(float(row[1])) + 32.8)
-        # UAV
-        #list_gt_timestamp_1.append(1000*(float(row[1])) + 41.8)
         list_gt_timestamp_1.append(1000 * (float(row[1])))
         list_gt_x_1.append(float(row[2]))
         list_gt_y_1.append(float(row[3]))
         list_gt_z_1.append(float(row[4]))
         #print(row[3] + ", " + row[4] + ", " + row[5])
       elif int(row[0]) == 1:
-        # Rack
-        #list_gt_timestamp_2.append(1000*(float(row[1])) + 32.8)
-        # UAV
-        #list_gt_timestamp_2.append(1000*(float(row[1])) + 41.8)
         list_gt_timestamp_2.append(1000 * (float(row[1])))
         list_gt_x_2.append(float(row[2]))
         list_gt_y_2.append(float(row[3]))
         list_gt_z_2.append(float(row[4]))
+
   return list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2
 
+## Adds the specified time offset to each timestampf of the provided list
 def time_offset(list_gt_timestamp, offset):
   for i in range(len(list_gt_timestamp)):
     list_gt_timestamp[i] += offset
     #print("list_gt_timestamp[i] = {0}".format(list_gt_timestamp[i]))
+
   return list_gt_timestamp
 
+## Creates an array out of the provided lists containing the timestamps and the coordinates
 def create_array(list_timestamp, list_x, list_y, list_z):
   array_timestamp = np.array(list_timestamp)
   array_x = np.array(list_x)
@@ -85,10 +84,11 @@ def create_array(list_timestamp, list_x, list_y, list_z):
   array = np.vstack((array, array_y))
   array = np.vstack((array, array_z))
   array = array.transpose()
+
   return array
 
+## Applies the transformation gained from a calibration precedure to the SLAM coordinates. This is needed if the position of a ground truth marker and the position of the camera are not the same.
 def transform_cam_marker(slam_coordinates_1, slam_coordinates_2):
-  # Transform SLAM points according to calibration transformation
   """
   # Rack
   R_cam_marker = np.array([[0.99858239, -0.00736774, -0.05271548],
@@ -100,18 +100,20 @@ def transform_cam_marker(slam_coordinates_1, slam_coordinates_2):
   R_cam_marker = np.array([[-0.02680569, -0.38553653, 0.92230312],
                            [-0.99927546, -0.01460280, -0.03514699],
                            [0.02701865, -0.92257701, -0.38486576]])
+
   t_cam_marker = np.array([0.08020492, -0.05702338, -0.12186974])
+
   R_marker_cam = R_cam_marker.transpose()
   t_marker_cam = -t_cam_marker
-  slam_coordinates_1[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_1[:,1:4]))) + t_marker_cam
 
-  # Transform SLAM points according to calibration transformation
+  # Transform SLAM points according to the transformation from the calibration
+  slam_coordinates_1[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_1[:,1:4]))) + t_marker_cam
   slam_coordinates_2[:,1:4] = np.transpose(np.dot(R_marker_cam, np.transpose(slam_coordinates_2[:,1:4]))) + t_marker_cam
 
   return slam_coordinates_1[:,1:4], slam_coordinates_2[:,1:4]
 
+## Matching of the datasets (ground truth and SLAM) according to their time stamps
 def time_matching(list_gt_x, list_slam_x, gt_coordinates, slam_coordinates, accuracy):
-  # Matching of the datasets according to their time stamps
   gt = np.zeros((len(list_gt_x), 4))
   slam = np.zeros((len(list_slam_x), 4))
 
@@ -141,6 +143,7 @@ def time_matching(list_gt_x, list_slam_x, gt_coordinates, slam_coordinates, accu
 
   return slam, gt
 
+## Plots a variety of graphs.
 def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, slam_2_transformed, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_x_2, list_gt_y_2, list_gt_z_2, gt_1, gt_2):
   # Plot data points
   fig = plt.figure()
@@ -291,17 +294,26 @@ def plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, s
 
   plt.show()
 
+## Calculates the rmse with the SLAM coordinates and the ground truth coordinates
 def calculate_rmse(slam_transformed, gt):
-  # Calculate rmse
   var_slam = []
 
   for i in range(len(slam_transformed)):
     var_slam.append(((gt[i, 1] - slam_transformed[i, 0]) ** 2 + (gt[i, 2] - slam_transformed[i, 1]) ** 2 + (gt[i, 3] - slam_transformed[i, 2]) ** 2))
 
-  return var_slam
+  rmse = np.sqrt(1 / (len(var_slam) - 1) * sum(var_slam))
+
+  return rmse
 
 
+## Main
 if __name__ == '__main__':
+  # Change current file_path
+  file_path = os.path.dirname(__file__)
+  if file_path != "":
+    os.chdir(file_path)
+
+  # Create required lists
   list_slam_timestamp_1 = []
   list_slam_x_1 = []
   list_slam_y_1 = []
@@ -322,10 +334,13 @@ if __name__ == '__main__':
   list_gt_y_2 = []
   list_gt_z_2 = []
 
+  # Get lists with the timestamps and the coordinates of the SLAM points
   list_slam_timestamp_1, list_slam_x_1, list_slam_y_1, list_slam_z_1, list_slam_timestamp_2, list_slam_x_2, list_slam_y_2, list_slam_z_2 = open_slam()
 
+  # Get lists with the timestamps and the coordinates of the ground truth points
   list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2 = open_ground_truth()
 
+  # Define time offset and appy it to the ground truth time stamps
   offset = 42.2
   list_gt_timestamp_1 = time_offset(list_gt_timestamp_1, offset)
   list_gt_timestamp_2 = time_offset(list_gt_timestamp_2, offset)
@@ -341,8 +356,8 @@ if __name__ == '__main__':
   print("map 1 nr of data points in gt_1: " + str(len(list_gt_x_1)))
   print("map 2 nr of data points in gt_2: " + str(len(list_gt_x_2)))
 
+  # Create numpy arrays out of the provided lists
   gt_coordinates_1 = create_array(list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1)
-
   slam_coordinates_1 = create_array(list_slam_timestamp_1, list_slam_x_1, list_slam_y_1, list_slam_z_1)
 
   # Add Gaussian noise to first trajectory
@@ -350,13 +365,12 @@ if __name__ == '__main__':
   #slam_coordinates_1 = slam_coordinates_1 + np.hstack((np.zeros(slam_coordinates_1[:,0:1].shape), np.random.normal(loc=0.0, scale=0.15, size=slam_coordinates_1[:, 1:4].shape)))
   #print("mean slam 1 map w. noise: " + str(np.mean(slam_coordinates_1[:,1:4], axis=0)) + ", std: " + str(np.std(slam_coordinates_1[:,1:4], axis=0)))
 
+  # Create numpy arrays out of the provided lists
   gt_coordinates_2 = create_array(list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2)
-
   slam_coordinates_2 = create_array(list_slam_timestamp_2, list_slam_x_2, list_slam_y_2, list_slam_z_2)
 
-  # Transform SLAM points according to calibration transformation
+  # Transform SLAM points according to the transformation from the calibration
   slam_coordinates_1[:,1:4], slam_coordinates_2[:,1:4] = transform_cam_marker(slam_coordinates_1, slam_coordinates_2)
-
 
   # Sort timings
   slam_coordinates_1 = slam_coordinates_1[slam_coordinates_1[:, 0].argsort()]
@@ -365,6 +379,7 @@ if __name__ == '__main__':
 
   slam_coordinates_2 = slam_coordinates_2[slam_coordinates_2[:, 0].argsort()]
 
+  # Define accuracy in [ms] for the time matching and perform time matching
   accuracy = 4
   slam_1, gt_1 = time_matching(list_gt_x_1, list_slam_x_1, gt_coordinates_1, slam_coordinates_1, accuracy)
   slam_2, gt_2 = time_matching(list_gt_x_2, list_slam_x_2, gt_coordinates_2, slam_coordinates_2, accuracy)
@@ -380,11 +395,11 @@ if __name__ == '__main__':
   slam_2_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_2[:,1:4]))) + gt_t_gt_es_1
 
   # Calculate rmse
-  var_slam_1 = calculate_rmse(slam_1_transformed, gt_1)
-  var_slam_2 = calculate_rmse(slam_2_transformed, gt_2)
+  rmse_1 = calculate_rmse(slam_1_transformed, gt_1)
+  rmse_2 = calculate_rmse(slam_2_transformed, gt_2)
 
-  print("SLAM Map 1 rmse = {0}".format(np.sqrt(1 / (len(var_slam_1) - 1) * sum(var_slam_1))))
-  print("SLAM Map 2 rmse = {0}".format(np.sqrt(1 / (len(var_slam_2) - 1) * sum(var_slam_2))))
+  print("SLAM Map 1 rmse = {0}".format(rmse_1))
+  print("SLAM Map 2 rmse = {0}".format(rmse_2))
 
 
   plot(slam_1_orig_transformed, slam_1_transformed, slam_2_orig_transformed, slam_2_transformed, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_x_2, list_gt_y_2, list_gt_z_2, gt_1, gt_2)
