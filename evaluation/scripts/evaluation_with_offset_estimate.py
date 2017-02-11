@@ -1,3 +1,4 @@
+import os
 from evaluation import open_slam, open_ground_truth, time_offset, create_array, time_matching, transform_cam_marker, calculate_rmse
 from align import align_sim3
 import numpy as np
@@ -16,26 +17,21 @@ slam_transformed = 0
 gt = 0
 
 def iteration(gt_coordinates_1, gt_coordinates_2, slam_coordinates_1, slam_coordinates_2, list_gt_x_1, list_slam_x_1, list_gt_x_2, list_slam_x_2, i, ns, lock):
-  """
-  global min_value
-  global min_pos
-  global accuracy
-  global slam
-  global slam_transformed
-  global gt
-  global lock
-  """
-
+  # Get local copies of the ground truth coordinates
   gt_coordinates_1_local = np.copy(gt_coordinates_1)
   gt_coordinates_2_local = np.copy(gt_coordinates_2)
 
+  # Determine the time offset
   offset = i * 0.1
   gt_coordinates_1_local[:,0] = time_offset(gt_coordinates_1_local[:,0], offset)
   gt_coordinates_2_local[:,0] = time_offset(gt_coordinates_2_local[:,0], offset)
 
+  # Define the accuracy for the time matching
   #for j in range(3):
   #  accuracy_j = 5 + j
   accuracy_j = 4
+
+  # Perform the time matching
   slam_1, gt_1 = time_matching(list_gt_x_1, list_slam_x_1, gt_coordinates_1_local, slam_coordinates_1, accuracy_j)
   slam_2, gt_2 = time_matching(list_gt_x_2, list_slam_x_2, gt_coordinates_2_local, slam_coordinates_2, accuracy_j)
 
@@ -50,13 +46,13 @@ def iteration(gt_coordinates_1, gt_coordinates_2, slam_coordinates_1, slam_coord
   #slam_2_orig_transformed = s_1 * np.transpose(np.dot(R_gt_es_1, np.transpose(slam_coordinates_2[:,1:4]))) + gt_t_gt_es_1
 
   # Calculate rmse
-  var_slam_1 = calculate_rmse(slam_1_transformed, gt_1)
+  rmse = calculate_rmse(slam_1_transformed, gt_1)
   #var_slam_2 = calculate_rmse(slam_2_transformed, gt_2)
 
-  rmse = math.sqrt(1 / (len(var_slam_1) - 1) * sum(var_slam_1))
   #print("Accuracy = {0}, Offset {1}, SLAM Map rmse = {2}".format(accuracy_j, i, rmse))
   #print("SLAM Map 2 rmse = {0}".format(np.sqrt(1 / (len(var_slam_2) - 1) * sum(var_slam_2))))
 
+  # Write results into namespace, if the achieved rmse is the lowest.
   lock.acquire()
   if rmse < ns.min_value:
     print("Accuracy = {0}, Offset {1}, SLAM Map rmse = {2}".format(accuracy_j, i, rmse))
@@ -69,7 +65,14 @@ def iteration(gt_coordinates_1, gt_coordinates_2, slam_coordinates_1, slam_coord
     print("min_value: {0}".format(ns.min_value))
   lock.release()
 
+## Main
 if __name__ == '__main__':
+  # Change current file_path
+  file_path = os.path.dirname(__file__)
+  if file_path != "":
+    os.chdir(file_path)
+
+  # Create required lists
   list_slam_timestamp_1 = []
   list_slam_x_1 = []
   list_slam_y_1 = []
@@ -91,32 +94,31 @@ if __name__ == '__main__':
   list_gt_z_2 = []
 
 
+  # Get lists with the timestamps and the coordinates of the SLAM points
   list_slam_timestamp_1, list_slam_x_1, list_slam_y_1, list_slam_z_1, list_slam_timestamp_2, list_slam_x_2, list_slam_y_2, list_slam_z_2 = open_slam()
 
+  # Get lists with the timestamps and the coordinates of the ground truth points
   list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1, list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2 = open_ground_truth()
 
+  # Create numpy arrays out of the provided lists
   gt_coordinates_1 = create_array(list_gt_timestamp_1, list_gt_x_1, list_gt_y_1, list_gt_z_1)
-
   slam_coordinates_1 = create_array(list_slam_timestamp_1, list_slam_x_1, list_slam_y_1, list_slam_z_1)
-
   gt_coordinates_2 = create_array(list_gt_timestamp_2, list_gt_x_2, list_gt_y_2, list_gt_z_2)
-
   slam_coordinates_2 = create_array(list_slam_timestamp_2, list_slam_x_2, list_slam_y_2, list_slam_z_2)
 
   # Transform SLAM points according to calibration transformation
   slam_coordinates_1[:,1:4], slam_coordinates_2[:,1:4] = transform_cam_marker(slam_coordinates_1, slam_coordinates_2)
 
-
   # Sort timings
   slam_coordinates_1 = slam_coordinates_1[slam_coordinates_1[:, 0].argsort()]
-
   slam_coordinates_2 = slam_coordinates_2[slam_coordinates_2[:, 0].argsort()]
 
-
+  # Define time offset and appy it to the ground truth time stamps
   offset = 30
   gt_coordinates_1[:,0] = time_offset(gt_coordinates_1[:,0], offset)
   gt_coordinates_2[:,0] = time_offset(gt_coordinates_2[:,0], offset)
 
+  # Create required objects for the parallel offset estimation
   manager = mp.Manager()
   ns = manager.Namespace()
 
@@ -124,18 +126,20 @@ if __name__ == '__main__':
 
   ns.min_pos = 0
   ns.min_value = 10
-  ns.ccuracy = 4
+  ns.accuracy = 4
 
   ns.slam = 0
   ns.slam_transformed = 0
   ns.gt = 0
 
+  # Create pool with the task trying the different offsets
   pool = mp.Pool(processes=8)
   for i in range(200):
     pool.apply_async(iteration, (gt_coordinates_1, gt_coordinates_2, slam_coordinates_1, slam_coordinates_2, list_gt_x_1, list_slam_x_1, list_gt_x_2, list_slam_x_2, i, ns, lock))
   pool.close()
   pool.join()
 
+  # Get the data from the estimated offset case
   accuracy = ns.accuracy
   min_pos = ns.min_pos
   min_value = ns.min_value
@@ -146,6 +150,7 @@ if __name__ == '__main__':
   print("Accuracy: {0}, Min pos: {1}, Min value: {2}".format(accuracy, min_pos, min_value))
 
 
+  # Create the plot with the result
   fig = plt.figure()
   fig.suptitle('Leica and SLAM transformed Map 1')
   ax3 = fig.add_subplot(111, projection='3d')
@@ -180,5 +185,3 @@ if __name__ == '__main__':
   plt.legend(handles=[legend_slam, legend_leica])
 
   plt.show()
-
-
