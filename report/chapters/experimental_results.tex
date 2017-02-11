@@ -2,7 +2,7 @@
 \chapter{Experimental Results}
 
 \section{Experimental Setup}
-In this section it will be described how the proposed approaches were compared against each other and against the standard implementation and how they were evaluated.\\
+In this section it will be described how the proposed approaches were compared against each other and against the previous approach and how they were evaluated.\\
 At first the data sets used for the comparison and the evaluation are described, then the \acf{ROS} setup will be explained and in the last section, the evaluation procedure itself will be described.
 
 \subsection{Data sets}
@@ -12,7 +12,7 @@ Both of the used data sets were captured in a room equipped with a motion tracki
   \item The ground truth as "geometry\_msgs.msg.PointStamped" in the topic "/camera\_imu/vrpn\_client/estimated\_transform"
 \end{itemize}
 
-The recorded rosbags were afterwards splitted into parts which do not contain any loop closure as loop closures would prohibit a fair comparison between the standard and the proposed new map fusion approach.
+The recorded rosbags were afterwards splitted into parts which do not contain any loop closure as loop closures would prohibit a fair comparison between the previous and the proposed new map fusion approach.
 
 For the evaluation each client took the data from a seperate splitted rosbag simulating two clients running the same time.
 
@@ -51,8 +51,8 @@ The \ac{UAV} used to record this data set (vi\_loops\_uav) is shown in \autoref{
 \end{figure}
 
 \subsection{\acf{ROS} setup}
-As already mentioned, the data set for the two clients were created by splitting a bigger data set recorded with only one client. Because the split data sets don't have the same timing, a re-timing \ac{ROS} node, explained in the next subsection, was written to work around this issue.\\
-To get the ground truth in a usable format, a record \ac{ROS} node, explained in \autoref{subsubsec:record_node}, was written which receives the ground truth position from the re-timing \ac{ROS} node and writes it into a text file.\\
+As already mentioned, the data sets for the two clients were created by splitting a bigger data set recorded with only one client. Because the split data sets don't have the same timing, a re-timing \ac{ROS} node, explained in the next subsection, was written to work around this issue.\\
+To get the ground truth in a usable format, a record \ac{ROS} node, explained shortly, was written, which receives the ground truth position from the re-timing \ac{ROS} node and writes it into a text file.\\
 
 The whole \ac{ROS} setup is illustrated in \autoref{fig:ros_setup}.
 
@@ -110,7 +110,7 @@ The re-timing \ac{ROS} node subscribes to the topics providing the ground truth 
 The recording \ac{ROS} node subscribes to the topic, the re-timing \ac{ROS} node publishes, which contains the ground truth position. It saves the ground truth positions into a list and at the end writes all the positions together with their time stamps into a text file.
 
 \subsection{Evaluation}
-To evaluate the proposed new map fusion approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy an evaluation procedure was developed. The evaluation procedure performs the following steps:
+To evaluate the proposed new map fusion approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy, an evaluation procedure was developed. The evaluation procedure performs the following steps:
 
 \begin{enumerate}
   \item Load ground truth and \ac{SLAM} positions
@@ -122,15 +122,15 @@ To evaluate the proposed new map fusion approach and to measure the influence of
 In the following subsections each step will be described in more detail.
 
 \subsubsection{Loading of the ground truth and \ac{SLAM} positions}
-This step involves the loading of the positions from the text files, applying the time offset $t_{\text{off}}$ and applying the camera-to-marker transformation $T_{\text{camera\_marker}}$.\\
+This step involves the loading of the positions from text files, applying the time offset $t_{\text{off}}$ and applying the camera-to-marker transformation $T_{\text{camera\_marker}}$.\\
 
 The offset $t_{\text{off}}$ has to be applied as there is a time offset, emerging from the fact that the \ac{ROS} messages with the greyscale image and the \ac{ROS} messages with the ground truth position do not have the same time of travel, which has to be compensated.\\
-For the \ac{UAV} data set the time offset varies a lot as both topics are received over a unreliable wireless LAN connection. To counteract this situation different time offsets are tried by brute-forcing and the time offset which results in the smallest \ac{RMSE} is taken.\\ 
+For the vi\_loops\_uav data set the time offset varies a lot as both topics are received over a unreliable wireless LAN connection. To counteract this situation different time offsets are tried by brute-forcing and the time offset which results in the smallest \ac{RMSE} is taken.\\ 
 
 As the camera and the marker of the motion tracking system do not have the same position, the transformation $T_{\text{camera\_marker}}$ has to be applied that the ground truth positions and the \ac{SLAM} positions are in the same coordinate system for the evaluation.
 
 \subsubsection{Find corresponding ground truth and \ac{SLAM} positions}
-In this step for every \ac{SLAM} position the first ground truth position with a time stamp higher than the one of the \ac{SLAM} position is searched (line \autoref{line:corr1}). After that, the absolute time difference between the time stamp of the \ac{SLAM} position and the time stamp of the ground truth position right before the one which was found in the previous step is calculated (line \autoref{line:corr2}). If this absolute time difference is smaller than the specified accuracy, the ground truth and the \ac{SLAM} positions are saved in a new array (lines \autoref{line:corr2}-\autoref{line:corr3}). The full procedure is listed in \autoref{lst:correspond}.
+In this step, for every \ac{SLAM} position the first ground truth position with a time stamp higher than the one of the \ac{SLAM} position is searched (line \autoref{line:corr1}). After that, the absolute time difference between the time stamp of the \ac{SLAM} position and the time stamp of the ground truth position, right before the one which was found in the previous step, is calculated (line \autoref{line:corr2}). If this absolute time difference is smaller than the specified accuracy, the ground truth and the \ac{SLAM} positions are saved in a new array (lines \autoref{line:corr2}-\autoref{line:corr3}). The full procedure is listed in \autoref{lst:correspond}.
 
 \lstset{language=Python}
 \begin{lstlisting}[frame=single, caption=Find corresponding positions in time, label=lst:correspond]
@@ -172,7 +172,7 @@ def time_matching(list_gt_x,list_slam_x,gt_coordinates,
 \subsubsection{Perform a 7DoF alignment}
 A 7DoF alignment is necessary as monocular \ac{SLAM} systems, as the one this semester project is based on, doesn't provide a scale and position and rotation of the \ac{SLAM} coordinate system and the one of the ground truth doesn't have to be the same one.\\
 
-To perform the 7DoF alignment an implementation of the algorithm proposed in \cite{Umeyama1991} was used. This algorithm determines the transformation and the scaling which results in the least \ac{RMSE}. With this transformation and scaling the \ac{SLAM} positions are transformed and scaled accordingly.
+To perform the 7DoF alignment an implementation of the algorithm proposed in \cite{Umeyama1991} was used. This algorithm determines the transformation and the scaling which results in the least \ac{RMSE}. With this transformation and scaling, the \ac{SLAM} positions are transformed and scaled accordingly.
 
 \subsubsection{Calculate the \acf{RMSE}}
 The \acf{RMSE} between the ground truth and the \ac{SLAM} positions is calculated according to
@@ -186,15 +186,15 @@ where $N$ is the total number of positions, $x_{\text{SLAM},i}$, $y_{\text{SLAM}
 
 In this section the performed experiments which show the performance of the proposed new map fusion approach, of the culling and of the different optimization algorithm settings are presented.\\
 
-For every experiment three runs were performed from which an average for the two maps was calculated. These averages as well as the average of the averaged map results are listed for every experiment.
+For every experiment, three runs were performed from which an average for the two maps was calculated. These averages as well as the average of the averaged map results are listed for every experiment.
 
 \subsection{Evaluation of suitable settings}
 \label{subsec:suitable_settings}
 \subsubsection{Description}
-With the first data set, the vi\_loops\_close data set, a variety of different settings (number of \acp{KFM} and number of \acp{KF} to skip after a \ac{KFM}) was evaluated to get an idea of the influence of the two parameters and to choose a selection of suitable settings for the other data sets.
+With the first data set, the vi\_loops\_close data set, a variety of different settings (number of \acp{KFM} and number of \acp{KF} to skip after a \ac{KFM}) was evaluated to get an idea of the influence of the two parameters and to choose a selection of suitable settings for the other experiments.
 
 \subsubsection{Results}
-The results of this experiments are listed in \autoref{tab:res_1}.
+The results of this experiment are listed in \autoref{tab:res_1}.
 
 \begin{table}[ht!]
 	\begin{center}
@@ -221,18 +221,18 @@ The results of this experiments are listed in \autoref{tab:res_1}.
 			15 & 10 & 0.44 & 0.510633333333333 & 0.475316666666667 \\
 		\end{tabular}
 	\end{center}
-	\caption{\acp{RMSE} of the vi\_loop\_close data set}
+	\caption{\acp{RMSE} with the vi\_loop\_close data set}
 	\label{tab:res_1}
 \end{table}
 
 \subsubsection{Discussion}
-In \autoref{tab:res_1} one can see, that with only three \acp{KFM} the \ac{RMSE} gets higher which may result from the fact that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformation for the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
+In \autoref{tab:res_1} one can see, that with only three \acp{KFM} the \ac{RMSE} gets higher, which may result from the fact that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped, supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformations of the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
 
 The setting with five \acp{KFM} and no \acp{KF} skipped also results in a worse \ac{RMSE} which could be explained with the same reason mentioned before.
 
 The settings with five and more \acp{KFM} and skipped \acp{KF} results in a lower \ac{RMSE} and therefore a higher accuracy compared to the old approach.\\
 
-The selected settings which will also be evaluated with other data sets are listed in \autoref{tab:dis_settings}.
+The selected settings which will also be evaluated in the other experiments are listed in \autoref{tab:dis_settings}.
 
 \begin{table}[ht!]
 	\begin{center}
@@ -248,14 +248,14 @@ The selected settings which will also be evaluated with other data sets are list
 	\label{tab:dis_settings}
 \end{table}
 
-The selected settings are may not the ones performing best on the first data set (vi\_loop\_close) but they are also well suited for other data sets as they e.g. do not skipp too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map fusion in data sets with less overlap.\\
+The selected settings may not be the ones performing best on the first data set (vi\_loop\_close) but they are also well suited for other data sets as they e.g. do not skipp too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map fusion in data sets with less overlap.\\
 
 \subsection{Proposed map fusion approach}
 \subsubsection{Description}
 To evaluate the performance of the proposed map fusion approach, the approach was applied to the vi\_loop\_far data set and to the more challenging vi\_loops\_uav data set with the chosen settings described in \autoref{subsec:suitable_settings}.
 
 \subsubsection{Results}
-The results of the experiments with the vi\_loop\_far data set are listed in \autoref{tab:res_2}. In \autoref{tab:res_3} the results of the experiments with the vi\_loops\_uav data set are listed.
+The results of the experiment with the vi\_loop\_far data set are listed in \autoref{tab:res_2}. In \autoref{tab:res_3} the results of the experiment with the vi\_loops\_uav data set are listed.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -267,7 +267,7 @@ The results of the experiments with the vi\_loop\_far data set are listed in \au
 		10 & 5 & 0.377166666666667 & 0.312666666666667 & 0.344916666666667 \\
 		10 & 10 & 0.356933333333333 & 0.3429 & 0.349916666666667 \\
 	\end{tabular}
-	\caption{\acp{RMSE} of the vi\_loop\_far data set}
+	\caption{\acp{RMSE} with the vi\_loop\_far data set}
 	\label{tab:res_2}
 \end{table}
 
@@ -281,21 +281,34 @@ The results of the experiments with the vi\_loop\_far data set are listed in \au
 		10 & 5 & 0.1129 & 0.134233333333333 & 0.123566666666667 \\
 		10 & 10 & 0.0846 & 0.107533333333333 & 0.096066666666667 \\
 	\end{tabular}
-	\caption{\acp{RMSE} of the vi\_loop\_uav data set}
+	\caption{\acp{RMSE} with the vi\_loop\_uav data set}
 	\label{tab:res_3}
 \end{table}
 
 \subsubsection{Discussion}
-In \autoref{tab:res_2} and \autoref{tab:res_3} one can see, that the \ac{RMSE} is also decreased for the selected settings with the data sets vi\_loop\_far, respective vi\_loop\_uav.\\
+In \autoref{tab:res_2} and \autoref{tab:res_3} one can see, that the \acp{RMSE} are also decreased for the selected settings with the data set vi\_loop\_far, respective vi\_loop\_uav.\\
 
-The presented results show therefore, that with the usage of multiple \acp{KFM} and the skipping of \acp{KF}, the \ac{RMSE} can be reduced, respective the accuracy can be increased.
+The presented results show therefore, that with the usage of multiple \acp{KFM} and the skipping of \acp{KF}, the \ac{RMSE} can be reduced, respective the accuracy can be increased. The reduced drift and the increased accuracy is visible, when comparing \autoref{fig:drift_1} and \autoref{fig:drift_2}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{images/m1_skf0_cut}
+	\caption{Drift of a trajectory with the previous approach}
+	\label{fig:drift_1}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.75\textwidth]{images/m10_skf10_cut}
+	\caption{Drift of a trajectory with the proposed new approach}
+	\label{fig:drift_2}
+\end{figure}
 
 \subsection{Culling}
 \subsubsection{Description}
-To determine the influence of the culling, the proposed map fusion approach without and with culling was applied to the vi\_loop\_uav data set. The influence was measured by counting the number of edges and vertices the \ac{PGO} and the \ac{BA} had to optimize over, by measuring the timing of the \ac{PGO} and the \ac{BA} and by calculating the \ac{RMSE}.
+To determine the influence of the culling, the proposed map fusion approach without and with culling was applied to the vi\_loop\_uav data set. The influence was measured by counting the number of edges and vertices the \ac{PGO} and the \ac{BA} had to process, by measuring the timing of the \ac{PGO} and the \ac{BA} and by calculating the \acp{RMSE}.
 
 \subsubsection{Results}
-\autoref{tab:res_4} lists the number of edges and vertices the \ac{PGO} and the \ac{BA} had to optimize over for two representative settings without culling for two representative settings and \autoref{tab:res_5} lists the results with culling.
+\autoref{tab:res_4} lists the number of edges and vertices the \ac{PGO} and the \ac{BA} had to process without culling for two representative settings and \autoref{tab:res_5} lists the results with culling.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -305,7 +318,7 @@ To determine the influence of the culling, the proposed map fusion approach with
 		1 & 0 & 753.666666666667 & 58.6666666666667 & 22193 & 2308 \\
 		10 & 10 & 1949.33333333333 & 149.666666666667 & 49765.3333333333 & 4806.33333333333 \\
 	\end{tabular}
-	\caption{number of edges and vertices in the \ac{PGO} and in the \ac{BA} without culling}
+	\caption{Number of edges and vertices in the \ac{PGO} and in the \ac{BA} without culling with the vi\_loop\_uav data set}
 	\label{tab:res_4}
 \end{table}
 
@@ -317,11 +330,11 @@ To determine the influence of the culling, the proposed map fusion approach with
 		1 & 0 & 282.666666666667 & 35.6666666666667 & 13221.6666666667 & 1892.66666666667 \\
 		10 & 10 & 656.666666666667 & 92.6666666666667 & 30453 & 4165 \\
 	\end{tabular}
-	\caption{number of edges and vertices in the \ac{PGO} and in the \ac{BA} with culling}
+	\caption{Number of edges and vertices in the \ac{PGO} and in the \ac{BA} with culling with the vi\_loop\_uav data set}
 	\label{tab:res_5}
 \end{table}
 
-The timings of the fusion of \acp{MP}, the \ac{PGO} and the \ac{BA} without and with culling are listed in \autoref{tab:res_timing_1} and \autoref{tab:res_timing_2}.
+The timings of the fusion of \acfp{MP}, the \ac{PGO} and the \ac{BA} without and with culling are listed in \autoref{tab:res_timing_1} and \autoref{tab:res_timing_2}.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -334,7 +347,7 @@ The timings of the fusion of \acp{MP}, the \ac{PGO} and the \ac{BA} without and 
 			10 & 5 & 57.4133333333333 & 372.417666666667 & 1334.04333333333 \\
 			10 & 10 & 98.1233333333333 & 532.276666666667 & 3659.48 \\
 		\end{tabular}
-		\caption{Timings of the vi\_loop\_uav data set without culling}
+		\caption{Timings of the MPF, the \ac{PGO} and the \ac{BA} with the vi\_loop\_uav data set without culling}
 		\label{tab:res_timing_1}
 	\end{center}
 \end{table}
@@ -350,12 +363,12 @@ The timings of the fusion of \acp{MP}, the \ac{PGO} and the \ac{BA} without and 
 			10 & 5 & 16.2366666666667 & 86.09 & 209.413333333333 \\
 			10 & 10 & 33.78 & 178.83 & 1098.36666666667 \\
 		\end{tabular}
-		\caption{Timings of the vi\_loop\_uav data set with culling}
+		\caption{Timings of the MPF, the \ac{PGO} and the \ac{BA} with the vi\_loop\_uav data set with culling}
 		\label{tab:res_timing_2}
 	\end{center}
 \end{table}
 
-\autoref{tab:res_6} lists the \ac{RMSE} of the proposed map fusion approach with culling with the vi\_loop\_uav data set.
+\autoref{tab:res_6} lists the \acp{RMSE} of the proposed map fusion approach with culling with the vi\_loop\_uav data set.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -372,7 +385,7 @@ The timings of the fusion of \acp{MP}, the \ac{PGO} and the \ac{BA} without and 
 \end{table}
 
 \subsubsection{Discussion}
-With culling the amount of edges and vertices the \ac{PGO} and the \ac{BA} algorithms have to process is reduced significantly compared without culling, as shown in \autoref{tab:res_4} and \autoref{tab:res_5}. The reduction of the number of edges in the \ac{PGO} and in the \ac{BA} is more than 60\%, respectively 38\% and the reduction of the number of vertices is in the \ac{PGO} and in the \ac{BA} is up to 38\%, respectively 13\%, as shown in \autoref{tab:res_percentage_1} and \autoref{tab:res_percentage_2}.
+With culling, the amount of edges and vertices the \ac{PGO} and the \ac{BA} have to process is reduced significantly compared to without culling, as shown in \autoref{tab:res_4} and \autoref{tab:res_5}. The reduction of the number of edges in the \ac{PGO} and in the \ac{BA} is more than 60\%, respectively 38\% and the reduction of the number of vertices in the \ac{PGO} and in the \ac{BA} is up to 38\%, respectively 13\%, as shown in \autoref{tab:res_percentage_1} and \autoref{tab:res_percentage_2}.
 
 \begin{table}[ht!]
 	\begin{center}
@@ -402,13 +415,13 @@ With culling the amount of edges and vertices the \ac{PGO} and the \ac{BA} algor
 
 The reduction in edges and vertices then results in a decrease of the runtime as shown in \autoref{tab:res_timing_1} and \autoref{tab:res_timing_2}\\
 
-As the culling removes information one has to be careful not to remove to many information. With a redundancy threshold of 90\% the accuracy of the setting with 10 \acp{KFM} and 10 \acp{KF} skipped got worse. Because of this reason another experiment with a redundancy threshold of 94\% was performed instead for this setting which showed a satisfactory result.\\
+As the culling removes information one has to be careful not to remove to many information. With a redundancy threshold of 90\% the accuracy of the setting with 10 \acp{KFM} and 10 \acp{KF} skipped got worse. Because of this reason another experiment with a redundancy threshold of 94\% was performed instead which showed a satisfactory result.\\
 
 With the right choice of the redundancy threshold, the number of edges and vertices in the optimization can be reduced significantly which results in a reduced runtime while achieving the same accuracy.
 
 \subsection{Different optimization algorithms}
 \subsubsection{Description}
-To compare the performance of the \ac{LM} algorithm and the \ac{DL} algorithm for the \ac{PGO} and the \ac{BA} in the proposed map fusion approach with culling, the timing and the \ac{RMSE} for all the cases with the vi\_loop\_uav data set was measured.
+To compare the performance of the \ac{LM} algorithm with the performance of the \ac{DL} algorithm for the \ac{PGO} and the \ac{BA} in the proposed map fusion approach with culling, the timings and the \acp{RMSE} for all the cases were measured.
 
 \subsubsection{Results}
 
@@ -425,7 +438,7 @@ The timings when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm wit
 		    10 & 5 & 14.2733333333333 & 92.7866666666667 & 164.97 \\			
 			10 & 10 & 35.2933333333333 & 243.346666666667 & 446.753333333333 \\
 		\end{tabular}
-		\caption{Timings of the vi\_loop\_uav data set with culling, \ac{PGO} and \ac{BA} both using the \ac{DL} algorithm}
+		\caption{Timings of the MPF, the \ac{PGO} and the \ac{BA} both using the \ac{DL} algorithm with the vi\_loop\_uav data set with culling}
 		\label{tab:res_timing_4}
 	\end{center}
 \end{table}
@@ -442,12 +455,12 @@ In \autoref{tab:res_6} the \acp{RMSE} when the \ac{PGO} and the \ac{BA} both use
 		10 & 5 & 0.0656 & 0.089093333333333 & 0.077346666666667 \\
 	    10 & 10 & 0.061566666666667 & 0.095233333333333 & 0.0784\\		
 	\end{tabular}
-	\caption{\acp{RMSE} with \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm}
+	\caption{\acp{RMSE} with \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm with the vi\_loop\_uav data set with culling}
 	\label{tab:res_8}
 \end{table}
 
 \subsubsection{Discussion}
-The timing of both optimization procedures (\ac{PGO} and \ac{BA}) with the \ac{LM} and the \ac{DL} algorithm were recorded and presented in \autoref{tab:res_timing_2} and \autoref{tab:res_timing_4}.
+The timings of both optimization procedures (\ac{PGO} and \ac{BA}) with the \ac{LM} and the \ac{DL} algorithm were recorded and presented in \autoref{tab:res_timing_2} and \autoref{tab:res_timing_4}.
 
 The best results are achieved if for the \ac{PGO} the \ac{LM} algorithm and for the \ac{BA} the \ac{DL} algorithm is used. The timings of this setup are summarized in \autoref{tab:res_timing_6}.
 
@@ -462,13 +475,13 @@ The best results are achieved if for the \ac{PGO} the \ac{LM} algorithm and for 
 			10 & 5 & 16 & 93.4466666666667 & 164.576666666667 \\
 			10 & 10 & 33.9466666666667 & 178.696666666667 & 383.539666666667 \\
 		\end{tabular}
-		\caption{Timings of the vi\_loop\_uav data set with culling, \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm}
+		\caption{Timings of the MPF, the \ac{PGO} and the \ac{BA}, \ac{PGO} using the \ac{LM} algorithm and \ac{BA} using the \ac{DL} algorithm with the vi\_loop\_uav data set with culling}
 		\label{tab:res_timing_6}
 	\end{center}
 \end{table}
 
-That only the \ac{BA} performs better with the \ac{DL} algorithm may come from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized and the \ac{LM} algorithm performs better for smaller optimization problems.\\
+That only the \ac{BA} performs better with the \ac{DL} algorithm may come from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized, and the \ac{LM} algorithm performs better for smaller optimization problems.\\
 
-With the change of the \ac{BA}, using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.
+With the change of the \ac{BA} using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.\\
 
 %\section{Discussion}

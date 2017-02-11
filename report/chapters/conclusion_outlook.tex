@@ -4,9 +4,9 @@
 \section{Conclusion}
 In this semester project, a novel map fusion approach was developed which uses multiple \acp{KFM} and skips \acp{KF} after each detected \ac{KFM}. With the skipping of \acp{KF}, the \acp{KFM} are spread over a bigger area and together with the usage of multiple \acp{KFM}, more information can be gathered and provided to the optimization procedures which results in a reduction of drift and an improved accuracy. The novel approach therefore outperforms the previous approach in terms of accuracy.\\
 
-The second part of this semester project, the introduced culling approach removes redundant \acp{KF} and therefore the optimization procedures (\ac{PGO} and \ac{BA}) have to process less edges and vertices. This culling approach reduced the runtime significantly while maintaining the accuracy.\\
+The second part of this semester project, the introduced culling approach, removes redundant \acp{KF} and therefore the optimization procedures (\ac{PGO} and \ac{BA}) have to process less edges and vertices. This culling approach reduced the runtime significantly while maintaining the accuracy.\\
 
-The evaluation of the \ac{LM} and the \ac{DL} algorithm for the optimization procedures has shown, that the best timing can be achieved if the \ac{PGO} uses the \ac{LM} algorithm and the \ac{BA} uses the \ac{DL} algorithm With this setting the timing of the system was further improved.\\
+The evaluation of the \ac{LM} and the \ac{DL} algorithm for the optimization procedures has shown, that the best timing can be achieved if the \ac{PGO} uses the \ac{LM} algorithm and the \ac{BA} uses the \ac{DL} algorithm. With this setting the timing of the system was further improved.\\
 
 With the new map fusion approach, the culling of \acp{KF} and the usage of optimal optimization algorithms with respect to the runtime, an existing multi agent \ac{SLAM} system was improved which was the goal of this semester project.
 
@@ -21,4 +21,4 @@ Contrary, if a setting with a small number of \acp{KFM} and \ac{KF} skips is use
 
 The proposed map fusion approach takes the transformation of the first detected \ac{KFM} to align the two maps. A more sophisticated heuristic approach could be used to determine the transformation of the \acp{KFM} which will result in the best alignment.\\
 
-In the implementation of the \ac{KF} culling only the first order neighbors (in the co-visibility graph) of the \acp{KF} of the \acp{KFM} are considered for the redundancy check. This could be adapted that higher order neighbors in the co-visibility graph are also taken into consideration. In this case, one has to be careful to set the redundancy threshold to a value that the optimization procedures can still be provided with enough information not to reduce the accuracy.
+In the implementation of the \ac{KF} culling only the first order neighbors (in the co-visibility graph) of the \acp{KF} of the \acp{KFM} are considered for the redundancy check. This could be adapted, that higher order neighbors in the co-visibility graph are also taken into consideration. In this case, one has to be careful to set the redundancy threshold to a value that the optimization procedures can still be provided with enough information not to reduce the accuracy.
