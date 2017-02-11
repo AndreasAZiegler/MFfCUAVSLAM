@@ -13,28 +13,34 @@ pub_uav_cam_1 = rospy.Publisher('/retime_messages/image_raw1', sensor_msgs.msg.I
 pub_vicon_0 = rospy.Publisher('/retime_messages/position', geometry_msgs.msg.TransformStamped, queue_size=1)
 pub_vicon_1 = rospy.Publisher('/retime_messages/position1', geometry_msgs.msg.TransformStamped, queue_size=1)
 
+## ROS callback function which retimes the grayscale image of client 0
 def uav_cam_0_callback(data):
   data.header.stamp = rospy.Time.now()
   #print "time.now(): " + str(rospy.Time.now())
   pub_uav_cam_0.publish(data)
 
+## ROS callback function which retimes the grayscale image of client 1
 def uav_cam_1_callback(data):
   data.header.stamp = rospy.Time.now()
   #print "time.now(): " + str(rospy.Time.now())
   pub_uav_cam_1.publish(data)
 
+## ROS callback function which retimes the ground truth position from the leica for client 0
 def leica_0_callback(data):
   data.header.stamp = rospy.Time.now()
   pub_leica_0.publish(data)
 
+## ROS callback function which retimes the ground truth position from the leica for client 1
 def leica_1_callback(data):
   data.header.stamp = rospy.Time.now()
   pub_leica_1.publish(data)
 
+## ROS callback function which retimes the ground truth position from the vicon for client 0
 def vicon_0_callback(data):
   data.header.stamp = rospy.Time.now()
   pub_vicon_0.publish(data)
 
+## ROS callback function which retimes the ground truth position from the vicon for client 1
 def vicon_1_callback(data):
   data.header.stamp = rospy.Time.now()
   pub_vicon_1.publish(data)
@@ -51,6 +57,7 @@ def initROS():
   sub_vicon_1 = rospy.Subscriber('/camera_imu/vrpn_client/estimated_transform1', geometry_msgs.msg.TransformStamped, vicon_1_callback)
 
 
+## Main
 if __name__ == '__main__':
   try:
     initROS()
