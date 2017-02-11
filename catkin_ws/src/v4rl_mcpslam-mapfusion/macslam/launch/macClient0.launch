@@ -6,7 +6,8 @@
   <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->
   <!-- Agent Specific Params - !!!MUST BE ADJUSTED!!! -->
 
-  <param name="~TopicNameCamSub" type="string" value="/cam0/image_raw" />
+  <!--<param name="~TopicNameCamSub" type="string" value="/cam0/image_raw" /> -->
+  <param name="~TopicNameCamSub" type="string" value="/retime_messages/image_raw" />
 <!--  <param name="~TopicNameCamSub" type="string" value="/mv_26805864/image_raw" /> -->
   <param name="~FrameId" type="string" value="odomC0" />
   <param name="~ClientId" type="int" value="0" />
