@@ -567,17 +567,6 @@ namespace macslam {
 			std::cin.get(); //wait to start bagfile recording
 			*/
 		}
-
-    // Project MapPoints observed in the neighborhood of the loop keyframe
-    // into the current keyframe and neighbors using corrected poses.
-    // Fuse duplications.
-    /*
-    lv = 0;
-    for(auto i : vMatchHits) {
-      SearchAndFuse(CorrectedSim3Vec[lv], i.mvpLoopMapPoints);
-      ++lv;
-    }
-    */
 	}
 
   void MapMerger::optimizeEssentialGraph(mapptr pFusedMap, mapptr pMapCurr, mapptr pMapMatch, vector<MapMatchHit> vMatchHits) {

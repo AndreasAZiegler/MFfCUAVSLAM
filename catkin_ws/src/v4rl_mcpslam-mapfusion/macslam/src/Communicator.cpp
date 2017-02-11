@@ -668,24 +668,37 @@ void Communicator::ResetCb(std_msgs::BoolConstPtr pMsg)
 
 void Communicator::PublishMapCb(std_msgs::BoolConstPtr pMsg) {
 	std::unique_lock<std::mutex> lock(Communicator::mMutexExport);
+
+	// If export was triggered and export was not previously done
 	if((true == pMsg->data) && (false == Communicator::mFlagExported)) {
 		// Export map
+		// Get all KeyFrames of the map
 		std::vector<boost::shared_ptr<KeyFrame>> kfs = mpMap->GetAllKeyFrames();
+
+		// Open text file for export
 		std::ofstream output;
 		output.open("export_" + to_string(mClientId) + ".txt");
 
+		// If file was successfully opened, export
 		if(true == output.is_open()) {
 			output << "Begin export of map:" << std::endl;
 			output << "ID;mapId;timestamp;x;y;z" << std::endl;
+
 			for(boost::shared_ptr<KeyFrame> i : kfs) {
+				// Only export valid KeyFrames
 				if((false == i->isBad()) && (false == i->IsEmpty())) {
 					std::cout << "test: " << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
 
 					output << i->mId.first << ";" << i->mId.second << ";" << std::setprecision(19) << i->mTimeStamp << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(0) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(1) << ";" << i->GetPoseInverse().rowRange(0,3).col(3).at<float>(2) << std::endl;
 				}
 			}
+
+			// Close text file
 			output.close();
+
+			// Set flag, that export was successfully done
 			Communicator::mFlagExported = true;
+
 			std::cout << "Finished export!" << std::endl;
 		} else {
 			std::cout << "Unalbel to open file!" << std::endl;

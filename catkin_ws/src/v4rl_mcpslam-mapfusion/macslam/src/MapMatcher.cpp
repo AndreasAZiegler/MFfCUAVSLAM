@@ -111,7 +111,7 @@ namespace macslam {
 
     ++mKFcount;
 
-    //If the map contains less than 10 KF or less than 10 KF have passed from last loop detection
+    //If the map contains less than 10 KF or less than the defined number of KF have passed from last loop detection
     if((mpCurrentKF->mId.first < mMMParams.mKFsToSkipAtStart) || (mKFcount < mMMParams.mKFsToSkip)) {
       //std::cout << "current KF id: " << mpCurrentKF->mId.first << " , KFs to skip at start: " << mMMParams.mKFsToSkipAtStart << std::endl;
       //std::cout << "current KF passed: " << currFramesPassed << " , KFs to skip: " << mMMParams.mKFsToSkip << std::endl;
@@ -469,6 +469,7 @@ namespace macslam {
     mFoundMatches[pMatchedMap][mpCurrMap].push_back(MMH);
     mKFcount = 0;
 
+    // Start map merging procedure when the required number of KeyFrameMatches is detected
     if(mFoundMatches[mpCurrMap][pMatchedMap].size() >= mMMParams.mMinHitsForMerge) {
       // Pointer to a Sim3 used by merge maps and global bundle adjustment
       std::shared_ptr<g2o::Sim3> g2oScw = std::make_shared<g2o::Sim3>();
@@ -479,42 +480,63 @@ namespace macslam {
       // Merge maps with the first match
       boost::shared_ptr<Map> pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches.back(), g2oScw);
 
+      //auto start_culling = chrono::steady_clock::now();
+
       // Remove redundant key frames
       for(auto i : vMatches) {
         KeyFrameCulling(i.mpKFCurr, i.mpKFMatch);
-        //MapPointCulling(i.mvpLoopMapPoints, i.mvpCurrentMatchedPoints);
       }
+
+			/*
+			auto end_culling = chrono::steady_clock::now();
+			auto diff_culling = end_culling - start_culling;
+			std::cout << "culling timing: " << chrono::duration <double, milli> (diff_culling).count() << " ms" << endl;
+
+      auto start_shrink = chrono::steady_clock::now();
+      */
 
       // Remove first match as the map points of the first match will already be fused by the map merge
       vMatches.pop_back();
       vMatches.shrink_to_fit();
 
+			/*
+			auto end_shrink = chrono::steady_clock::now();
+			auto diff_shrink = end_shrink - start_shrink;
+			std::cout << "shrinking timing: " << chrono::duration <double, milli> (diff_shrink).count() << " ms" << endl;
+
       auto start_lmpf = chrono::steady_clock::now();
+      */
 
       // Perform local map point fusion on the remaining matches
       mpMapMerger->localMapPointFusion(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
 
+			/*
 			auto end_lmpf = chrono::steady_clock::now();
 			auto diff_lmpf = end_lmpf - start_lmpf;
 			std::cout << "local map point fusion timing: " << chrono::duration <double, milli> (diff_lmpf).count() << " ms" << endl;
 
 			auto start_oeg = chrono::steady_clock::now();
+			*/
 
       // Perform essential graph optimization
       mpMapMerger->optimizeEssentialGraph(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
 
+			/*
 			auto end_oeg = chrono::steady_clock::now();
 			auto diff_oeg = end_oeg - start_oeg;
 			std::cout << "optimize essential graph timing: " << chrono::duration <double, milli> (diff_oeg).count() << " ms" << endl;
 
 			auto start_gba = chrono::steady_clock::now();
+			*/
 
       // Perform global bundle adjustment
       mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches, g2oScw);
 
+			/*
 			auto end_gba = chrono::steady_clock::now();
 			auto diff_gba = end_gba - start_gba;
 			std::cout << "global bundle adjustment timing: " << chrono::duration <double, milli> (diff_gba).count() << " ms" << endl;
+			*/
 		}
 
     this->ClearLoopEdges();
