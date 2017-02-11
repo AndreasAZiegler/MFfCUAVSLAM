@@ -1892,7 +1892,7 @@ namespace macslam {
           el->setMeasurement(Sli);
           el->information() = matLambda;
           optimizer.addEdge(el);
-          nEdgesCounted++;
+          //nEdgesCounted++;
         }
       }
 
