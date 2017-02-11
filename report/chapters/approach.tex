@@ -7,10 +7,10 @@ In this section the proposed map fusion approach is explained. Firstly, the read
 
 \subsection{Terms}
 
-\subsection{\acf{MP} / Landmarks}
+\subsubsection{\acf{MP} / Landmarks}
 The terms \acf{MP} and Landmarks are used interchangeably in this report and are defined as uniquely identifiable objects in the world whose location can be estimated by a sensor.
 
-\subsection{\acf{KF}}
+\subsubsection{\acf{KF}}
 \acfp{KF} are the most representative poses of the trajectory of a robot. As an example in the sketch in figure \autoref{fig:kf}, $x_0$ and $x_3$ are \acp{KF} whereas $x_1$ and $x_2$ are not \acp{KF} as they are not enough representative because they do not contribute additional (unseen) \acp{MP}.
 
 \begin{figure}[H]
@@ -29,7 +29,7 @@ In ORB-SLAM(2) \cite{Mur-Artal2015}, \cite{Mur-Artal2016}, on which this semeste
   \item Current frame tracks less than 90\% points than the reference \ac{KF}
 \end{itemize}
 
-\subsection{\acf{KFM}}
+\subsubsection{\acf{KFM}}
 A \acf{KFM} is if two \acp{KF}, one per client, observed the same location (cf. \autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (cf. \autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (cf. \autoref{fig:kfm3}).
 
 \begin{figure}[H]
@@ -143,7 +143,7 @@ In conclusion, a \ac{KFM} contains:
   \item The transformation ($T \in \text{Sim(3)}$) between the two \acp{KF}
 \end{itemize}
 
-\subsection{Co-visibility graph}
+\subsubsection{Co-visibility graph}
 Co-visibility is represented as an undirected, weighted graph, a co-visibility graph. Each node/vertex is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} an the resulting co-visibility graph is shown in \autoref{fig:covis}.
 
 \begin{figure}[H]
