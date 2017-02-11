@@ -8,7 +8,7 @@ In this section, the proposed map fusion approach is explained. Firstly, the rea
 \subsection{Terms}
 
 \subsubsection{\acf{MP} / Landmarks}
-The terms \acf{MP} and Landmarks are used interchangeably in this report and are defined as uniquely identifiable objects in the world whose location can be estimated by a sensor.
+The terms \acf{MP} and Landmarks are used interchangeably in this report and are defined as uniquely identifiable objects in the world, whose location can be estimated by a sensor.
 
 \subsubsection{\acf{KF}}
 \acfp{KF} are the most representative poses of the trajectory of a robot. As an example in the sketch in figure \autoref{fig:kf}, $x_0$ and $x_3$ are \acp{KF} whereas $x_1$ and $x_2$ are not \acp{KF} as they are not enough representative because they do not contribute additional (unseen) \acp{MP}.
@@ -144,7 +144,7 @@ In conclusion, a \ac{KFM} contains:
 \end{itemize}
 
 \subsubsection{Co-visibility graph}
-Co-visibility is represented as an undirected, weighted graph, a co-visibility graph. Each node/vertex is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} and the resulting co-visibility graph is shown in \autoref{fig:covis}.
+Co-visibility is represented as an undirected, weighted graph, a co-visibility graph. Each node/vertex is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}. The weight of an edge is the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} and the resulting co-visibility graph is shown in \autoref{fig:covis}.
 
 \begin{figure}[H]
 	\centering
@@ -1218,7 +1218,7 @@ After the last \ac{KFM} was detected, the maps will be aligned with the transfor
   \label{fig:newapproach7}
 \end{figure}
 
-After the two maps are aligned (possibly with still some miss alignment as in \autoref{fig:newapproach7}), the \ac{PGO} will be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, the \acp{KF} and the \acp{MP}.\\
+After the two maps are aligned (possibly still with some miss alignment as in \autoref{fig:newapproach7}), the \ac{PGO} will be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, the \acp{KF} and the \acp{MP}.\\
 
 The idea behind the usage of multiple \acp{KFM} was already discussed in contrary to the idea of skipping \acp{KF} after a \ac{KFM} was detected. This idea will be discussed next.
 
@@ -1614,7 +1614,7 @@ Optimizations such as \acf{PGO} and \acf{BA} are typically the most time consumi
 
 \ac{BA} leads to a large scale optimization problem that is solved by simultaneously refining the 3D structure and viewing parameters, to achieve a reconstruction which is optimal. The optimization is obtained by using non-linear least squares algorithms, of which \acf{LM} has become a very popular choice \cite{Lourakis2005}.\\
 
-\cite{Lourakis2005} argues that considerable computational benefits can be gained by substituting the \ac{LM} algorithm in the implementation of \ac{BA} with a variant of \acf{DL} non-linear least squares technique.\\
+In \cite{Lourakis2005} it is argued, that considerable computational benefits can be gained by substituting the \ac{LM} algorithm in the implementation of \ac{BA} with a variant of \acf{DL} non-linear least squares technique.\\
 
 ORB-SLAM(2) also uses the \ac{LM} algorithm for the \ac{PGO} and the \ac{BA} and therefore as stated in \cite{Lourakis2005}, this semester project could also benefit from better timing by using the \ac{DL} algorithm instead of the \ac{LM} algorithm.\\
 

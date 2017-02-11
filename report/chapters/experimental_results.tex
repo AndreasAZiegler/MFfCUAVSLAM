@@ -3,7 +3,7 @@
 
 \section{Experimental Setup}
 In this section it will be described how the proposed approaches were compared against each other and against the previous approach and how they were evaluated.\\
-At first the data sets used for the comparison and the evaluation are described, then the \acf{ROS} setup will be explained and in the last section, the evaluation procedure itself will be described.
+First the data sets used for the comparison and the evaluation are described, then the \acf{ROS} setup will be explained and in the last section, the evaluation procedure itself will be described.
 
 \subsection{Data sets}
 Both of the used data sets were captured in a room equipped with a motion tracking system, VICON, which provided the ground truth for the comparison and the evaluation. As the whole setup is based on \ac{ROS}, the data sets were recorded with rosbags. The rosbags contain at least the following topics:
@@ -177,7 +177,7 @@ To perform the 7DoF alignment an implementation of the algorithm proposed in \ci
 \subsubsection{Calculate the \acf{RMSE}}
 The \acf{RMSE} between the ground truth and the \ac{SLAM} positions is calculated according to
 \begin{equation}
-  \textit{rmse} = \sqrt{\frac{1}{N - 1} \sum_i^N \big( (x_{\text{SLAM},i} - x_{\text{gt},i})^2 + (y_{\text{SLAM},i} - y_{\text{gt},i})^2 + (z_{\text{SLAM},i} - z_{\text{gt},i})^2\big)}
+  \text{\ac{RMSE}} = \sqrt{\frac{1}{N - 1} \sum_i^N \big( (x_{\text{SLAM},i} - x_{\text{gt},i})^2 + (y_{\text{SLAM},i} - y_{\text{gt},i})^2 + (z_{\text{SLAM},i} - z_{\text{gt},i})^2\big)}
 \end{equation}
 where $N$ is the total number of positions, $x_{\text{SLAM},i}$, $y_{\text{SLAM},i}$ and $z_{\text{SLAM},i}$ are the positions of the \ac{SLAM} system and $x_{\text{gt},i}$, $y_{\text{gt},i}$ and $z_{\text{gt},i}$ are the ground truth positions provided by a motion tracking system.
 
@@ -385,7 +385,7 @@ The timings of the fusion of \acfp{MP}, the \ac{PGO} and the \ac{BA} without and
 \end{table}
 
 \subsubsection{Discussion}
-With culling, the amount of edges and vertices the \ac{PGO} and the \ac{BA} have to process is reduced significantly compared to without culling, as shown in \autoref{tab:res_4} and \autoref{tab:res_5}. The reduction of the number of edges in the \ac{PGO} and in the \ac{BA} is more than 60\%, respectively 38\% and the reduction of the number of vertices in the \ac{PGO} and in the \ac{BA} is up to 38\%, respectively 13\%, as shown in \autoref{tab:res_percentage_1} and \autoref{tab:res_percentage_2}.
+With culling, the number of edges and vertices the \ac{PGO} and the \ac{BA} have to process is reduced significantly compared to without culling, as shown in \autoref{tab:res_4} and \autoref{tab:res_5}. The reduction of the number of edges in the \ac{PGO} and in the \ac{BA} is more than 60\%, respectively 38\% and the reduction of the number of vertices in the \ac{PGO} and in the \ac{BA} is up to 38\%, respectively 13\%, as shown in \autoref{tab:res_percentage_1} and \autoref{tab:res_percentage_2}.
 
 \begin{table}[ht!]
 	\begin{center}

@@ -12,7 +12,7 @@ ORB-SLAM(2) uses a bags of words place recognition module, which is based on \ci
 \section{Co-visibility Graph and Essential Graph}
 In a co-visibility graph, each node/vertex represents a \ac{KF} and there is an edge between two \acp{KF} if they share observations of the same \acfp{MP}. With the usage of such a co-visibility graph for the tracking and the mapping in ORB-SLAM(2), this two tasks focus in a local co-visible area, independent of the global map size.
 
-The essential graph is built from a spanning tree, loop closure links and strong edges from the co-visibility graph. Loop closing based on the optimization of an essential graph can be performed in real time as the essential graph retains all the \acp{KF} but only a reduced number of edges compared to the co-visibility graph and therefore the optimization is less computationally demanding.
+An essential graph, described in \cite{Mur-Artal2015}, is built from a spanning tree, loop closure links and strong edges from the co-visibility graph. Loop closing based on the optimization of an essential graph can be performed in real time as the essential graph retains all the \acp{KF} but only a reduced number of edges compared to the co-visibility graph and therefore the optimization is less computationally demanding.
 
 \section{g$^2$o}
 The optimization framework g$^2$o \cite{Kummerle2011} is used by ORB-SLAM(2) for the different optimization tasks. g$^2$o is a general framework for optimizing graph-based nonlinear error functions as they often appear in many popular problems in robotics, such as \ac{SLAM} or \acf{BA}. 
