@@ -3,7 +3,7 @@
 
 \section{Map fusion}
 \label{sec:mapmerging}
-In this section the proposed map fusion approach is explained. Firstly, the reader will be introduced to the terms needed to explain map fusion in general and the proposed map fusion approach especially. Then the previous map fusion approach is introduced followed by the new proposed approach.
+In this section, the proposed map fusion approach is explained. Firstly, the reader will be introduced to the terms needed to explain map fusion in general and the proposed map fusion approach especially. Then, the previous map fusion approach is introduced followed by the new proposed approach.
 
 \subsection{Terms}
 
@@ -30,7 +30,7 @@ In ORB-SLAM(2) \cite{Mur-Artal2015}, \cite{Mur-Artal2016}, on which this semeste
 \end{itemize}
 
 \subsubsection{\acf{KFM}}
-A \acf{KFM} is if two \acp{KF}, one per client, observed the same location (cf. \autoref{fig:kfm1}). If a \ac{KFM} was detected a transformation $T \in \text{Sim(3)}$ can be obtained, from the poses of the \acp{KF}, which relates the maps of the two clients to each other (cf. \autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (cf. \autoref{fig:kfm3}).
+A \acf{KFM} is if two \acp{KF}, one per client, observed the same location (cf. \autoref{fig:kfm1}). If a \ac{KFM} was detected, a transformation $T \in \text{Sim(3)}$ can be obtained from the poses of the \acp{KF}, which relates the maps of the two clients to each other (cf. \autoref{fig:kfm2}). With the transformation $T$ the maps than can be aligned (cf. \autoref{fig:kfm3}).
 
 \begin{figure}[H]
   \centering
@@ -63,7 +63,7 @@ A \acf{KFM} is if two \acp{KF}, one per client, observed the same location (cf. 
     \node [fill=black, circle,inner sep=1pt, text width=0.5mm] at (D1) {};
     \node [fill=black, circle,inner sep=1pt, text width=0.5mm] at (D2) {};
   \end{tikzpicture}
-  \caption{Two clients each with own landmarks and \acp{KF} with one \ac{KF} observing the same location}
+  \caption{Two clients, each with own landmarks and \acp{KF} with one \ac{KF} observing the same location}
   \label{fig:kfm1}
 \end{figure}
 
@@ -144,7 +144,7 @@ In conclusion, a \ac{KFM} contains:
 \end{itemize}
 
 \subsubsection{Co-visibility graph}
-Co-visibility is represented as an undirected, weighted graph, a co-visibility graph. Each node/vertex is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} an the resulting co-visibility graph is shown in \autoref{fig:covis}.
+Co-visibility is represented as an undirected, weighted graph, a co-visibility graph. Each node/vertex is a \ac{KF} and an edge between two \acp{KF} exists if they share observations of the same \acp{MP}, being the weight of the edge the number of common \acp{MP} \cite{Mur-Artal2015}. An example of \acp{KF} and the resulting co-visibility graph is shown in \autoref{fig:covis}.
 
 \begin{figure}[H]
 	\centering
@@ -163,7 +163,7 @@ In the previous approach, proposed in \cite{Schmuck2017}, as soon as a \ac{KFM} 
     \begin{figure}[H]
       \centering
       \includegraphics[width=0.75\textwidth]{images/map_1_2_1}
-      \caption{Two clients each with own landmarks and \acp{KF} observing the same location}
+      \caption{Two clients, each with own landmarks and \acp{KF} observing the same location}
       \label{fig:kfm4}
     \end{figure}}
   \item {The transformation between the two maps can be obtained (shown in figure \autoref{fig:kfm5})
@@ -190,7 +190,7 @@ The general idea of the proposed approach is to use multiple \acp{KFM} to guaran
 The proposed map fusion approach works as follow:
 
 \begin{enumerate}
-  \item After a \ac{KFM} is found skip $m$ \acp{KF} before processing the next \acs{KF}
+  \item After a \ac{KFM} is found, skip $m$ \acp{KF} before processing the next \acs{KF}
   \item Wait until $n$ \acp{KFM} were detected
   \item Fuse the two maps with the transformation of one of the \acp{KFM}
   \item Fuse the map points in the ($n-1$) \acp{KFM}
@@ -1218,7 +1218,7 @@ After the last \ac{KFM} was detected, the maps will be aligned with the transfor
   \label{fig:newapproach7}
 \end{figure}
 
-After the two maps are aligned (possibly with still some miss alignment as in \autoref{fig:newapproach7}) the \ac{PGO} will be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, the \acp{KF} and the \acp{MP}.\\
+After the two maps are aligned (possibly with still some miss alignment as in \autoref{fig:newapproach7}), the \ac{PGO} will be performed which optimizes the poses of the \acp{KF} and afterwards the \ac{BA} will be performed which optimizes the poses of both, the \acp{KF} and the \acp{MP}.\\
 
 The idea behind the usage of multiple \acp{KFM} was already discussed in contrary to the idea of skipping \acp{KF} after a \ac{KFM} was detected. This idea will be discussed next.
 

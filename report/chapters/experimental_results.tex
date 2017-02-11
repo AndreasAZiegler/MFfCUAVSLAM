@@ -107,7 +107,7 @@ The re-timing \ac{ROS} node subscribes to the topics providing the ground truth 
 
 \subsubsection{Recording node}
 \label{subsubsec:record_node}
-The recording \ac{ROS} node subscribes to the topic, the re-timing \ac{ROS} node publishes, which contains the ground truth position. It saves the ground truth positions into a list and at the end writes all the positions together with their time stamps into a text file.
+The recording \ac{ROS} node subscribes to the topic, which contains the re-timed ground truth position. It saves the ground truth positions into a list and at the end writes all the positions together with their time stamps into a text file.
 
 \subsection{Evaluation}
 To evaluate the proposed new map fusion approach and to measure the influence of the culling as well as the change of the optimization algorithm to the accuracy, an evaluation procedure was developed. The evaluation procedure performs the following steps:
@@ -184,7 +184,7 @@ where $N$ is the total number of positions, $x_{\text{SLAM},i}$, $y_{\text{SLAM}
 \section{Experiments}
 \label{sec:experiments}
 
-In this section the performed experiments which show the performance of the proposed new map fusion approach, of the culling and of the different optimization algorithm settings are presented.\\
+In this section, the performed experiments which show the performance of the proposed new map fusion approach, of the culling and of the different optimization algorithm settings are presented.\\
 
 For every experiment, three runs were performed from which an average for the two maps was calculated. These averages as well as the average of the averaged map results are listed for every experiment.
 
@@ -226,7 +226,7 @@ The results of this experiment are listed in \autoref{tab:res_1}.
 \end{table}
 
 \subsubsection{Discussion}
-In \autoref{tab:res_1} one can see, that with only three \acp{KFM} the \ac{RMSE} gets higher, which may result from the fact that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped, supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformations of the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
+In \autoref{tab:res_1} one can see, that with only three \acp{KFM} the \ac{RMSE} gets higher. This may result from the fact, that with only three \acp{KFM} not much more information is gained while the computational effort is increased, as the transformation for every \ac{KFM} is calculated and optimized. If this increased computational effort occurs more or less at once, this could lead to short time overload of the system which then results in a higher \ac{RMSE}. The fact that the \ac{RMSE} is decreased if \acp{KF} are skipped, supports this reasoning as with skipped \acp{KF} the increased computational effort is more spread over time because the time between the transformations of the \acp{KFM} are calculated and optimized is increased due to the skipping of \acp{KF}.
 
 The setting with five \acp{KFM} and no \acp{KF} skipped also results in a worse \ac{RMSE} which could be explained with the same reason mentioned before.
 
@@ -248,11 +248,11 @@ The selected settings which will also be evaluated in the other experiments are 
 	\label{tab:dis_settings}
 \end{table}
 
-The selected settings may not be the ones performing best on the first data set (vi\_loop\_close) but they are also well suited for other data sets as they e.g. do not skipp too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map fusion in data sets with less overlap.\\
+The selected settings may not be the ones performing best on the first data set (vi\_loop\_close) but they are also well suited for other data sets as they e.g. do not skip too many \acp{KF} or do not require too many \acp{KFM} which could lead to no map fusion in data sets with less overlap.\\
 
 \subsection{Proposed map fusion approach}
 \subsubsection{Description}
-To evaluate the performance of the proposed map fusion approach, the approach was applied to the vi\_loop\_far data set and to the more challenging vi\_loops\_uav data set with the chosen settings described in \autoref{subsec:suitable_settings}.
+To evaluate the performance of the proposed map fusion approach, the approach was applied to the vi\_loop\_far data set and to the more challenging vi\_loops\_uav data set, with the chosen settings described in \autoref{subsec:suitable_settings}.
 
 \subsubsection{Results}
 The results of the experiment with the vi\_loop\_far data set are listed in \autoref{tab:res_2}. In \autoref{tab:res_3} the results of the experiment with the vi\_loops\_uav data set are listed.
@@ -415,7 +415,7 @@ With culling, the amount of edges and vertices the \ac{PGO} and the \ac{BA} have
 
 The reduction in edges and vertices then results in a decrease of the runtime as shown in \autoref{tab:res_timing_1} and \autoref{tab:res_timing_2}\\
 
-As the culling removes information one has to be careful not to remove to many information. With a redundancy threshold of 90\% the accuracy of the setting with 10 \acp{KFM} and 10 \acp{KF} skipped got worse. Because of this reason another experiment with a redundancy threshold of 94\% was performed instead which showed a satisfactory result.\\
+As the culling removes information, one has to be careful not to remove to many information. With a redundancy threshold of 90\%, the accuracy of the setting with 10 \acp{KFM} and 10 \acp{KF} skipped got worse. Because of this reason, another experiment with a redundancy threshold of 94\% was performed instead, which showed a satisfactory result.\\
 
 With the right choice of the redundancy threshold, the number of edges and vertices in the optimization can be reduced significantly which results in a reduced runtime while achieving the same accuracy.
 
@@ -425,7 +425,7 @@ To compare the performance of the \ac{LM} algorithm with the performance of the 
 
 \subsubsection{Results}
 
-The timings when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm with the vi\_loop\_uav data set are listed in \autoref{tab:res_timing_2}. In \autoref{tab:res_timing_4} the timings when the \ac{PGO} and the \ac{BA} both use the \ac{DL} algorithm are listed.
+The timings when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm with the vi\_loop\_uav data set are listed in \autoref{tab:res_timing_2}. In \autoref{tab:res_timing_4}, the timings when the \ac{PGO} and the \ac{BA} both use the \ac{DL} algorithm are listed.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -443,7 +443,7 @@ The timings when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm wit
 	\end{center}
 \end{table}
 
-In \autoref{tab:res_6} the \acp{RMSE} when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm with the vi\_loop\_uav data set are listed. The \acp{RMSE} when the \ac{PGO} and the \ac{BA} both use the \ac{DL} algorithm are listed in \autoref{tab:res_8}.
+In \autoref{tab:res_6}, the \acp{RMSE} when the \ac{PGO} and the \ac{BA} both use the \ac{LM} algorithm with the vi\_loop\_uav data set are listed. The \acp{RMSE} when the \ac{PGO} and the \ac{BA} both use the \ac{DL} algorithm are listed in \autoref{tab:res_8}.
 
 \begin{table}[ht!]
 	\npdecimalsign{.}
@@ -480,8 +480,8 @@ The best results are achieved if for the \ac{PGO} the \ac{LM} algorithm and for 
 	\end{center}
 \end{table}
 
-That only the \ac{BA} performs better with the \ac{DL} algorithm may come from the fact, that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized, and the \ac{LM} algorithm performs better for smaller optimization problems.\\
+That only the \ac{BA} performs better with the \ac{DL} algorithm may come from the fact that the \ac{BA} is a large scale, classically non-linear, optimization problem \cite{Lourakis2005, Triggs2000}, whereas the \ac{PGO} in comparison is a smaller optimization problem, as the \acp{MP} stay fixed and are not optimized, and the \ac{LM} algorithm performs better for smaller optimization problems.\\
 
-With the change of the \ac{BA} using the \ac{DL} algorithm instead of the \ac{LM} algorithm the runtime of the optimization was decreased and therefore also the runtime of the whole system.\\
+With the change of the \ac{BA} using the \ac{DL} algorithm instead of the \ac{LM} algorithm, the runtime of the optimization was decreased and therefore also the runtime of the whole system.\\
 
 %\section{Discussion}
