@@ -944,10 +944,8 @@ namespace macslam {
   }
 
   void Optimizer::MapFusionGBA(mapptr pMap, size_t ClientId, int nIterations, bool* pbStopFlag, idpair nLoopKF, const bool bRobust) {
-    /*
     int nVertexesCounted = 0;
     int nEdgesCounted = 0;
-    */
 
     //prepare structures
 
@@ -998,7 +996,7 @@ namespace macslam {
 
       vSE3->setFixed(pKF->mId == FixedId);
       optimizer.addVertex(vSE3);
-      //nVertexesCounted++;
+      nVertexesCounted++;
 
       if(pKF->mUniqueId > maxKFid) {
         maxKFid = pKF->mUniqueId;
@@ -1026,7 +1024,7 @@ namespace macslam {
 
       vPoint->setMarginalized(true);
       optimizer.addVertex(vPoint);
-      //nVertexesCounted++;
+      nVertexesCounted++;
 
       const map<kfptr, size_t> observations = pMP->GetObservations();
 
@@ -1069,7 +1067,7 @@ namespace macslam {
         e->cy = pKF->cy;
 
         optimizer.addEdge(e);
-        //nEdgesCounted++;
+        nEdgesCounted++;
       }
 
       if(nEdges == 0) {
@@ -1081,10 +1079,8 @@ namespace macslam {
       }
     }
 
-    /*
     std::cout << "GBA nVertexes: " << nVertexesCounted << std::endl;
     std::cout << "GBA nEdges: " << nEdgesCounted << std::endl;
-    */
 
     // Optimize!
     cout << "----- Optimize" << endl;
@@ -1740,10 +1736,8 @@ namespace macslam {
   void Optimizer::OptimizeEssentialGraphMapFusionV2(mapptr pMap, kfptr pLoopKF, kfptr pCurKF,
       const map<kfptr, set<kfptr> > &LoopConnections, const bool &bFixScale) {
 
-    /*
     int nEdgesCounted = 0;
     int nVertexesCounted = 0;
-    */
 
     // Setup optimizer
     g2o::SparseOptimizer optimizer;
@@ -1795,7 +1789,7 @@ namespace macslam {
       VSim3->_fix_scale = bFixScale;
 
       optimizer.addVertex(VSim3);
-      //nVertexesCounted++;
+      nVertexesCounted++;
 
       vpVertices[nIDi] = VSim3;
     }
@@ -1840,7 +1834,7 @@ namespace macslam {
         e->information() = matLambda;
 
         optimizer.addEdge(e);
-        //nEdgesCounted++;
+        nEdgesCounted++;
 
         sInsertedEdges.insert(make_pair(min(nIDi, nIDj), max(nIDi, nIDj)));
       }
@@ -1871,7 +1865,7 @@ namespace macslam {
 
         e->information() = matLambda;
         optimizer.addEdge(e);
-        //nEdgesCounted++;
+        nEdgesCounted++;
       }
 
       // Loop edges
@@ -1892,7 +1886,7 @@ namespace macslam {
           el->setMeasurement(Sli);
           el->information() = matLambda;
           optimizer.addEdge(el);
-          //nEdgesCounted++;
+          nEdgesCounted++;
         }
       }
 
@@ -1930,10 +1924,8 @@ namespace macslam {
       }
     }
 
-    /*
     std::cout << "Essential graph optimization nVertexes: " << nVertexesCounted << std::endl;
     std::cout << "Essential graph optimization nEdges: " << nEdgesCounted << std::endl;
-    */
 
     // Optimize!
     optimizer.initializeOptimization();

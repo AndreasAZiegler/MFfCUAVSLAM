@@ -480,63 +480,53 @@ namespace macslam {
       // Merge maps with the first match
       boost::shared_ptr<Map> pMergedMap = mpMapMerger->MergeMaps(mpCurrMap, pMatchedMap, vMatches.back(), g2oScw);
 
-      //auto start_culling = chrono::steady_clock::now();
+      auto start_culling = chrono::steady_clock::now();
 
       // Remove redundant key frames
       for(auto i : vMatches) {
         KeyFrameCulling(i.mpKFCurr, i.mpKFMatch);
       }
 
-			/*
 			auto end_culling = chrono::steady_clock::now();
 			auto diff_culling = end_culling - start_culling;
 			std::cout << "culling timing: " << chrono::duration <double, milli> (diff_culling).count() << " ms" << endl;
 
       auto start_shrink = chrono::steady_clock::now();
-      */
 
       // Remove first match as the map points of the first match will already be fused by the map merge
       vMatches.pop_back();
       vMatches.shrink_to_fit();
 
-			/*
 			auto end_shrink = chrono::steady_clock::now();
 			auto diff_shrink = end_shrink - start_shrink;
 			std::cout << "shrinking timing: " << chrono::duration <double, milli> (diff_shrink).count() << " ms" << endl;
 
       auto start_lmpf = chrono::steady_clock::now();
-      */
 
       // Perform local map point fusion on the remaining matches
       mpMapMerger->localMapPointFusion(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
 
-			/*
 			auto end_lmpf = chrono::steady_clock::now();
 			auto diff_lmpf = end_lmpf - start_lmpf;
 			std::cout << "local map point fusion timing: " << chrono::duration <double, milli> (diff_lmpf).count() << " ms" << endl;
 
 			auto start_oeg = chrono::steady_clock::now();
-			*/
 
       // Perform essential graph optimization
       mpMapMerger->optimizeEssentialGraph(pMergedMap, mpCurrMap, pMatchedMap, vMatches);
 
-			/*
 			auto end_oeg = chrono::steady_clock::now();
 			auto diff_oeg = end_oeg - start_oeg;
 			std::cout << "optimize essential graph timing: " << chrono::duration <double, milli> (diff_oeg).count() << " ms" << endl;
 
 			auto start_gba = chrono::steady_clock::now();
-			*/
 
       // Perform global bundle adjustment
       mpMapMerger->globalBundleAdjustment(pMergedMap, mpCurrMap, pMatchedMap, vMatches, g2oScw);
 
-			/*
 			auto end_gba = chrono::steady_clock::now();
 			auto diff_gba = end_gba - start_gba;
 			std::cout << "global bundle adjustment timing: " << chrono::duration <double, milli> (diff_gba).count() << " ms" << endl;
-			*/
 		}
 
     this->ClearLoopEdges();
