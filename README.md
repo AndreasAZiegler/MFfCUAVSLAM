@@ -29,3 +29,11 @@ Republishes topics with retimed timestamps.
 
 ###v4rl_mcpslam-mapfusion###
 Modifid multi client SLAM system, in which the proposed approaches of this semester project are implemented.
+
+##Evaluation##
+The text files with the recorded timestamps and coordinates of each experiment/dataset are in the folder evaluation.
+
+The data sets are "close", "far", "frontal", and "uav". "vicon" represents the ground truth. mX_skY describes how many KeyFrameMatches were required to fuse the maps (X) and how many KeyFrames were skipped (Y) after a KeyFrameMatch was detected.
+
+##Papers##
+The relevant research papers and some slides are in the folder papers.
