@@ -555,7 +555,6 @@ namespace macslam {
 			// Update connections in covisibility graph
 			j.mpKFCurr->UpdateConnections();
 
-			/*
 			set<size_t> suAssClientsC = pMapCurr->msuAssClients;
 			set<size_t> suAssClientsM = pMapMatch->msuAssClients;
 
@@ -565,7 +564,6 @@ namespace macslam {
 
 			cout << "ENTER to continue..." << endl << endl;
 			std::cin.get(); //wait to start bagfile recording
-			*/
 		}
 	}
 
