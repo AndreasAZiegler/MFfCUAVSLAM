@@ -11,29 +11,29 @@ The presentation I gave is located in the folder presentation. There is also an 
 
 # Contained scripts/ROS nodes #
 
-##Scripts##
+## Scripts ##
 
-###evaluation/scripts/evaluation.py###
+### evaluation/scripts/evaluation.py ###
 Python script to calculate the root mean squared error (RMSE) from a recorded experiment.
 
-###evaluation/scripts/evaluation_with_offset_estimate.py###
+### evaluation/scripts/evaluation_with_offset_estimate.py ###
 Python script to calculate the root mean squared error (RMSE) from a recorded experiment with an estimated time offset.
 
-##ROS nodes##
+## ROS nodes ##
 
-###record_vicon###
+### record_vicon ###
 Receives ground truth positions and writes it into a text file.
 
-###retime_messages###
+### retime_messages ###
 Republishes topics with retimed timestamps.
 
-###v4rl_mcpslam-mapfusion###
+### v4rl_mcpslam-mapfusion ###
 Modifid multi client SLAM system, in which the proposed approaches of this semester project are implemented.
 
-##Evaluation##
+## Evaluation ##
 The text files with the recorded timestamps and coordinates of each experiment/dataset are in the folder evaluation.
 
 The data sets are "close", "far", "frontal", and "uav". "vicon" represents the ground truth. mX_skY describes how many KeyFrameMatches were required to fuse the maps (X) and how many KeyFrames were skipped (Y) after a KeyFrameMatch was detected.
 
-##Papers##
+## Papers ##
 The relevant research papers and some slides are in the folder papers.
